@@ -1,0 +1,276 @@
+/* eslint-disable no-unused-expressions, @typescript-eslint/camelcase, no-underscore-dangle */
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
+
+import { createClient } from './client';
+import { renderNativePanel, NativePanelParams } from './NativePanel/NativePanel';
+import { SystemMessageDataType, SuggestionButtonType, ClientLogger } from './typings';
+import { createAudioRecorder } from './createAudioRecorder';
+import { renderAssistantRecordPanel } from './record';
+import { createCallbackLogger } from './record/callback-logger';
+import { createConsoleLogger } from './record/console-logger';
+import { createLogCallbackRecorder, RecorderCallback } from './record/callback-recorder';
+import { createRecordDownloader } from './record/record-downloader';
+
+const SDK_VERSION = '20.09.1.3576';
+const APP_VERSION = '20.09.1.3576';
+
+const CAPABILITIES = JSON.stringify({
+    screen: { available: true, width: window.innerWidth, height: window.innerHeight },
+    speak: { available: true },
+});
+
+const FEATURES = JSON.stringify({
+    appTypes: ['DIALOG', 'WEB_APP'],
+});
+
+export const legacyDevice = {
+    clientType: 'simple',
+    channel: 'Android_SB',
+    channelVersion: '8.1.0.2932_RC',
+    platformName: 'Android 8.0',
+    platformVersion: '8.0',
+};
+
+export const settings = {
+    dubbing: 1,
+    echo: -1,
+};
+
+export const initializeAssistantSDK = ({
+    initPhrase,
+    url,
+    userChannel,
+    surface,
+    userId = `webdbg_userid_${
+        Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    }`,
+    token = `webdbg_eribtoken_${
+        Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    }`,
+    surfaceVersion,
+    deviceId,
+    locale = 'ru',
+    nativePanel = {
+        defaultText: 'Покажи что-нибудь',
+        render: renderNativePanel,
+    },
+    sdkVersion = SDK_VERSION,
+    enableRecord,
+    recordParams,
+}: {
+    initPhrase: string;
+    url: string;
+    userChannel: string;
+    surface: string;
+    userId?: string;
+    token?: string;
+    surfaceVersion?: string; // версия хост (андроид) приложения
+    deviceId?: string;
+    locale?: string;
+    nativePanel?: NativePanelParams | null;
+    sdkVersion?: string; // версия sdk
+    enableRecord?: boolean; // показать управление записью лога сообщений
+    recordParams?: {
+        // параметры логирования сообщений
+        defaultActive?: boolean;
+        logger?: ClientLogger;
+    };
+}) => {
+    const device = {
+        platformType: 'ANDROID', // эмулируем андроид сдк
+        platformVersion: '9.0',
+        sdkVersion,
+        surface,
+        surfaceVersion: surfaceVersion || APP_VERSION,
+        features: FEATURES,
+        capabilities: CAPABILITIES,
+        deviceId,
+        additionalInfo: JSON.stringify({
+            host_app_id: 'ru.sberbank.sdakit.demo',
+            sdk_version: sdkVersion,
+        }),
+    };
+
+    let clientLogger = recordParams?.logger ? recordParams.logger : createConsoleLogger();
+    let loggerCb: RecorderCallback;
+    const recorder = createLogCallbackRecorder(
+        (subscribe: RecorderCallback) => {
+            loggerCb = subscribe;
+        },
+        recordParams?.defaultActive != null ? recordParams.defaultActive : true,
+    );
+    const saver = createRecordDownloader();
+    if (enableRecord && recordParams?.logger == null) {
+        clientLogger = createCallbackLogger((logEntry) => loggerCb && loggerCb(logEntry));
+    }
+
+    const vpsClient = createClient(
+        {
+            url,
+            userId,
+            token,
+            userChannel,
+            locale,
+            device,
+            legacyDevice,
+            settings,
+            version: 3,
+        },
+        clientLogger,
+    );
+
+    let appInfo: SystemMessageDataType['app_info'] | void;
+    const initialSmartAppData: Array<SystemMessageDataType['items'][0]['command']> = [];
+    let clientReady = false; // флаг готовности клиента к приему onData
+    let assistantReady = false; // флаг готовности контекста ассистента
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let state: any = null;
+
+    const createSystemMessageBase = () => {
+        return {
+            app_info: appInfo,
+            meta: {
+                current_app: {
+                    app_info: appInfo,
+                    state,
+                },
+            },
+        };
+    };
+
+    const sendServerAction = (payload: string, messageName: string) => {
+        return vpsClient.sendSystemMessage({
+            data: {
+                ...createSystemMessageBase(),
+                server_action: JSON.parse(payload),
+            },
+            messageName,
+        });
+    };
+
+    const sendState = () => {
+        return vpsClient.sendSystemMessage(
+            {
+                data: {
+                    ...createSystemMessageBase(),
+                },
+                messageName: '',
+            },
+            false,
+        );
+    };
+
+    const sendText = (text: string, params: {} = {}) => {
+        if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
+
+        return vpsClient.batch(() => {
+            state && sendState();
+            return vpsClient.sendText(text, params);
+        });
+    };
+
+    const fn = async () => {
+        await new Promise((resolve) => {
+            vpsClient.on('ready', resolve);
+        });
+
+        await vpsClient.sendSystemMessage({ data: {}, messageName: 'OPEN_ASSISTANT' });
+
+        if (initPhrase) {
+            const res = await vpsClient.sendText(initPhrase);
+            appInfo = res?.app_info;
+            res?.character && initialSmartAppData.push({ type: 'character', character: res.character });
+
+            for (const item of res?.items || []) {
+                if (item.command != null) {
+                    initialSmartAppData.push(item.command);
+                }
+            }
+
+            if (clientReady && window.AssistantClient?.onData) {
+                window.AssistantClient?.onStart && window.AssistantClient?.onStart();
+                for (const smartAppData of initialSmartAppData) {
+                    window.AssistantClient.onData(smartAppData);
+                }
+            }
+
+            assistantReady = true;
+        }
+    };
+
+    const promise = fn();
+
+    window.appInitialData = initialSmartAppData;
+    window.AssistantHost = {
+        close() {
+            appInfo = undefined;
+            initialSmartAppData.splice(0, initialSmartAppData.length);
+            state = null;
+
+            sendText('Хватит');
+        },
+        ready() {
+            if (assistantReady && window.AssistantClient?.onData) {
+                window.AssistantClient?.onStart && window.AssistantClient?.onStart();
+                for (const smartAppData of initialSmartAppData) {
+                    window.AssistantClient.onData(smartAppData);
+                }
+            }
+
+            clientReady = true;
+        },
+        async sendData(payload: string, messageName = 'SERVER_ACTION') {
+            await promise;
+
+            if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
+
+            sendServerAction(payload, messageName);
+        },
+        updateState(nextState) {
+            state = JSON.parse(nextState);
+        },
+        setSuggest() {},
+    };
+
+    const createVoiceStream = () => {
+        if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
+
+        return vpsClient.createVoiceStream(createSystemMessageBase());
+    };
+
+    const updateDevUI = (suggestions: SuggestionButtonType[] = []) => {
+        if (nativePanel) {
+            const { render, ...props } = nativePanel;
+
+            (render || renderNativePanel)({
+                ...props,
+                sendText,
+                createVoiceStream,
+                suggestions,
+            });
+        }
+    };
+
+    vpsClient.on('systemMessage', (message) => {
+        for (const item of message.items) {
+            if (item.command) {
+                if (clientReady && assistantReady && window.AssistantClient?.onData) {
+                    window.AssistantClient.onData(item.command);
+                }
+            }
+        }
+
+        updateDevUI(message.suggestions?.buttons ?? []);
+    });
+
+    updateDevUI();
+    enableRecord && renderAssistantRecordPanel(recorder, saver);
+
+    return {
+        sendText,
+        createVoiceStream,
+        createAudioRecorder,
+        on: vpsClient.on,
+        destroy: vpsClient.destroy,
+    };
+};
