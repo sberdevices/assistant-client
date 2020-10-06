@@ -1,0 +1,177 @@
+syntax = "proto3";
+
+// --- добавлено Бондарь Р.О
+// --- документация ASR : https://sbtatlas.sigma.sbrf.ru/wiki/pages/viewpage.action?pageId=1880294872
+
+option optimize_for = LITE_RUNTIME;
+
+message Data {                                      // Сообщение с аудио данными от клиента. Должно быть упаковано в PacketWrapperToServer.data_field
+    string stream_name = 1;
+    bytes data = 2;                                 // Обязательное поле. Содержит непосредственно аудио данные.
+                                                    // Размер одного сообщения типа Data не должен превышать
+                                                    // 3200 байт (100 мc WAV PCM 16bit 16kHz)
+                                                    // В случае, если шлется WAV, длина поля data в каждом пакете
+                                                    // должна быть четной.
+                                                    // Может иметь нулевую длину.
+}
+
+message Variables {
+    map<string,string> variables = 1;
+}
+
+message Info {                                      // Сообщение для логирования от клиента. Должно быть упаковано в PacketWrapperToServer.set_options_field.info.
+    string info = 1;                                // Опциональное поле. Запишется в лог, можно использовать для отладки.
+    string message_id = 2;                          // Обязательное поле. Message_id от VPS.
+    string channel_name = 3;                        // Обязательнео поле. Channel_name от VPS.
+    string session_id = 4;                          // Обязательнео поле. Session_id от VPS.
+    string user_id = 5;                             // Обязательнео поле. User_id от VPS.
+}
+
+message Finalized {                                 // Сообщение об окончании аудио потока от клиента. Должно быть упаковано в PacketWrapperToServer.finalized_field.
+
+}
+
+message SetOptions {                                // Сообщение с настройками распознавания от клиента. Должно быть упаковано в PacketWrapperToServer.set_options_field.
+    message NonFinalHypothesisOptions {
+        bool enable_non_final_hypothesis_report = 1;                // Возвращать ли промежуточные результаты распознавания.
+        float non_final_hypothesis_report_interval_seconds = 2;     // Как часто возвращать промежуточные результаты распознавания.
+    }
+
+    message ShortPhraseModelOptions {
+        bool enable_short_phrase_model = 1;
+        float short_phrase_model_cutoff = 2;
+    }
+
+    message SampleRateOptions {
+        int32 sample_rate = 1;                      // Частота дискретизации для PCM аудио, гарантируется только работа на 16 kHz.
+    }
+
+    enum AudioEncoding {
+        PCM_S16LE = 0;                              // Тип аудио потока WAV PCM 16 bit Little Endian, без заголовка.
+        OPUS = 1;                                   // Тип аудио потока Opus в контейнере ogg.
+    }
+
+    message AudioEncodingOptions {
+        AudioEncoding encoding = 1;
+    }
+
+    message LanguageOptions {
+        string language_code = 1;
+    }
+
+    message ProfanityFilterOptions {
+        bool enable = 1;
+    }
+
+    message NormalizationOptions {
+        bool enable = 1;                            // Делать ли нормализацию
+    }
+
+    message NBestOptions {
+        int32 count = 1;                            // Сколько возвращать гипотез. По умолчанию - 1.
+    }
+
+    message ModelOptions {
+        message Context {                           // Сообщение контекста.
+            enum ContextType {                      // Тип контекста
+                GENERAL = 0;                        // Общий тип. Ищем только элементы контекста в той форме, в которой их подали.
+                ADDRESSBOOK = 1;                    // Тип для адресной книги. Будем искать в т.ч. в других формах элементов контекста.
+                                                    // Например для элемента "Иван Петров", найдем в т.ч. "Ивану Петрову" или "Ивана Петрова".
+            }
+            string id = 1;                          // Уникальный идентификатор контекста.
+            ContextType context_type = 2;
+            repeated string prefixes = 3;           // Список префиксов. Начнем искать в контексте, только если будет
+                                                    // произнесено одно из этих слов.
+            repeated string values = 4;             // Элементы контекста. Не может быть больше 1000 значений суммарно во всех
+                                                    // контекстах. Количество влияет на производительность. Контексты,
+                                                    // содержащие любые символы, кроме русских букв и пробелов - игнорируются.
+        }
+
+        string model_name = 1;                      // Имя модели распознавания.
+        repeated Context contexts = 2;
+    }
+
+    NonFinalHypothesisOptions non_final_hypothesis_options = 1;
+    ShortPhraseModelOptions short_phrase_model_options = 2;
+    SampleRateOptions sample_rate_options = 3;
+    AudioEncodingOptions audio_encoding_options = 4;
+    LanguageOptions language_options = 5;
+    ProfanityFilterOptions profanity_filter_options = 6;
+    NormalizationOptions normalization_options = 7;
+    NBestOptions n_best_options = 8;
+    ModelOptions model_options = 9;
+    Info info = 10;
+}
+
+message UndecodedSeconds {
+    float undecoded_seconds = 1;
+}
+
+message FullyFinalized {                            // Пакет об окончании обработки от сервера к клиента. Должен быть упакован в PacketWrapperFromServer.fully_finalized_field
+
+}
+
+message EmotionResult {                             // Результаты определения эмоций. Эмоции определяются только для всего аудио целиком,
+                                                    // высылаются только когда DecoderResult.is_final = true, т.е. в конце распознавания.
+    string name = 1;                                // Имя эмоции: сейчас может быть "positive", "negative" и "neutral"
+    float confidence = 2;                           // Уверенность в эмоции от 0.0 до 1.0.
+}
+
+message Hypothesis {                                // Гипотеза распознавания
+    string words = 1;                               // Ненормализованный результат, например "раз два три москва"
+    float acoustic_cost = 2;
+    float linguistic_cost = 3;
+    float final_cost = 4;
+    float phrase_start = 5;
+    float phrase_end = 6;
+    string normalized_text = 7;                     // Нормализованный результат, например "1 2 3 Москва"
+}
+
+message DecoderResult {                             // Результат работы ASR. Должен быть упакован в PacketWrapperFromServer.decoder_result_field
+    message ContextAnswer {
+        message ContextRef {                            // Результат поиска в контекстах
+            string id = 1;                              // В какой контекст попали.
+            int32 index = 2;                            // В какой элемент попали (индекс в исходном списке, считается с 0)
+            string original_value = 3;                  // Оригинальное значение элемента контекста, например "Иван Петров".
+            string predicted_value = 4;                 // Распознанное значение контекста, например "Ивану Петрову"
+            float score = 5;                            // Мера уверенности от 0.0 до 1.0
+        }
+        repeated ContextRef context_result = 1;
+    }
+    repeated Hypothesis hypothesis = 1;
+    float chunk_start = 2;
+    float chunk_end = 3;
+    float time_endpoint_detection_ms = 4;
+    float time_decoding_ms = 5;
+    Variables variables = 6;
+    bool is_final = 7;                              // Признак того, что это финальный результат
+    repeated EmotionResult emotion_result = 8;      // Результат оценки эмоций, заполняется только если DecoderResult.is_final = true
+    repeated ContextAnswer context_answer = 9;         // Результат попадания в контексты, заполняется только если DecoderResult.is_final = true
+}
+
+message ErrorResponse {
+    string error_message = 1;
+}
+
+message PacketWrapperToServer {                     // Все сообщения от клиента должны быть упакованы в этот тип сообщений
+    oneof MessageType {
+        Data data_field = 1;
+        Info info_field = 3;
+        Finalized finalized_field = 5;
+        SetOptions set_options_field = 7;
+    }
+}
+
+message PacketWrapperFromServer {                   // Все сообщения от сервера должны быть упакованы в этот тип сообщений
+    oneof MessageType {
+        UndecodedSeconds undecoded_seconds_field = 1;
+        FullyFinalized fully_finalized_field = 2;
+        // DecoderRestarted decoder_restarted_field = 3;
+        DecoderResult decoder_result_field = 4;
+        // EmotionList emotion_list = 5;
+        // RequestCapabilitiesResponse request_capabilities_response = 6;
+        // GetCapabilitiesResponse get_capabilities_response = 7;
+        ErrorResponse error_response = 8;
+        // GetEmotionParametersResponse get_emotion_parameters_response = 9;
+    }
+}
