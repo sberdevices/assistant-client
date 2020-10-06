@@ -1,0 +1,58 @@
+{
+    "name": "@sberdevices/assistant-client",
+    "version": "1.0.0-rc.1",
+    "description": "Модуль взаимодействия с виртуальным ассистентом",
+    "main": "dist/index.js",
+    "scripts": {
+        "prepublishOnly": "rm -rf dist tsconfig.tsbuildinfo && tsc && rsync -rlptgoD --include=\"*/\" --include '*.png' --exclude '*' src/ dist/",
+        "proto": "pbjs -t static-module src/proto.proto > src/proto.js && pbts src/proto.js -o src/proto.d.ts",
+        "asr": "pbjs -t static-module src/asr/index.proto > src/asr/index.js && pbts src/asr/index.js -o src/asr/index.d.ts",
+        "cy:open": "cypress open",
+        "cy:run": "cypress run",
+        "test:cy": "cypress run -b chromium --headless",
+        "test": "echo \"Error: no test specified\""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/sberdevices/assistant-client"
+    },
+    "keywords": [
+        "sber",
+        "assistant",
+        "smartapp"
+    ],
+    "author": "SberDevices Frontend Team",
+    "license": "UNLICENSED",
+    "dependencies": {
+        "axios": "0.19.2",
+        "nanoevents": "5.1.7",
+        "protobufjs": "6.9.0",
+        "react": "16.13.1",
+        "react-dom": "16.13.1",
+        "styled-components": "5.1.1",
+        "uuid": "8.0.0"
+    },
+    "browserslist": [
+        "last 1 Chrome versions"
+    ],
+    "devDependencies": {
+        "@cypress/webpack-preprocessor": "5.4.5",
+        "@types/jest": "26.0.14",
+        "@types/mocha": "8.0.3",
+        "@types/react": "16.9.35",
+        "@types/react-dom": "16.9.8",
+        "@types/styled-components": "5.1.1",
+        "@types/uuid": "7.0.3",
+        "cypress": "4.11.0",
+        "cypress-react-unit-test": "4.14.2",
+        "file-loader": "6.1.0",
+        "mock-socket": "9.0.3",
+        "react-scripts": "3.4.3",
+        "ts-loader": "8.0.4",
+        "typescript": "3.9.2",
+        "webpack": "4.44.2"
+    },
+    "files": [
+        "dist"
+    ]
+}
