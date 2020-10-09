@@ -161,7 +161,7 @@ export interface AssistantHost {
     close: () => void;
     ready: () => void;
     updateState: (state: string) => void;
-    sendData: (action: string, message?: string) => void;
+    sendData: (action: string, message: string | null) => void;
     setState?: (state: string) => void;
     setSuggest: (suggest: string) => void;
 }

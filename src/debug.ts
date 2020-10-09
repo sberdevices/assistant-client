@@ -150,7 +150,7 @@ export function initializeDebugging(config: IntitializeProps = defaultConfig) {
         sendData(data, name) {
             ask({
                 data,
-                name,
+                name: name || undefined
             });
         },
         setSuggest() {},
@@ -169,6 +169,6 @@ export function initializeDebugging(config: IntitializeProps = defaultConfig) {
         );
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    window.__dangerouslySendDataMessage = (data: any, name?: string) =>
+    window.__dangerouslySendDataMessage = (data: any, name: string | null = null) =>
         window.AssistantHost?.sendData(JSON.stringify(data), name);
 }

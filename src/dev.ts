@@ -219,12 +219,12 @@ export const initializeAssistantSDK = ({
 
             clientReady = true;
         },
-        async sendData(payload: string, messageName = 'SERVER_ACTION') {
+        async sendData(payload: string, messageName: string | null = null) {
             await promise;
 
             if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
 
-            sendServerAction(payload, messageName);
+            sendServerAction(payload, messageName || 'SERVER_ACTION');
         },
         updateState(nextState) {
             state = JSON.parse(nextState);

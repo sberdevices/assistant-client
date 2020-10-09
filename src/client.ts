@@ -343,9 +343,9 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
 
     const startWebSocket = () => {
         status = 'connecting';
-        setImmediate(() => {
+        setTimeout(() => {
             emit('connecting');
-        });
+        }, 0);
         ws = new WebSocket(url);
 
         ws.binaryType = 'arraybuffer';
