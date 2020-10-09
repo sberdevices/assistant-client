@@ -29,7 +29,7 @@ export const createAssistant = ({ getState }: { getState: () => AssistantAppStat
         getRecoveryState: () => ({ ...state }),
         on,
         sendData: (action: AssistantAction | AssistantServerAction, name?: string) =>
-            window.AssistantHost?.sendData(JSON.stringify(action), name),
+            window.AssistantHost?.sendData(JSON.stringify(action), name || null),
         setGetState: (nextGetState: () => {}) => {
             currentGetState = nextGetState;
         },
