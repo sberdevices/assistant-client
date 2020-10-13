@@ -1,4 +1,4 @@
-import { AssistantAction, AssistantAppState, AssistantCharacterCommand, AssistantNavigationCommand, AssistantServerAction, AssistantSmartAppCommand, ClientLogger } from './typings';
+import { AssistantAppState, AssistantCharacterCommand, AssistantNavigationCommand, AssistantServerAction, AssistantSmartAppCommand, ClientLogger } from './typings';
 import { createNanoEvents } from './nanoevents';
 import { initializeAssistantSDK } from './dev';
 import { NativePanelParams } from './NativePanel/NativePanel';
@@ -28,7 +28,7 @@ export const createAssistant = ({ getState }: { getState: () => AssistantAppStat
         getInitialData: () => window.appInitialData, // messages от бека для инициализации аппа
         getRecoveryState: () => ({ ...state }),
         on,
-        sendData: (action: AssistantAction | AssistantServerAction, name?: string) =>
+        sendData: (action: AssistantServerAction, name?: string) =>
             window.AssistantHost?.sendData(JSON.stringify(action), name || null),
         setGetState: (nextGetState: () => {}) => {
             currentGetState = nextGetState;
