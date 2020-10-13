@@ -10,16 +10,15 @@ Assistant Client - это инструмент для встраивания В�
 $ npm install @sberdevices/assistant-client
 ```
 
-
 ## Quickstart
 
 ```typescript
-import { createAssistant, createAssistantDev, AssistantAction, AssistantServerAction, AssistantCharacterCommand, AssistantNavigationCommand, AssistantSmartAppCommand, AssistantAppState } from '@sberdevices/assistant-client';
+import { createAssistant, createAssistantDev, AssistantServerAction, AssistantCharacterCommand, AssistantNavigationCommand, AssistantSmartAppCommand, AssistantAppState } from '@sberdevices/assistant-client';
 
 const initialize = (getState: AssistantAppState): {
     getInitialData: () => AssistantCommands[];
     on: ('start' || 'data', cb: (data?: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) => void) => void;
-    sendData: (data: AssistantAction | AssistantServerAction) => void;
+    sendData: (data: AssistantServerAction) => void;
     setGetState: (getState: () => AssistantAppState) => void;
 } => {
     if (process.env.NODE_ENV === 'development') {
@@ -63,7 +62,6 @@ const handleOnClick = () => {
 };
 ```
 
-
 ## API
 
 ### `createAssistant`
@@ -74,18 +72,17 @@ const handleOnClick = () => {
 
 Создает экземпляр [`AssistantClient`](#AssistantClient), добавляет на экран браузера панель с голосовым ассистентом, подобно устройствам. Панель позволяет вводить команды с клавиатуры и голосом. Также активируется озвучка ассистента.
 
-| Параметр      | Dev only | Описание |
-| :------------ | :------: | :---- |
-| getState\*    | []       | Функция, которая возвращает актуальное состояние смартаппа. |
-| url\*         | [x]      | Стенд. |
-| userChannel\* | [x]      | Канал. |
-| surface\*     | [x]      | Поверхность. |
-| initPhrase\*  | [x]      | Текст команды для запуска смартаппа (закажи попкорн и т.п). |
-| nativePanel   | [x]      | Конфигурация [панели ассистента](#AssistantPanel). |
-| userId        | [x]      | Идентификатор пользователя. |
-| token         | [x]      | Токен. |
-| enableRecord  | [x]      | Флаг активации функции [записи диалога](#AssistantRecord) (true/false). |
-
+| Параметр      | Dev only | Описание                                                                |
+| :------------ | :------: | :---------------------------------------------------------------------- |
+| getState\*    |    []    | Функция, которая возвращает актуальное состояние смартаппа.             |
+| url\*         |   [x]    | Стенд.                                                                  |
+| userChannel\* |   [x]    | Канал.                                                                  |
+| surface\*     |   [x]    | Поверхность.                                                            |
+| initPhrase\*  |   [x]    | Текст команды для запуска смартаппа (закажи попкорн и т.п).             |
+| nativePanel   |   [x]    | Конфигурация [панели ассистента](#AssistantPanel).                      |
+| userId        |   [x]    | Идентификатор пользователя.                                             |
+| token         |   [x]    | Токен.                                                                  |
+| enableRecord  |   [x]    | Флаг активации функции [записи диалога](#AssistantRecord) (true/false). |
 
 #### Панель ассистента
 
@@ -95,23 +92,23 @@ const handleOnClick = () => {
 
 ```typescript
 import { createAssistantDev } from '@sberdevices/assistant-client';
- 
+
 const assistant = createAssistantDev({ ..., nativePanel: null });
 ```
- 
- Первоначальный текст в панели ассистента конфигурируется установкой параметра `defaultText`.
- 
- ```typescript
- import { createAssistantDev } from '@sberdevices/assistant-client';
- 
- const assistant = createAssistantDev({ ..., nativePanel: { defaultText: 'Покажи 1' } });
- ```
- 
+
+Первоначальный текст в панели ассистента конфигурируется установкой параметра `defaultText`.
+
+```typescript
+import { createAssistantDev } from '@sberdevices/assistant-client';
+
+const assistant = createAssistantDev({ ..., nativePanel: { defaultText: 'Покажи 1' } });
+```
+
 #### Логирование диалога с ассистентом
 
 <a name="AssistantRecord"></a>
 
-В режиме разработке, в целях отладки и тестирования, есть возможность получить файл с записью разговора ассистента. По-умолчанию, эта возможность деактирована, для активаци необходимо установить значение параметра `enableRecord: true`. В результате, на экране будут отрисованы кнопки управления записью диалога (start/stop/save). 
+В режиме разработке, в целях отладки и тестирования, есть возможность получить файл с записью разговора ассистента. По-умолчанию, эта возможность деактирована, для активаци необходимо установить значение параметра `enableRecord: true`. В результате, на экране будут отрисованы кнопки управления записью диалога (start/stop/save).
 
 ```typescript
 import { createAssistantDev } from '@sberdevices/assistant-client';
@@ -127,16 +124,17 @@ createAssistantDev({
 
 ```typescript
 interface RecordPlayer {
-    /* проиграть следующую реплику, возвращает флаг наличия следующей реплики */
-    continue: () => boolean;
-    /* проиграть весь диалог до конца */
-    play: () => void;
-    /* Установить запись */
-    setRecord: (record: AssistantRecord) => void;
+  /* проиграть следующую реплику, возвращает флаг наличия следующей реплики */
+  continue: () => boolean;
+  /* проиграть весь диалог до конца */
+  play: () => void;
+  /* Установить запись */
+  setRecord: (record: AssistantRecord) => void;
 }
 ```
 
 Пример интеграции с cypress:
+
 ```typescript
 import { createRecordPlayer } from '@sberdevices/assistant-client';
 
@@ -168,7 +166,7 @@ describe('Тест', () => {
 
 Подписка на событие получения данных от бэкенда
 
-#### sendData(data: [AssistantAction](#AssistantAction) | [AssistantServerAction](#AssistantServerAction)): void
+#### sendData(data: [AssistantServerAction](#AssistantServerAction)): void
 
 Отправляет сервер-экшен, который будет передан бэкенду
 
@@ -186,31 +184,31 @@ describe('Тест', () => {
 
 ```typescript
 interface AssistantAppState {
-    /* Любые данные, которые могут потребоваться Backend'у для принятия решений */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
-    item_selector?: {
-        ignored_words?: string[];
-        /* Список соответствий голосовых команд действиям в веб-приложении */
-        items: AssistantViewItem[];
-    };
+  /* Любые данные, которые могут потребоваться Backend'у для принятия решений */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+  item_selector?: {
+    ignored_words?: string[];
+    /* Список соответствий голосовых команд действиям в веб-приложении */
+    items: AssistantViewItem[];
+  };
 }
 
 interface AssistantViewItem {
-    /* Порядковый номер элемента, назначается смартаппом, уникален в рамках items */
-    number?: number;
-    /* Уникальный id элемента */
-    id?: string;
-    /* Ключевая фраза, которая должна приводить к данному действию */
-    title?: string;
-    /* Фразы-синонимы, которые должны быть расценены как данное действие */
-    aliases?: string[];
-    /* Сервер экшен, проксирует action обратно на бекэнд. */
-    server_action?: AssistantServerAction,
-    /* Экшен, выполяет действие от имени пользователя */
-    action?: AssistantAction;
-    /* Дополнительные данные для бэкенда */
-    [key: string]: any;
+  /* Порядковый номер элемента, назначается смартаппом, уникален в рамках items */
+  number?: number;
+  /* Уникальный id элемента */
+  id?: string;
+  /* Ключевая фраза, которая должна приводить к данному действию */
+  title?: string;
+  /* Фразы-синонимы, которые должны быть расценены как данное действие */
+  aliases?: string[];
+  /* Сервер экшен, проксирует action обратно на бекэнд. */
+  server_action?: AssistantServerAction;
+  /* Экшен, выполяет действие от имени пользователя */
+  action?: AssistantAction;
+  /* Дополнительные данные для бэкенда */
+  [key: string]: any;
 }
 ```
 
@@ -232,30 +230,6 @@ interface AssistantViewItem {
 }
 ```
 
-#### Формат объекта `AssistantAction`
-
-<a name="AssistantAction"></a>
-
-`AssistantAction` - это действие, которое выполнит SDK от имени пользоваля: откроет ссылку или отправит сообщение в чат.
-
-```typescript
-type AssistantAction = AssistantDeepLinkAction | AssistantTextAction;
-
-interface AssistantTextAction {
-    type: 'text';
-    /* Строка из поля text будет отправлена в чат от имени пользователя */
-    text: string;
-    /* default = true, true если сообщение нужно отобразить в чате и отправить в бекэнд, false если сообщение нужно только отобразить в чате, и не отправлять на бекэнд */
-    should_send_to_backend?: boolean;
-}
-
-interface AssistantDeepLinkAction {
-    type: 'deep_link';
-    /* https ссылки будут открыты в браузере, а android-app://ru.sberbankmoblie/... - будут открыты в приложении */
-    deep_link: string;
-}
-```
-
 #### Формат объекта `AssistantServerAction`
 
 <a name="AssistantServerAction"></a>
@@ -264,10 +238,10 @@ interface AssistantDeepLinkAction {
 
 ```typescript
 interface AssistantServerAction {
-    /* Тип сервер-экшена */
-    action_id: string;
-    /* любые параметры */
-    parameters?: Record<string, any>;
+  /* Тип сервер-экшена */
+  action_id: string;
+  /* любые параметры */
+  parameters?: Record<string, any>;
 }
 ```
 
@@ -279,10 +253,10 @@ interface AssistantServerAction {
 
 ```typescript
 interface AssistantCharacterCommand {
-    type: 'character';
-    character: {
-        id: 'sber' | 'eva' | 'joy';
-    };
+  type: "character";
+  character: {
+    id: "sber" | "eva" | "joy";
+  };
 }
 ```
 
@@ -294,10 +268,10 @@ interface AssistantCharacterCommand {
 
 ```typescript
 interface AssistantNavigationCommand {
-    /* Тип команды */
-    type: 'navigation';
-    /* Навигационная команда (направление навигации) */
-    navigation: { command: { direction: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FORWARD' | 'BACK' } };
+  /* Тип команды */
+  type: "navigation";
+  /* Навигационная команда (направление навигации) */
+  navigation: { command: { direction: "UP" | "DOWN" | "LEFT" | "RIGHT" | "FORWARD" | "BACK" } };
 }
 ```
 
@@ -309,10 +283,10 @@ interface AssistantNavigationCommand {
 
 ```typescript
 interface AssistantSmartAppCommand {
-    /* Тип команды */
-    type: 'smart_app_data';
-    /* Любые данные, которые нужны смартаппу */
-    smart_app_data: Record<string, any>;
+  /* Тип команды */
+  type: "smart_app_data";
+  /* Любые данные, которые нужны смартаппу */
+  smart_app_data: Record<string, any>;
 }
 ```
 
