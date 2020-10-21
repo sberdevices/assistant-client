@@ -139,18 +139,17 @@ export function initializeDebugging(config: IntitializeProps = defaultConfig) {
             }, 0);
         },
 
-        updateState(state) {
-            currentAppState = JSON.parse(state);
-        },
-
-        setState(state) {
-            currentAppState = JSON.parse(state);
-        },
-
         sendData(data, name) {
             ask({
                 data,
                 name: name || undefined
+            });
+        },
+
+        sendDataContainer({data, message_name}: { data: string; message_name?: string | null; requestId?: string  }) {
+            ask({
+                data,
+                name: message_name || undefined
             });
         },
         setSuggest() {},

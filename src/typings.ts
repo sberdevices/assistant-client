@@ -122,6 +122,10 @@ export interface AssistantCharacterCommand {
     character: {
         id: 'sber' | 'eva' | 'joy';
     };
+    sdkMeta?: {
+        mid?: number;
+        requestId?: string;
+    };
 }
 
 export interface AssistantCloseAppCommand {
@@ -131,6 +135,10 @@ export interface AssistantCloseAppCommand {
 export interface AssistantNavigationCommand {
     type: 'navigation';
     navigation: { command: { direction: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'BACK' | 'FORWARD' } };
+    sdkMeta?: {
+        mid?: number;
+        requestId?: string;
+    };
 }
 
 export interface AssistantSmartAppCommand {
@@ -138,6 +146,10 @@ export interface AssistantSmartAppCommand {
     smart_app_data: {
         command: string;
         [key: string]: unknown;
+    };
+    sdkMeta?: {
+        mid?: number;
+        requestId?: string;
     };
 }
 
@@ -153,16 +165,16 @@ export interface AssistantSystemCommand {
 
 export interface AssistantClient {
     onStart?: () => void;
-    onRequestState?: () => void;
+    onRequestState?: () => Record<string, any>;
+    onRequestRecoveryState?: () => any;
     onData?: (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) => void;
 }
 
 export interface AssistantHost {
     close: () => void;
     ready: () => void;
-    updateState: (state: string) => void;
     sendData: (action: string, message: string | null) => void;
-    setState?: (state: string) => void;
+    sendDataContainer: (container: { data: any; message_name?: string | null; requestId?: string  }) => void;
     setSuggest: (suggest: string) => void;
 }
 
@@ -171,6 +183,7 @@ export interface AssistantWindow {
     AssistantClient?: AssistantClient;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     appInitialData: Array<any>;
+    appRecoveryState: any;
 
     __dangerouslySendDataMessage?: (data: {}, name: string) => void;
     __dangerouslySendVoiceMessage?: (message: string) => void;
@@ -253,6 +266,9 @@ export type SystemMessageDataType = {
     character?: {
         id: 'sber' | 'eva' | 'joy';
     };
+    sdk_meta?: {
+        requestId?: string;
+    }
 };
 
 export interface OriginalMessageType {
