@@ -124,6 +124,7 @@ export const initializeAssistantSDK = ({
 
     let appInfo: SystemMessageDataType['app_info'] | void;
     const initialSmartAppData: Array<SystemMessageDataType['items'][0]['command']> = [];
+    const requestIdMap: Record<string, string> = {};
     let clientReady = false; // флаг готовности клиента к приему onData
     let assistantReady = false; // флаг готовности контекста ассистента
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -141,14 +142,21 @@ export const initializeAssistantSDK = ({
         };
     };
 
-    const sendServerAction = (payload: string, messageName: string) => {
+    const sendServerAction = ({ data, message_name, requestId } : { data: any; message_name?: string | null; requestId?: string  }) => {
+        let messageId: number | undefined = undefined;
+        
+        if (requestId) {
+            messageId = Date.now();
+            requestIdMap[messageId.toString()] = requestId;
+        }
+
         return vpsClient.sendSystemMessage({
             data: {
                 ...createSystemMessageBase(),
-                server_action: JSON.parse(payload),
+                server_action: data,
             },
-            messageName,
-        });
+            messageName: message_name || 'SERVER_ACTION',
+        }, undefined, messageId);
     };
 
     const sendState = () => {
@@ -210,7 +218,7 @@ export const initializeAssistantSDK = ({
             initialSmartAppData.splice(0, initialSmartAppData.length);
             state = null;
 
-            sendText('Хватит');
+            sendText('Хватит'); // нужно слать close_app
         },
         ready() {
             if (assistantReady && window.AssistantClient?.onData) {
@@ -227,10 +235,14 @@ export const initializeAssistantSDK = ({
 
             if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
 
-            sendServerAction(payload, messageName || 'SERVER_ACTION');
+            sendServerAction({ data: JSON.parse(payload), message_name: messageName || undefined  });
         },
-        updateState(nextState) {
-            state = JSON.parse(nextState);
+        async sendDataContainer(container: { data: any; message_name?: string | null; requestId?: string  }) {
+            await promise;
+
+            if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
+
+            sendServerAction(container);
         },
         setSuggest() {},
     };
@@ -254,11 +266,11 @@ export const initializeAssistantSDK = ({
         }
     };
 
-    vpsClient.on('systemMessage', (message) => {
+    vpsClient.on('systemMessage', (message, original) => {
         for (const item of message.items) {
             if (item.command) {
                 if (clientReady && assistantReady && window.AssistantClient?.onData) {
-                    window.AssistantClient.onData(item.command);
+                    window.AssistantClient.onData({ ...item.command, sdkMeta: { mid: original.messageId, requestId: requestIdMap[original.messageId.toString()] } });
                 }
             }
         }
