@@ -16,17 +16,23 @@ export interface AssistantEvents {
     data: (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) => void;
 }
 
-export const createAssistant = ({ getState }: { getState: () => AssistantAppState }) => {
-    let state: {} | null = null;
+export const createAssistant = ({ getState, getRecoveryState }: { getState: () => AssistantAppState, getRecoveryState?: () => any }) => {
     let currentGetState = getState;
+    let currentGetRecoveryState = getRecoveryState;
     const { on, emit } = createNanoEvents<AssistantEvents>();
 
     window.AssistantClient = {
         onData: (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) =>
             emit("data", command),
         onRequestState: () => {
-            state = currentGetState();
-            window.AssistantHost?.updateState(JSON.stringify(state));
+            return currentGetState();
+        },
+        onRequestRecoveryState: () => {
+            if (currentGetRecoveryState) {
+                return currentGetRecoveryState();
+            }
+
+            return undefined;
         },
         onStart: () => emit("start"),
     };
@@ -35,12 +41,15 @@ export const createAssistant = ({ getState }: { getState: () => AssistantAppStat
     return {
         close: () => window.AssistantHost?.close(),
         getInitialData: () => window.appInitialData, // messages от бека для инициализации аппа
-        getRecoveryState: () => ({ ...state }),
+        getRecoveryState: () => window.appRecoveryState,
         on,
-        sendData: (action: AssistantServerAction, name?: string) =>
-            window.AssistantHost?.sendData(JSON.stringify(action), name || null),
+        sendData: ({ action, name, requestId } : { action: AssistantServerAction, name?: string, requestId?: string }) =>
+            window.AssistantHost?.sendDataContainer({ data: action, message_name: name || null, requestId }),
         setGetState: (nextGetState: () => {}) => {
             currentGetState = nextGetState;
+        },
+        setGetRecoveryState: (nextGetRecoveryState?: () => any) => {
+            currentGetRecoveryState = nextGetRecoveryState;
         },
         setSuggest: (suggest: string) => window.AssistantHost?.setSuggest(suggest),
     };
@@ -48,6 +57,7 @@ export const createAssistant = ({ getState }: { getState: () => AssistantAppStat
 
 export const createAssistantDev = ({
     getState,
+    getRecoveryState,
     initPhrase,
     nativePanel,
     url,
@@ -62,6 +72,7 @@ export const createAssistantDev = ({
     settings,
 }: {
     getState: () => AssistantAppState;
+    getRecoveryState?: () => Record<string, any> | undefined;
     url: string;
     userChannel: string; // канал (влияет на навыки)
     surface: string; // поверхность (влияет на навыки)
@@ -94,7 +105,7 @@ export const createAssistantDev = ({
         settings,
     });
 
-    return createAssistant({ getState });
+    return createAssistant({ getState, getRecoveryState });
 };
 
 // Публичный метод, использующий токен из SmartApp Studio
@@ -102,10 +113,12 @@ export const createSmartappDebugger = ({
     token,
     initPhrase,
     getState,
+    getRecoveryState,
 }: {
     token: string;
     initPhrase: string;
     getState: () => AssistantAppState;
+    getRecoveryState?: () => Record<string, any> | undefined;
 }) => {
     return createAssistantDev({
         initPhrase,
@@ -115,6 +128,7 @@ export const createSmartappDebugger = ({
             authConnector: "developer_portal_jwt",
         },
         getState,
+        getRecoveryState,
         url: "wss://nlp2vpspsi.online.sberbank.ru/vps/",
         surface: "SBERBOX",
         userChannel: "B2C",

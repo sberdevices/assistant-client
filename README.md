@@ -15,21 +15,22 @@ $ npm i @sberdevices/assistant-client
 ```typescript
 import { createAssistant, createSmartappDebugger } from '@sberdevices/assistant-client';
 
-const initialize = (getState) => {
+const initialize = (getState, getRecoveryState) => {
     if (process.env.NODE_ENV === 'development') {
         return createSmartappDebugger({
-            token: 'токен разработчика из Smartapp Studio', // Токен, 
+            token: 'токен разработчика из Smartapp Studio', // Токен,
             initPhrase: 'Хочу попкорн', // фраза для запуска аппа
             getState,
+            getRecoveryState,
         });
     }
 
-    return createAssistant({ getState });
+    return createAssistant({ getState, getRecoveryState });
 }
 
 ...
 
-const assistant = initialize(() => state);
+const assistant = initialize(() => state, () => recoveryState);
 assistant.on('data', (command) => {
     // подписка на команды ассистента, в т.ч. команда инициализации смартапа
     if (command.navigation) {
@@ -46,7 +47,7 @@ assistant.on('data', (command) => {
 
 const handleOnClick = () => {
     // отправка ServerAction
-    assistant.sendData({ action_id: 'some_action_name' });
+    assistant.sendData({ action: { action_id: 'some_action_name' } });
 };
 ```
 
@@ -60,11 +61,12 @@ const handleOnClick = () => {
 
 Создает экземпляр [`AssistantClient`](#AssistantClient), добавляет на экран браузера панель с голосовым ассистентом, подобно устройствам. Панель позволяет вводить команды с клавиатуры и голосом. Также активируется озвучка ассистента. Используется в development среде для локальной отладки и разработки.
 
-| Параметр      | Dev only | Описание                                                                |
-| :------------ | :------: | :---------------------------------------------------------------------- |
-| getState\*    |    []    | Функция, которая возвращает актуальное состояние смартапа.              |
-| token\*       |   [x]    | Токен.                                                                  |
-| initPhrase\*  |   [x]    | Фраза, которая запускает ваше приложение.                               |
+| Параметр         | Dev only | Описание                                                                   |
+| :--------------- | :------: | :------------------------------------------------------------------------- |
+| getState\*       |    []    | Функция, которая возвращает актуальное состояние смартапа.                 |
+| token\*          |   [x]    | Токен.                                                                     |
+| initPhrase\*     |   [x]    | Фраза, которая запускает ваше приложение.                                  |
+| getRecoveryState |    []    | Функция, которая возвращает состояние смартаппа перед последним закрытием. |
 
 #### Панель ассистента
 
@@ -80,26 +82,29 @@ const handleOnClick = () => {
 
 Возвращает данные, полученные при инициализации смартапа.
 
+### getRecoveryState(): any
+
+Возвращает данные, сохраненные при последнем закрытии аппа на устройстве. Данные сохраняются при помощи вызова getRecoveryState, в момент закрытия аппа.
 
 #### on('start', cb: () => void): void
 
 Подписка на событие готовности ассистента к работе.
 
-
 #### on('data', cb: (data: [AssistantCharacterCommand](#AssistantCharacterCommand) | [AssistantNavigationCommand](#AssistantNavigationCommand) | [AssistantSmartAppCommand](#AssistantSmartAppCommand)) => {}): void
 
 Подписка на событие получения данных от бэкенда.
 
-
-#### sendData(data: [AssistantServerAction](#AssistantServerAction)): void
+#### sendData({ action: [AssistantServerAction](#AssistantServerAction) }): void
 
 Отправляет сервер-экшен, который будет передан бэкенду.
-
 
 #### setGetState(nextGetState: () => [AssistantAppState](#AssistantAppState)): void
 
 Подменяет колбек, возвращаюший актуальное состояние приложения.
 
+#### setGetRecoveryState(nextGetRecoveryState: () => any)
+
+Подменяет колбек, возвращающий объект, который будет доступен при следующем запуске приложения. Данные можно получить при вызове getRecoveryState.
 
 #### Формат объекта `AssistantAppState`
 
@@ -184,6 +189,9 @@ interface AssistantCharacterCommand {
   character: {
     id: "sber" | "eva" | "joy";
   };
+  sdkMeta: {
+    requestId: string;
+  };
 }
 ```
 
@@ -199,6 +207,9 @@ interface AssistantNavigationCommand {
   type: "navigation";
   /* Навигационная команда (направление навигации) */
   navigation: { command: { direction: "UP" | "DOWN" | "LEFT" | "RIGHT" | "FORWARD" | "BACK" } };
+  sdkMeta: {
+    requestId: string;
+  };
 }
 ```
 
@@ -214,6 +225,9 @@ interface AssistantSmartAppCommand {
   type: "smart_app_data";
   /* Любые данные, которые нужны смартапу */
   smart_app_data: Record<string, any>;
+  sdkMeta: {
+    requestId: string;
+  };
 }
 ```
 
