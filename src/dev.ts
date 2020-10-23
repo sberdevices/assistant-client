@@ -58,7 +58,7 @@ export const initializeAssistantSDK = ({
     sdkVersion = SDK_VERSION,
     enableRecord,
     recordParams,
-    settings: settingsOverride
+    settings: settingsOverride,
 }: {
     initPhrase: string;
     url: string;
@@ -77,7 +77,7 @@ export const initializeAssistantSDK = ({
         defaultActive?: boolean;
         logger?: ClientLogger;
     };
-    settings?: ISettings
+    settings?: ISettings;
 }) => {
     const device = {
         platformType: 'ANDROID', // эмулируем андроид сдк
@@ -142,21 +142,34 @@ export const initializeAssistantSDK = ({
         };
     };
 
-    const sendServerAction = ({ data, message_name, requestId } : { data: any; message_name?: string | null; requestId?: string  }) => {
-        let messageId: number | undefined = undefined;
-        
+    const sendServerAction = ({
+        data,
+        message_name,
+        requestId,
+    }: {
+        data: any;
+        /* eslint-disable-next-line @typescript-eslint/camelcase */
+        message_name?: string | null;
+        requestId?: string;
+    }) => {
+        let messageId: number | undefined;
+
         if (requestId) {
             messageId = Date.now();
             requestIdMap[messageId.toString()] = requestId;
         }
 
-        return vpsClient.sendSystemMessage({
-            data: {
-                ...createSystemMessageBase(),
-                server_action: data,
+        return vpsClient.sendSystemMessage(
+            {
+                data: {
+                    ...createSystemMessageBase(),
+                    server_action: data,
+                },
+                messageName: message_name || 'SERVER_ACTION',
             },
-            messageName: message_name || 'SERVER_ACTION',
-        }, undefined, messageId);
+            undefined,
+            messageId,
+        );
     };
 
     const sendState = () => {
@@ -235,9 +248,9 @@ export const initializeAssistantSDK = ({
 
             if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
 
-            sendServerAction({ data: JSON.parse(payload), message_name: messageName || undefined  });
+            sendServerAction({ data: JSON.parse(payload), message_name: messageName || undefined });
         },
-        async sendDataContainer(container: { data: any; message_name?: string | null; requestId?: string  }) {
+        async sendDataContainer(container: { data: any; message_name?: string | null; requestId?: string }) {
             await promise;
 
             if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
@@ -270,7 +283,10 @@ export const initializeAssistantSDK = ({
         for (const item of message.items) {
             if (item.command) {
                 if (clientReady && assistantReady && window.AssistantClient?.onData) {
-                    window.AssistantClient.onData({ ...item.command, sdkMeta: { mid: original.messageId, requestId: requestIdMap[original.messageId.toString()] } });
+                    window.AssistantClient.onData({
+                        ...item.command,
+                        sdkMeta: { mid: original.messageId, requestId: requestIdMap[original.messageId.toString()] },
+                    });
                 }
             }
         }

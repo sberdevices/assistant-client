@@ -4,7 +4,15 @@
 import axios from 'axios';
 import { v4 } from 'uuid';
 
-import { DPMessage, AssistantAppState, AssistantAction, AssistantServerAction, AssistantCharacterCommand, AssistantNavigationCommand, AssistantSmartAppCommand } from './typings';
+import {
+    DPMessage,
+    AssistantAppState,
+    AssistantAction,
+    AssistantServerAction,
+    AssistantCharacterCommand,
+    AssistantNavigationCommand,
+    AssistantSmartAppCommand,
+} from './typings';
 
 const STATE_UPDATE_TIMEOUT = 200;
 
@@ -99,7 +107,7 @@ const defaultConfig: IntitializeProps = {
 };
 
 export function initializeDebugging(config: IntitializeProps = defaultConfig) {
-    let currentAppState: AssistantAppState = {};
+    const currentAppState: AssistantAppState = {};
     const sessionId = v4();
     const userId = v4();
     const applicationId = v4();
@@ -127,7 +135,11 @@ export function initializeDebugging(config: IntitializeProps = defaultConfig) {
         })
             .then(config.onResponse)
             .then((action: unknown) => {
-                if (action && window.AssistantClient?.onData) window.AssistantClient.onData(action as (AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand));
+                if (action && window.AssistantClient?.onData) {
+                    window.AssistantClient.onData(
+                        action as AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand,
+                    );
+                }
             })
             .catch(config.onError);
 
@@ -142,14 +154,14 @@ export function initializeDebugging(config: IntitializeProps = defaultConfig) {
         sendData(data, name) {
             ask({
                 data,
-                name: name || undefined
+                name: name || undefined,
             });
         },
 
-        sendDataContainer({data, message_name}: { data: string; message_name?: string | null; requestId?: string  }) {
+        sendDataContainer({ data, message_name }: { data: string; message_name?: string | null; requestId?: string }) {
             ask({
                 data,
-                name: message_name || undefined
+                name: message_name || undefined,
             });
         },
         setSuggest() {},
