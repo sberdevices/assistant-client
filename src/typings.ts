@@ -68,7 +68,7 @@ export interface AssistantViewItem {
     /* Сервер экшен, проксирует action обратно на бекэнд. */
     server_action?: AssistantServerAction;
     /* Экшен, выполяет действие от имени пользователя */
-    action?: AssistantAction;
+    action?: AssistantAction | { type: string };
     /* Дополнительные данные для бэкенда */
     [key: string]: any;
 }
@@ -135,7 +135,7 @@ export interface AssistantCloseAppCommand {
 
 export interface AssistantNavigationCommand {
     type: 'navigation';
-    navigation: { command: { direction: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'BACK' | 'FORWARD' } };
+    navigation: { command: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'BACK' | 'FORWARD' };
     sdkMeta?: {
         mid?: number;
         requestId?: string;
