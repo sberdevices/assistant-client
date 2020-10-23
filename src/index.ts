@@ -1,7 +1,15 @@
-import { AssistantAppState, AssistantCharacterCommand, AssistantNavigationCommand, AssistantServerAction, AssistantSmartAppCommand, ClientLogger } from './typings';
-import { createNanoEvents } from './nanoevents';
-import { initializeAssistantSDK } from './dev';
-import { NativePanelParams } from './NativePanel/NativePanel';
+import {
+    AssistantAppState,
+    AssistantCharacterCommand,
+    AssistantNavigationCommand,
+    AssistantServerAction,
+    AssistantSmartAppCommand,
+    ClientLogger,
+} from "./typings";
+import { createNanoEvents } from "./nanoevents";
+import { initializeAssistantSDK, settings } from "./dev";
+import { NativePanelParams } from "./NativePanel/NativePanel";
+import { ISettings } from "./proto";
 
 export interface AssistantEvents {
     start: () => void;
@@ -14,12 +22,13 @@ export const createAssistant = ({ getState }: { getState: () => AssistantAppStat
     const { on, emit } = createNanoEvents<AssistantEvents>();
 
     window.AssistantClient = {
-        onData: (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) => emit('data', command),
+        onData: (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) =>
+            emit("data", command),
         onRequestState: () => {
             state = currentGetState();
             window.AssistantHost?.updateState(JSON.stringify(state));
         },
-        onStart: () => emit('start'),
+        onStart: () => emit("start"),
     };
     setTimeout(() => window.AssistantHost?.ready()); // таймаут для подписки на start
 
@@ -50,6 +59,7 @@ export const createAssistantDev = ({
     sdkVersion,
     enableRecord = false,
     recordParams,
+    settings,
 }: {
     getState: () => AssistantAppState;
     url: string;
@@ -67,6 +77,7 @@ export const createAssistantDev = ({
         defaultActive?: boolean;
         logger?: ClientLogger;
     };
+    settings?: ISettings;
 }) => {
     initializeAssistantSDK({
         initPhrase,
@@ -80,15 +91,40 @@ export const createAssistantDev = ({
         sdkVersion,
         enableRecord,
         recordParams,
+        settings,
     });
 
     return createAssistant({ getState });
 };
 
-export { createRecordOfflinePlayer as createRecordPlayer } from './record/offline-player';
-export { NativePanelParams } from './NativePanel/NativePanel';
-export * from './typings';
-export * from './dev';
-export { createClient } from './client';
-export { createAudioRecorder } from './createAudioRecorder';
-export { initializeDebugging } from './debug';
+// Публичный метод, использующий токен из SmartApp Studio
+export const createSmartappDebugger = ({
+    token,
+    initPhrase,
+    getState,
+}: {
+    token: string;
+    initPhrase: string;
+    getState: () => AssistantAppState;
+}) => {
+    return createAssistantDev({
+        initPhrase,
+        token,
+        settings: {
+            ...settings,
+            authConnector: "developer_portal_jwt",
+        },
+        getState,
+        url: "wss://nlp2vpspsi.online.sberbank.ru/vps/",
+        surface: "SBERBOX",
+        userChannel: "B2C",
+    });
+};
+
+export { createRecordOfflinePlayer as createRecordPlayer } from "./record/offline-player";
+export { NativePanelParams } from "./NativePanel/NativePanel";
+export * from "./typings";
+export * from "./dev";
+export { createClient } from "./client";
+export { createAudioRecorder } from "./createAudioRecorder";
+export { initializeDebugging } from "./debug";
