@@ -13,24 +13,14 @@ $ npm install @sberdevices/assistant-client
 ## Quickstart
 
 ```typescript
-import { createAssistant, createAssistantDev, AssistantServerAction, AssistantCharacterCommand, AssistantNavigationCommand, AssistantSmartAppCommand, AssistantAppState } from '@sberdevices/assistant-client';
+import { createAssistant, createSmartappDebugger } from '@sberdevices/assistant-client';
 
-const initialize = (getState: AssistantAppState): {
-    getInitialData: () => AssistantCommands[];
-    on: ('start' || 'data', cb: (data?: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) => void) => void;
-    sendData: (data: AssistantServerAction) => void;
-    setGetState: (getState: () => AssistantAppState) => void;
-} => {
+const initialize = (getState) => {
     if (process.env.NODE_ENV === 'development') {
-        return createAssistantDev({
-            url: 'wss://...', // стенд
-            surface: '...', // поверхность
-            channel: '...', // канал
-            getState,
+        return createSmartappDebugger({
+            token: 'токен разработчика из Smartapp Studio', // Токен, 
             initPhrase: 'Хочу попкорн', // фраза для запуска аппа
-            nativePanel: {
-                defaultText: 'Кутузовский д.32', // текст в панели
-            },
+            getState,
         });
     }
 
@@ -40,7 +30,7 @@ const initialize = (getState: AssistantAppState): {
 ...
 
 const assistant = initialize(() => state);
-assistant.on('data', (command: AssistantNavigationCommand) => {
+assistant.on('data', (command) => {
     // подписка на команды ассистента, в т.ч. команда инициализации смартапа
     if (command.navigation) {
         switch(command.navigation.command.direction) {
@@ -50,10 +40,8 @@ assistant.on('data', (command: AssistantNavigationCommand) => {
             case 'DOWN':
                 window.scrollTo(0, 1000);
                 break;
-            ...
         }
     }
-    ...
 });
 
 const handleOnClick = () => {
@@ -66,23 +54,17 @@ const handleOnClick = () => {
 
 ### `createAssistant`
 
-Создает экземпляр [`AssistantClient`](#AssistantClient), обязательный параметр `getState` - функция, которая возвращает актуальное состояние смартапа при каждом обращении к бэкенду.
+Создает экземпляр [`AssistantClient`](#AssistantClient), обязательный параметр `getState` - функция, которая возвращает актуальное состояние смартапа при каждом обращении к бэкенду. Используется в production среде на девайсах.
 
-### `createAssistantDev`
+### `createSmartappDebugger`
 
-Создает экземпляр [`AssistantClient`](#AssistantClient), добавляет на экран браузера панель с голосовым ассистентом, подобно устройствам. Панель позволяет вводить команды с клавиатуры и голосом. Также активируется озвучка ассистента.
+Создает экземпляр [`AssistantClient`](#AssistantClient), добавляет на экран браузера панель с голосовым ассистентом, подобно устройствам. Панель позволяет вводить команды с клавиатуры и голосом. Также активируется озвучка ассистента. Используется в development среде для локальной отладки и разработки.
 
 | Параметр      | Dev only | Описание                                                                |
 | :------------ | :------: | :---------------------------------------------------------------------- |
 | getState\*    |    []    | Функция, которая возвращает актуальное состояние смартапа.              |
-| url\*         |   [x]    | Стенд.                                                                  |
-| userChannel\* |   [x]    | Канал.                                                                  |
-| surface\*     |   [x]    | Поверхность.                                                            |
-| initPhrase\*  |   [x]    | Текст команды для запуска смартапа (закажи попкорн и т.п).              |
-| nativePanel   |   [x]    | Конфигурация [панели ассистента](#AssistantPanel).                      |
-| userId        |   [x]    | Идентификатор пользователя.                                             |
-| token         |   [x]    | Токен.                                                                  |
-| enableRecord  |   [x]    | Флаг активации функции [записи диалога](#AssistantRecord) (true/false). |
+| token\*       |   [x]    | Токен.                                                                  |
+| initPhrase\*  |   [x]    | Токен.                                                                  |
 
 #### Панель ассистента
 
@@ -91,17 +73,17 @@ const handleOnClick = () => {
 По-умолчанию, в режиме разработки, панель отрисовывается. Чтобы выключить панель ассистента в режиме разработки, необходимо установить значение `null`, соответствующему параметру.
 
 ```typescript
-import { createAssistantDev } from '@sberdevices/assistant-client';
+import { createSmartappDebugger } from '@sberdevices/assistant-client';
 
-const assistant = createAssistantDev({ ..., nativePanel: null });
+const assistant = createSmartappDebugger({ ..., nativePanel: null });
 ```
 
 Первоначальный текст в панели ассистента конфигурируется установкой параметра `defaultText`.
 
 ```typescript
-import { createAssistantDev } from '@sberdevices/assistant-client';
+import { createSmartappDebugger } from '@sberdevices/assistant-client';
 
-const assistant = createAssistantDev({ ..., nativePanel: { defaultText: 'Покажи 1' } });
+const assistant = createSmartappDebugger({ ..., nativePanel: { defaultText: 'Покажи 1' } });
 ```
 
 #### Логирование диалога с ассистентом
@@ -111,9 +93,9 @@ const assistant = createAssistantDev({ ..., nativePanel: { defaultText: 'Пок�
 В режиме разработки, в целях отладки и тестирования, есть возможность получить файл с записью разговора ассистента. По-умолчанию, эта возможность деактирована, для активации необходимо установить значение параметра `enableRecord: true`. В результате, на экране будут отрисованы кнопки управления записью диалога (start/stop/save).
 
 ```typescript
-import { createAssistantDev } from '@sberdevices/assistant-client';
+import { createSmartappDebugger } from '@sberdevices/assistant-client';
 
-createAssistantDev({
+createSmartappDebugger({
     getState,
     ...
     enableRecord: true
