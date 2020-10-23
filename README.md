@@ -1,3 +1,6 @@
+<img src="https://user-images.githubusercontent.com/982072/97004635-0888a900-1546-11eb-8f25-283a0693608e.png" height="150px" width="150px">
+
+
 # Sberdevices Assistant Client
 
 Assistant Client - это инструмент для тестирования и отладки СanvasApps c Виртуальным Ассистентом (ВА).
