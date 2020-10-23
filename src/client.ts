@@ -352,7 +352,9 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         ws.binaryType = 'arraybuffer';
         ws.addEventListener('open', () => {
             status = 'ready';
-            clearRetryTimer = setTimeout(() => { retries = 0; }, 500);
+            clearRetryTimer = setTimeout(() => {
+                retries = 0;
+            }, 500);
             if (ws.readyState === 1) {
                 if (version < 3) {
                     if (version === 1 && currentSettings.legacyDevice) {

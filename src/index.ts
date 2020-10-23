@@ -5,25 +5,31 @@ import {
     AssistantServerAction,
     AssistantSmartAppCommand,
     ClientLogger,
-} from "./typings";
-import { createNanoEvents } from "./nanoevents";
-import { initializeAssistantSDK, settings } from "./dev";
-import { NativePanelParams } from "./NativePanel/NativePanel";
-import { ISettings } from "./proto";
+} from './typings';
+import { createNanoEvents } from './nanoevents';
+import { initializeAssistantSDK, settings } from './dev';
+import { NativePanelParams } from './NativePanel/NativePanel';
+import { ISettings } from './proto';
 
 export interface AssistantEvents {
     start: () => void;
     data: (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) => void;
 }
 
-export const createAssistant = ({ getState, getRecoveryState }: { getState: () => AssistantAppState, getRecoveryState?: () => any }) => {
+export const createAssistant = ({
+    getState,
+    getRecoveryState,
+}: {
+    getState: () => AssistantAppState;
+    getRecoveryState?: () => any;
+}) => {
     let currentGetState = getState;
     let currentGetRecoveryState = getRecoveryState;
     const { on, emit } = createNanoEvents<AssistantEvents>();
 
     window.AssistantClient = {
         onData: (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) =>
-            emit("data", command),
+            emit('data', command),
         onRequestState: () => {
             return currentGetState();
         },
@@ -34,7 +40,7 @@ export const createAssistant = ({ getState, getRecoveryState }: { getState: () =
 
             return undefined;
         },
-        onStart: () => emit("start"),
+        onStart: () => emit('start'),
     };
     setTimeout(() => window.AssistantHost?.ready()); // таймаут для подписки на start
 
@@ -43,7 +49,8 @@ export const createAssistant = ({ getState, getRecoveryState }: { getState: () =
         getInitialData: () => window.appInitialData, // messages от бека для инициализации аппа
         getRecoveryState: () => window.appRecoveryState,
         on,
-        sendData: ({ action, name, requestId } : { action: AssistantServerAction, name?: string, requestId?: string }) =>
+        sendData: ({ action, name, requestId }: { action: AssistantServerAction; name?: string; requestId?: string }) =>
+            /* eslint-disable-next-line @typescript-eslint/camelcase */
             window.AssistantHost?.sendDataContainer({ data: action, message_name: name || null, requestId }),
         setGetState: (nextGetState: () => {}) => {
             currentGetState = nextGetState;
@@ -125,7 +132,7 @@ export const createSmartappDebugger = ({
         token,
         settings: {
             ...settings,
-            authConnector: "developer_portal_jwt",
+            authConnector: 'developer_portal_jwt',
         },
         getState,
         getRecoveryState,
@@ -135,10 +142,10 @@ export const createSmartappDebugger = ({
     });
 };
 
-export { createRecordOfflinePlayer as createRecordPlayer } from "./record/offline-player";
-export { NativePanelParams } from "./NativePanel/NativePanel";
-export * from "./typings";
-export * from "./dev";
-export { createClient } from "./client";
-export { createAudioRecorder } from "./createAudioRecorder";
-export { initializeDebugging } from "./debug";
+export { createRecordOfflinePlayer as createRecordPlayer } from './record/offline-player';
+export { NativePanelParams } from './NativePanel/NativePanel';
+export * from './typings';
+export * from './dev';
+export { createClient } from './client';
+export { createAudioRecorder } from './createAudioRecorder';
+export { initializeDebugging } from './debug';
