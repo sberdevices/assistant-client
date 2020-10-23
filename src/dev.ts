@@ -10,6 +10,7 @@ import { createCallbackLogger } from './record/callback-logger';
 import { createConsoleLogger } from './record/console-logger';
 import { createLogCallbackRecorder, RecorderCallback } from './record/callback-recorder';
 import { createRecordDownloader } from './record/record-downloader';
+import { ISettings } from './proto';
 
 const SDK_VERSION = '20.09.1.3576';
 const APP_VERSION = '20.09.1.3576';
@@ -57,6 +58,7 @@ export const initializeAssistantSDK = ({
     sdkVersion = SDK_VERSION,
     enableRecord,
     recordParams,
+    settings: settingsOverride
 }: {
     initPhrase: string;
     url: string;
@@ -75,6 +77,7 @@ export const initializeAssistantSDK = ({
         defaultActive?: boolean;
         logger?: ClientLogger;
     };
+    settings?: ISettings
 }) => {
     const device = {
         platformType: 'ANDROID', // эмулируем андроид сдк
@@ -113,7 +116,7 @@ export const initializeAssistantSDK = ({
             locale,
             device,
             legacyDevice,
-            settings,
+            settings: settingsOverride || settings,
             version: 3,
         },
         clientLogger,
