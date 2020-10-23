@@ -34,7 +34,7 @@ const assistant = initialize(() => state, () => recoveryState);
 assistant.on('data', (command) => {
     // подписка на команды ассистента, в т.ч. команда инициализации смартапа
     if (command.navigation) {
-        switch(command.navigation.command.direction) {
+        switch(command.navigation.command) {
             case 'UP':
                 window.scrollTo(0, 0);
                 break;
@@ -138,7 +138,7 @@ interface AssistantViewItem {
   /* Сервер экшен, проксирует action обратно на бекэнд. */
   server_action?: AssistantServerAction;
   /* Экшен, выполяет действие от имени пользователя */
-  action?: AssistantAction;
+  action?: AssistantAction | { type: string };
   /* Дополнительные данные для бэкенда */
   [key: string]: any;
 }
@@ -206,7 +206,7 @@ interface AssistantNavigationCommand {
   /* Тип команды */
   type: "navigation";
   /* Навигационная команда (направление навигации) */
-  navigation: { command: { direction: "UP" | "DOWN" | "LEFT" | "RIGHT" | "FORWARD" | "BACK" } };
+  navigation: { command: "UP" | "DOWN" | "LEFT" | "RIGHT" | "FORWARD" | "BACK" };
   sdkMeta: {
     requestId: string;
   };
