@@ -2,12 +2,12 @@
 
 Assistant Client - это инструмент для тестирования и отладки СanvasApps c Виртуальным Ассистентом (ВА).
 
-Технически Assistant Client представляет собой интегрируемый в WebView JS-код, который связан биндингами с нативным кодом операционной системы. В режиме разработки используется реализация протокола на JavaScript (эмулирует среду Android), что позволяет запускать ВА в браузере.
+Assistant Client интегрирует в WebView JS-код, который предоставляет биндинги к нативным методам на устройствах. В режиме локальной отладки и разработки Assistant Client эмулирует нативные методы, что позволяет запускать ВА в браузере.
 
 Установка:
 
 ```sh
-$ npm install @sberdevices/assistant-client
+$ npm i @sberdevices/assistant-client
 ```
 
 ## Quickstart
@@ -64,73 +64,13 @@ const handleOnClick = () => {
 | :------------ | :------: | :---------------------------------------------------------------------- |
 | getState\*    |    []    | Функция, которая возвращает актуальное состояние смартапа.              |
 | token\*       |   [x]    | Токен.                                                                  |
-| initPhrase\*  |   [x]    | Токен.                                                                  |
+| initPhrase\*  |   [x]    | Фраза, которая запускает ваше приложение.                               |
 
 #### Панель ассистента
 
 <a name="AssistantPanel"></a>
 
-По-умолчанию, в режиме разработки, панель отрисовывается. Чтобы выключить панель ассистента в режиме разработки, необходимо установить значение `null`, соответствующему параметру.
-
-```typescript
-import { createSmartappDebugger } from '@sberdevices/assistant-client';
-
-const assistant = createSmartappDebugger({ ..., nativePanel: null });
-```
-
-Первоначальный текст в панели ассистента конфигурируется установкой параметра `defaultText`.
-
-```typescript
-import { createSmartappDebugger } from '@sberdevices/assistant-client';
-
-const assistant = createSmartappDebugger({ ..., nativePanel: { defaultText: 'Покажи 1' } });
-```
-
-#### Логирование диалога с ассистентом
-
-<a name="AssistantRecord"></a>
-
-В режиме разработки, в целях отладки и тестирования, есть возможность получить файл с записью разговора ассистента. По-умолчанию, эта возможность деактирована, для активации необходимо установить значение параметра `enableRecord: true`. В результате, на экране будут отрисованы кнопки управления записью диалога (start/stop/save).
-
-```typescript
-import { createSmartappDebugger } from '@sberdevices/assistant-client';
-
-createSmartappDebugger({
-    getState,
-    ...
-    enableRecord: true
-});
-```
-
-`createRecordPlayer` - возвращает `RecordPlayer`, предоставляет возможность воспроизведения диалога. Принимает два необязательных параметра - запись и объект window (для взаимодействия с assistant-client).
-
-```typescript
-interface RecordPlayer {
-  /* проиграть следующую реплику, возвращает флаг наличия следующей реплики */
-  continue: () => boolean;
-  /* проиграть весь диалог до конца */
-  play: () => void;
-  /* Установить запись */
-  setRecord: (record: AssistantRecord) => void;
-}
-```
-
-Пример интеграции с cypress:
-
-```typescript
-import { createRecordPlayer } from '@sberdevices/assistant-client';
-
-describe('Тест', () => {
-    it('Запуск аппа', () => {
-        cy.fixture('app_start.json').then((record) => {
-            cy.window().then((win) => {
-                const player = createRecordPlayer(record, win);
-                player.play();
-            });
-        });
-    });
-);
-```
+По-умолчанию, в режиме разработки, панель отрисовывается. Вы можете посылать ВА сообщения, используя текстовое поле ввода в нижней панели. Чтобы отправить голосовое сообщение, нажмите на иконку салюта.
 
 ### AssistantClient
 
