@@ -66,7 +66,7 @@ export interface AssistantViewItem {
     /* Фразы-синонимы, которые должны быть расценены как данное действие */
     aliases?: string[];
     /* Сервер экшен, проксирует action обратно на бекэнд. */
-    server_action?: AssistantServerAction,
+    server_action?: AssistantServerAction;
     /* Экшен, выполяет действие от имени пользователя */
     action?: AssistantAction;
     /* Дополнительные данные для бэкенда */
@@ -79,7 +79,8 @@ export interface AssistantTextAction {
     type: 'text';
     /* Строка из поля text будет отправлена в чат от имени пользователя */
     text: string;
-    /* default = true, true если сообщение нужно отобразить в чате и отправить в бекэнд, false если сообщение нужно только отобразить в чате, и не отправлять на бекэнд */
+    /* default = true, true если сообщение нужно отобразить в чате и отправить в бекэнд,
+        false если сообщение нужно только отобразить в чате, и не отправлять на бекэнд */
     should_send_to_backend?: boolean;
 }
 
@@ -174,7 +175,7 @@ export interface AssistantHost {
     close: () => void;
     ready: () => void;
     sendData: (action: string, message: string | null) => void;
-    sendDataContainer: (container: { data: any; message_name?: string | null; requestId?: string  }) => void;
+    sendDataContainer: (container: { data: any; message_name?: string | null; requestId?: string }) => void;
     setSuggest: (suggest: string) => void;
 }
 
@@ -268,7 +269,7 @@ export type SystemMessageDataType = {
     };
     sdk_meta?: {
         requestId?: string;
-    }
+    };
 };
 
 export interface OriginalMessageType {
