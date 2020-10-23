@@ -34,7 +34,7 @@ const assistant = initialize(() => state, () => recoveryState);
 assistant.on('data', (command) => {
     // подписка на команды ассистента, в т.ч. команда инициализации смартапа
     if (command.navigation) {
-        switch(command.navigation.command.direction) {
+        switch(command.navigation.command) {
             case 'UP':
                 window.scrollTo(0, 0);
                 break;
@@ -138,7 +138,7 @@ interface AssistantViewItem {
   /* Сервер экшен, проксирует action обратно на бекэнд. */
   server_action?: AssistantServerAction;
   /* Экшен, выполяет действие от имени пользователя */
-  action?: AssistantAction;
+  action?: AssistantAction | { type: string };
   /* Дополнительные данные для бэкенда */
   [key: string]: any;
 }
@@ -206,7 +206,7 @@ interface AssistantNavigationCommand {
   /* Тип команды */
   type: "navigation";
   /* Навигационная команда (направление навигации) */
-  navigation: { command: { direction: "UP" | "DOWN" | "LEFT" | "RIGHT" | "FORWARD" | "BACK" } };
+  navigation: { command: "UP" | "DOWN" | "LEFT" | "RIGHT" | "FORWARD" | "BACK" };
   sdkMeta: {
     requestId: string;
   };
@@ -234,3 +234,7 @@ interface AssistantSmartAppCommand {
 ## Разрешения устройств
 
 Смартапы должны корректно отображаться на разных устройствах (SberBox, SberPortal и др). Для этого, необходимо проверять смартап на следующих разрешениях: 559x568, 768x400, 959x400, 1920x1080. Рекомендуется настроить эти разрешения на [вкладке Devices Chrome](https://developers.google.com/web/tools/chrome-devtools/device-mode#custom).
+
+## FAQ
+### Как получить токен?
+Заведите аккаунт в [SmartApp Studio](https://smartapp-studio.sberdevices.ru/) и создайте приложение типа CanvasApp. Токен доступен во вкладке «Настройка профиля» в секции «Auth Token».
