@@ -22,7 +22,7 @@
         "smartapp"
     ],
     "author": "SberDevices Frontend Team",
-    "license": "UNLICENSED",
+    "license": "Sber Public License at-nc-sa v.2",
     "dependencies": {
         "axios": "0.19.2",
         "nanoevents": "5.1.7",
