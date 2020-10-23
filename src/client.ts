@@ -98,6 +98,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
     let destroyed = false;
     let ws: WebSocket;
     let timeOut: number | undefined;
+    let clearRetryTimer: number;
 
     const voicePlayer = createVoicePlayer();
 
@@ -351,7 +352,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         ws.binaryType = 'arraybuffer';
         ws.addEventListener('open', () => {
             status = 'ready';
-            retries = 0;
+            clearRetryTimer = setTimeout(() => { retries = 0; }, 500);
             if (ws.readyState === 1) {
                 if (version < 3) {
                     if (version === 1 && currentSettings.legacyDevice) {
@@ -383,6 +384,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
 
         ws.addEventListener('close', () => {
             status = 'closed';
+            clearTimeout(clearRetryTimer);
             if (!ws || (ws.readyState === 3 && !destroyed)) {
                 if (timeOut) {
                     clearTimeout(timeOut);
