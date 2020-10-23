@@ -234,3 +234,7 @@ interface AssistantSmartAppCommand {
 ## Разрешения устройств
 
 Смартапы должны корректно отображаться на разных устройствах (SberBox, SberPortal и др). Для этого, необходимо проверять смартап на следующих разрешениях: 559x568, 768x400, 959x400, 1920x1080. Рекомендуется настроить эти разрешения на [вкладке Devices Chrome](https://developers.google.com/web/tools/chrome-devtools/device-mode#custom).
+
+## FAQ
+### Как получить токен?
+Заведите аккаунт в [SmartApp Studio](https://smartapp-studio.sberdevices.ru/) и создайте приложение типа CanvasApp. Токен доступен во вкладке «Настройка профиля» в секции «Auth Token».
