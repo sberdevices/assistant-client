@@ -129,7 +129,7 @@ export const createSmartappDebugger = ({
         },
         getState,
         getRecoveryState,
-        url: "wss://nlp2vpspsi.online.sberbank.ru/vps/",
+        url: "wss://nlp2vps.online.sberbank.ru:443/vps/",
         surface: "SBERBOX",
         userChannel: "B2C",
     });
