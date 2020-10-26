@@ -158,7 +158,9 @@ export function initializeDebugging(config: IntitializeProps = defaultConfig) {
             });
         },
 
-        sendDataContainer({ data, message_name }: { data: string; message_name?: string | null; requestId?: string }) {
+        sendDataContainer(container: string) {
+            const { data, message_name } = JSON.parse(container);
+
             ask({
                 data,
                 name: message_name || undefined,

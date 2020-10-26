@@ -250,12 +250,12 @@ export const initializeAssistantSDK = ({
 
             sendServerAction({ data: JSON.parse(payload), message_name: messageName || undefined });
         },
-        async sendDataContainer(container: { data: any; message_name?: string | null; requestId?: string }) {
+        async sendDataContainer(container: string) {
             await promise;
 
             if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
 
-            sendServerAction(container);
+            sendServerAction(JSON.parse(container));
         },
         setSuggest() {},
     };
