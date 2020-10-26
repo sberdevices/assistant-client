@@ -10,6 +10,7 @@ import { createNanoEvents } from './nanoevents';
 import { initializeAssistantSDK, settings } from './dev';
 import { NativePanelParams } from './NativePanel/NativePanel';
 import { ISettings } from './proto';
+import { VoicePlayerSettings } from './createVoicePlayer';
 
 export interface AssistantEvents {
     start: () => void;
@@ -77,6 +78,7 @@ export const createAssistantDev = ({
     enableRecord = false,
     recordParams,
     settings,
+    voiceSettings,
 }: {
     getState: () => AssistantAppState;
     getRecoveryState?: () => Record<string, any> | undefined;
@@ -96,6 +98,7 @@ export const createAssistantDev = ({
         logger?: ClientLogger;
     };
     settings?: ISettings;
+    voiceSettings?: VoicePlayerSettings; // настройки озвучки
 }) => {
     initializeAssistantSDK({
         initPhrase,
@@ -110,6 +113,7 @@ export const createAssistantDev = ({
         enableRecord,
         recordParams,
         settings,
+        voiceSettings: voiceSettings || { startVoiceDelay: 1 },
     });
 
     return createAssistant({ getState, getRecoveryState });
@@ -136,9 +140,9 @@ export const createSmartappDebugger = ({
         },
         getState,
         getRecoveryState,
-        url: "wss://nlp2vps.online.sberbank.ru:443/vps/",
-        surface: "SBERBOX",
-        userChannel: "B2C",
+        url: 'wss://nlp2vps.online.sberbank.ru:443/vps/',
+        surface: 'SBERBOX',
+        userChannel: 'B2C',
     });
 };
 
