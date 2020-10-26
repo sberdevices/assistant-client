@@ -175,7 +175,7 @@ export interface AssistantHost {
     close: () => void;
     ready: () => void;
     sendData: (action: string, message: string | null) => void;
-    sendDataContainer: (container: { data: any; message_name?: string | null; requestId?: string }) => void;
+    sendDataContainer: (container: string) => void;
     setSuggest: (suggest: string) => void;
 }
 

@@ -51,7 +51,7 @@ export const createAssistant = ({
         on,
         sendData: ({ action, name, requestId }: { action: AssistantServerAction; name?: string; requestId?: string }) =>
             /* eslint-disable-next-line @typescript-eslint/camelcase */
-            window.AssistantHost?.sendDataContainer({ data: action, message_name: name || null, requestId }),
+            window.AssistantHost?.sendDataContainer(JSON.stringify({ data: action, message_name: name || null, requestId })),
         setGetState: (nextGetState: () => {}) => {
             currentGetState = nextGetState;
         },
