@@ -1,6 +1,8 @@
-const START_VOICE_DELAY = 0.2;
-
 const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+export interface VoicePlayerSettings {
+    startVoiceDelay?: number;
+}
 
 type BytesArraysSizes = {
     incomingMessageVoiceDataLength: number;
@@ -78,7 +80,7 @@ const from16BitToFloat32 = (incomingData: Int16Array) => {
     return outputData;
 };
 
-export const createVoicePlayer = () => {
+export const createVoicePlayer = (params?: VoicePlayerSettings) => {
     let audioContextForPlayback: AudioContext | null = null;
     let audioSlices: Array<Uint8Array> = [];
     let extraByte: number | null = null;
@@ -116,7 +118,13 @@ export const createVoicePlayer = () => {
         let slicePoint = 0;
         if (audioSlices.length === 0) {
             audioContextForPlayback = new AudioContext();
-            soundBuffer = createSoundBuffer(audioContextForPlayback, 24000, finishPlayback, 1000, START_VOICE_DELAY);
+            soundBuffer = createSoundBuffer(
+                audioContextForPlayback,
+                24000,
+                finishPlayback,
+                1000,
+                (params?.startVoiceDelay || 0) > 0 ? params?.startVoiceDelay : 0.2,
+            );
             slicePoint = 44;
         }
 

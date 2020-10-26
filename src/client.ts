@@ -15,7 +15,7 @@ import {
 import { PacketWrapperFromServer } from './asr';
 import { EventsType, SystemMessageDataType, VpsVersion, CreateClientDataType, ClientLogger } from './typings';
 import { createNanoEvents } from './nanoevents';
-import { createVoicePlayer } from './createVoicePlayer';
+import { createVoicePlayer, VoicePlayerSettings } from './createVoicePlayer';
 
 export const MESSAGE_NAMES = {
     ANSWER_TO_USER: 'ANSWER_TO_USER',
@@ -67,7 +67,11 @@ const compileBasePayload = ({
     };
 };
 
-export const createClient = (clientParams: CreateClientDataType, logger?: ClientLogger) => {
+export const createClient = (
+    clientParams: CreateClientDataType,
+    logger?: ClientLogger,
+    voiceSettings?: VoicePlayerSettings,
+) => {
     const {
         url,
         userId,
@@ -100,7 +104,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
     let timeOut: number | undefined;
     let clearRetryTimer: number;
 
-    const voicePlayer = createVoicePlayer();
+    const voicePlayer = createVoicePlayer(voiceSettings);
 
     const getMessageId = () => {
         return currentMessageId++;
