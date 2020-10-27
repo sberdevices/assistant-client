@@ -176,6 +176,12 @@ export const initializeAssistantSDK = ({
         );
     };
 
+    const updateState = () => {
+        if (window.AssistantClient?.onRequestState) {
+            state = window.AssistantClient.onRequestState();
+        }
+    };
+
     const sendState = () => {
         return vpsClient.sendSystemMessage(
             {
@@ -189,7 +195,7 @@ export const initializeAssistantSDK = ({
     };
 
     const sendText = (text: string, params: {} = {}) => {
-        if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
+        updateState();
 
         return vpsClient.batch(() => {
             state && sendState();
@@ -250,14 +256,14 @@ export const initializeAssistantSDK = ({
         async sendData(payload: string, messageName: string | null = null) {
             await promise;
 
-            if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
+            updateState();
 
             sendServerAction({ data: JSON.parse(payload), message_name: messageName || undefined });
         },
         async sendDataContainer(container: string) {
             await promise;
 
-            if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
+            updateState();
 
             sendServerAction(JSON.parse(container));
         },
@@ -265,7 +271,7 @@ export const initializeAssistantSDK = ({
     };
 
     const createVoiceStream = () => {
-        if (window.AssistantClient?.onRequestState) window.AssistantClient.onRequestState();
+        updateState();
 
         return vpsClient.createVoiceStream(createSystemMessageBase());
     };
