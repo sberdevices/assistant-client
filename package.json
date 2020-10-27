@@ -1,6 +1,6 @@
 {
     "name": "@sberdevices/assistant-client",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Модуль взаимодействия с виртуальным ассистентом",
     "main": "dist/index.js",
     "scripts": {
@@ -27,9 +27,6 @@
         "axios": "0.19.2",
         "nanoevents": "5.1.7",
         "protobufjs": "6.9.0",
-        "react": "16.13.1",
-        "react-dom": "16.13.1",
-        "styled-components": "5.1.1",
         "uuid": "8.0.0"
     },
     "browserslist": [
@@ -65,6 +62,11 @@
         "ts-loader": "8.0.4",
         "typescript": "3.9.2",
         "webpack": "4.44.2"
+    },
+    "peerDependencies": {
+        "react": ">=16.8.0",
+        "react-dom": ">=16.8.0",
+        "styled-components": ">=5.1.0"
     },
     "files": [
         "dist"
