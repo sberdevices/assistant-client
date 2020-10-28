@@ -356,7 +356,7 @@ export const createClient = (
         ws.binaryType = 'arraybuffer';
         ws.addEventListener('open', () => {
             status = 'ready';
-            clearRetryTimer = setTimeout(() => {
+            clearRetryTimer = window.setTimeout(() => {
                 retries = 0;
             }, 500);
             if (ws.readyState === 1) {
@@ -395,7 +395,7 @@ export const createClient = (
                 if (timeOut) {
                     clearTimeout(timeOut);
                 }
-                timeOut = setTimeout(() => {
+                timeOut = window.setTimeout(() => {
                     startWebSocket();
                     retries++;
                 }, 300 * retries);
