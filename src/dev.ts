@@ -29,8 +29,8 @@ export const legacyDevice = {
     clientType: 'simple',
     channel: 'Android_SB',
     channelVersion: '8.1.0.2932_RC',
-    platformName: 'Android 8.0',
-    platformVersion: '8.0',
+    platformName: 'WEBDBG 1.0',
+    platformVersion: '1.0',
 };
 
 export const settings = {
@@ -83,8 +83,8 @@ export const initializeAssistantSDK = ({
     voiceSettings?: VoicePlayerSettings;
 }) => {
     const device = {
-        platformType: 'ANDROID', // эмулируем андроид сдк
-        platformVersion: '9.0',
+        platformType: 'WEBDBG',
+        platformVersion: '1.0',
         sdkVersion,
         surface,
         surfaceVersion: surfaceVersion || APP_VERSION,
