@@ -1,20 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { render } from 'react-dom';
-import styled from 'styled-components';
 
 import { AssistantRecord, LogRecorder, RecordSaver } from '../typings';
-
-const StyledAssistantRecordPanel = styled.div`
-    position: fixed;
-    z-index: 999;
-    top: 0;
-    right: 0;
-
-    & button {
-        margin-right: 8px;
-        margin-top: 8px;
-    }
-`;
+import './styles.css';
 
 interface AssistantRecordPanelProps {
     recorder: LogRecorder;
@@ -51,17 +39,17 @@ const AssistantRecordPanel: React.FC<AssistantRecordPanelProps> = ({ recorder, o
     }, [recorder]);
 
     return (
-        <StyledAssistantRecordPanel>
-            <button onClick={handleStart} type="button" disabled={isRecording}>
+        <div className="recordPanel">
+            <button onClick={handleStart} type="button" disabled={isRecording} className="recordButton">
                 start
             </button>
-            <button onClick={handleStop} type="button" disabled={!isRecording}>
+            <button onClick={handleStop} type="button" disabled={!isRecording} className="recordButton">
                 stop
             </button>
-            <button onClick={handleSave} type="button" disabled={record == null}>
+            <button onClick={handleSave} type="button" disabled={record == null} className="recordButton">
                 save
             </button>
-        </StyledAssistantRecordPanel>
+        </div>
     );
 };
 
