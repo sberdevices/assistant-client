@@ -50,9 +50,24 @@ export const createAssistant = ({
         getInitialData: () => window.appInitialData, // messages от бека для инициализации аппа
         getRecoveryState: () => window.appRecoveryState,
         on,
-        sendData: ({ action, name, requestId }: { action: AssistantServerAction; name?: string; requestId?: string }) =>
-            /* eslint-disable-next-line @typescript-eslint/camelcase */
-            window.AssistantHost?.sendDataContainer(JSON.stringify({ data: action, message_name: name || null, requestId })),
+        sendData: ({
+            action,
+            name,
+            requestId,
+        }: {
+            action: AssistantServerAction;
+            name?: string;
+            requestId?: string;
+        }) => {
+            if (window.AssistantHost?.sendDataContainer) {
+                /* eslint-disable-next-line @typescript-eslint/camelcase */
+                window.AssistantHost?.sendDataContainer(
+                    JSON.stringify({ data: action, message_name: name || null, requestId }),
+                );
+            } else {
+                window.AssistantHost?.sendData(JSON.stringify(action), name || null);
+            }
+        },
         setGetState: (nextGetState: () => {}) => {
             currentGetState = nextGetState;
         },
