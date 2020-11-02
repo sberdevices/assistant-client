@@ -1,41 +1,81 @@
 <img src="https://user-images.githubusercontent.com/982072/97004635-0888a900-1546-11eb-8f25-283a0693608e.png" height="150px" width="150px">
 
 
-# SberDevices Assistant Client
+Assistant Client - это инструмент для локального тестирования и отладки [Сanvas App](https://smartapp-code.sberdevices.ru/documentation/#/docs/ru/methodology/research/canvasapp) c виртуальным ассистентом. Он реализован в виде JavaScript протокола, который эмулирует среду Android и вызывает нативные методы. Такой подход не требует от разработчика наличия физических устройств и позволяет запустить виртуального ассистента через браузер. 
 
-Assistant Client - это инструмент для тестирования и отладки СanvasApps c Виртуальным Ассистентом (ВА).
 
-Assistant Client интегрирует в WebView JS-код, который предоставляет биндинги к нативным методам на устройствах. В режиме локальной отладки и разработки Assistant Client эмулирует нативные методы, что позволяет запускать ВА в браузере.
+## Оглавление
+   * [Конфигурация](#Конфигурация)
+     * [Аутентификация](#Аутентификация)
+     * [Установка](#Установка)
+     * [Использование](#Пример)
+   * [API](#API)
+     * [createAssistant](#createAssistant)
+     * [createSmartappDebugger](#createSmartappDebugger)
+     * [getInitialData](#getInitialData) 
+     * [getRecoveryState](#getRecoveryState)
+   * [Форматы объектов](#Форматы)
+     * [AssistantAppState](#AssistantAppState)
+     * [AssistantServerAction](#AssistantServerAction)
+     * [AssistantCharacterCommand](#AssistantCharacterCommand)
+     * [AssistantNavigationCommand](#AssistantNavigationCommand)
+     * [AssistantSmartAppCommand](#AssistantSmartAppCommand)     
+   * [Требования](#Требования)
 
-Установка:
+____
+
+## Конфигурация
+
+### Аутентификация
+
+Для работы с Assistant Client необходимо:
+
+1. Завести аккаунт в [SmartApp Studio](https://smartapp-studio.sberdevices.ru/).
+2. Создать приложение с типом [Сanvas App](https://smartapp-code.sberdevices.ru/documentation/#/docs/ru/methodology/research/canvasapp). 
+3. Получить токен в Кабинете разработчика и передать его в запросе.  
+
+Для получения токена необходимо авторизоваться в [SmartApp Studio](https://smartapp-studio.sberdevices.ru/login) и в рамках Кабинета разработчика перейти в *Настройки профиля* > пункт *Auth Token* > опция *Скопировать ключ*. Полученный токен необходимо передавать в методе `createSmartappDebugger` в параметре `token`.  
+
+
+### Установка
+
+Для установки Assistant Client выполните следующую команду:
 
 ```sh
 $ npm i @sberdevices/assistant-client
 ```
 
-## Quickstart
+
+### Пример использования
 
 ```typescript
+// Функция createSmartappDebugger используется в development среде. В production среде необходимо использовать createAssistant.
 import { createAssistant, createSmartappDebugger } from '@sberdevices/assistant-client';
 
 const initialize = (getState, getRecoveryState) => {
     if (process.env.NODE_ENV === 'development') {
         return createSmartappDebugger({
-            token: 'токен разработчика из Smartapp Studio', // Токен,
-            initPhrase: 'Хочу попкорн', // фраза для запуска аппа
-            getState,
-            getRecoveryState,
+            // Токен из Кабинета разработчика
+            token: 'token', 
+            // Пример фразы для запуска приложения
+            initPhrase: 'Хочу попкорн', 
+            // Функция, которая возвращает текущее состояние приложения
+            getState, 
+            // Функция, возвращающая состояние приложения, с которым приложение будет восстановлено при следующем запуске
+            getRecoveryState, 
         });
     }
 
-    return createAssistant({ getState, getRecoveryState });
+	  // Только для среды production
+    return createAssistant({ getState, getRecoveryState }); 
 }
 
 ...
 
 const assistant = initialize(() => state, () => recoveryState);
 assistant.on('data', (command) => {
-    // подписка на команды ассистента, в т.ч. команда инициализации смартапа
+    // Подписка на команды ассистента, в т.ч. команда инициализации смартапа. 
+    // Ниже представлен пример обработки голосовых команд "ниже"/"выше" 
     if (command.navigation) {
         switch(command.navigation.command) {
             case 'UP':
@@ -49,142 +89,149 @@ assistant.on('data', (command) => {
 });
 
 const handleOnClick = () => {
-    // отправка ServerAction
+    // Отправка сообщения ассистенту с фронтенд. 
+    // Структура может меняться на усмотрение разработчика, в зависимости от бэкенд
     assistant.sendData({ action: { action_id: 'some_action_name' } });
 };
 ```
+
+____
+
 
 ## API
 
 ### `createAssistant`
 
-Создает экземпляр [`AssistantClient`](#AssistantClient), обязательный параметр `getState` - функция, которая возвращает актуальное состояние смартапа при каждом обращении к бэкенду. Используется в production среде на девайсах.
+Создает экземпляр [`AssistantClient`](#AssistantClient) для запуска виртуального ассистента. Используется на устройствах в production среде.
+
+| Параметр         | Обязательный | Описание                                                                   |
+| :--------------- | :------: | :------------------------------------------------------------------------- |
+| getState         | Да           |  Функция, которая возвращает актуальное состояние смартапа                 |
+| getRecoveryState | Нет          |  Функция, которая сохраняет состояние смартапа на момент последнего закрытия |
+
+
 
 ### `createSmartappDebugger`
 
-Создает экземпляр [`AssistantClient`](#AssistantClient), добавляет на экран браузера панель с голосовым ассистентом, подобно устройствам. Панель позволяет вводить команды с клавиатуры и голосом. Также активируется озвучка ассистента. Используется в development среде для локальной отладки и разработки.
+Создает экземпляр [`AssistantClient`](#AssistantClient) и добавляет на экран браузера панель с голосовым ассистентом (подобно устройствам). Панель ассистента находится в нижней части отрисованного экрана и позволяет отправлять виртуальному ассистенту следующие типы сообщений:
+* текстовые сообщения через текстовое поле ввода; 
+* голосовые сообщения через кнопку "Салют". 
 
-| Параметр         | Dev only | Описание                                                                   |
+`createSmartappDebugger` используется для локальной отладки и разработки в development среде (Dev).
+
+| Параметр         | Обязательный | Описание                                                                   |
 | :--------------- | :------: | :------------------------------------------------------------------------- |
-| getState\*       |    []    | Функция, которая возвращает актуальное состояние смартапа.                 |
-| token\*          |   [x]    | Токен.                                                                     |
-| initPhrase\*     |   [x]    | Фраза, которая запускает ваше приложение.                                  |
-| getRecoveryState |    []    | Функция, которая возвращает состояние смартаппа перед последним закрытием. |
+| token            | Да           |  Токен из Кабинета Разработчика                                             |
+| initPhrase       | Да           |  Фраза, которая запускает приложение                                |
+| getState         | Да           |  Функция, которая возвращает актуальное состояние смартапа                 |
+| getRecoveryState | Нет          |  Функция, которая сохраняет состояние смартапа на момент последнего закрытия |
 
-#### Панель ассистента
 
-<a name="AssistantPanel"></a>
 
-По-умолчанию, в режиме разработки, панель отрисовывается. Вы можете посылать ВА сообщения, используя текстовое поле ввода в нижней панели. Чтобы отправить голосовое сообщение, нажмите на иконку салюта.
-
-### AssistantClient
-
-<a name="AssistantClient"></a>
-
-#### getInitialData(): [AssistantCommands](#AssistantCommands)[]
+### getInitialData(): [AssistantCommands](#AssistantCommands)[]
 
 Возвращает данные, полученные при инициализации смартапа.
 
+
 ### getRecoveryState(): any
 
-Возвращает данные, сохраненные при последнем закрытии аппа на устройстве. Данные сохраняются при помощи вызова getRecoveryState, в момент закрытия аппа.
+Возвращает состояние, сохраненное при закрытии приложения. Устройство запоминает последнее состояние, которое возвращает функция getRecoveryState при инициализации Assistant Client.
 
 #### on('start', cb: () => void): void
 
-Подписка на событие готовности ассистента к работе.
+Осуществляет подписку на событие готовности ассистента к работе.
 
 #### on('data', cb: (data: [AssistantCharacterCommand](#AssistantCharacterCommand) | [AssistantNavigationCommand](#AssistantNavigationCommand) | [AssistantSmartAppCommand](#AssistantSmartAppCommand)) => {}): void
 
-Подписка на событие получения данных от бэкенда.
+Осуществляет подписку на событие получения данных с бэкенд.
 
 #### sendData({ action: [AssistantServerAction](#AssistantServerAction) }): void
 
-Отправляет сервер-экшен, который будет передан бэкенду.
+Отправляет события с фронтенд на бэкенд через ассистента.
 
 #### setGetState(nextGetState: () => [AssistantAppState](#AssistantAppState)): void
 
-Подменяет колбек, возвращаюший актуальное состояние приложения.
+Подменяет callback, который возвращает актуальное состояние приложения.
 
 #### setGetRecoveryState(nextGetRecoveryState: () => any)
 
-Подменяет колбек, возвращающий объект, который будет доступен при следующем запуске приложения. Данные можно получить при вызове getRecoveryState.
+Подменяет callback, который возвращает объект, доступный только при следующем запуске приложения. Данные приходят при вызове getRecoveryState.
 
-#### Формат объекта `AssistantAppState`
 
-<a name="AssistantAppState"></a>
+____
 
-Объект `AssistantAppState` — текущее состояние смартапа, которое не хранится в платформе или сценарии. То, что происходит на экране у пользователя и как пользователь может взамодействовать с смартапа в конкретный момент времени - ответственность смартапа. Assistant Client, в данном случае, некий буфер, который хранит состояние и предоставляет его платформе и сценарию смартапа.
 
-Каждый раз, когда пользователь начинает говорить, Assistant Client вызывает коллбек getState, чтобы получить и передать бэкенду состояние экрана пользователя.
+## Форматы объектов 
+
+### `AssistantAppState`
+
+Объект `AssistantAppState` — текущее состояние смартапа, которое не хранится в платформе или сценарии. Каждый раз, когда пользователь начинает говорить, Assistant Client вызывает getState, чтобы получить и передать в бэкенд состояние экрана пользователя. 
+То, что происходит на экране у пользователя и как он взаимодействует со смартапом в конкретный момент времени - ответственность смартапа. Assistant Client в данном случае - это буфер, который только передает состояние платформе или сценарию.
+
 
 ```typescript
 interface AssistantAppState {
-  /* Любые данные, которые могут потребоваться Backend'у для принятия решений */
+  // Любые данные, которые могут потребоваться в бэкенд для принятия решений
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
   item_selector?: {
     ignored_words?: string[];
-    /* Список соответствий голосовых команд действиям в веб-приложении */
+    // Список соответствий между голосовыми командами и действиями в приложении
     items: AssistantViewItem[];
   };
 }
 
 interface AssistantViewItem {
-  /* Порядковый номер элемента, назначается смартапом, уникален в рамках items */
+  // Уникальный (в рамках items) порядковый номер элемента, который назначается смартапом 
   number?: number;
-  /* Уникальный id элемента */
+  // Уникальный id элемента
   id?: string;
-  /* Ключевая фраза, которая должна приводить к данному действию */
+  // Ключевая фраза, которая должна приводить к данному действию
   title?: string;
-  /* Фразы-синонимы, которые должны быть расценены как данное действие */
+  // Фразы-синонимы, которые должны приводить к данному действию
   aliases?: string[];
-  /* Сервер экшен, проксирует action обратно на бекэнд. */
+  // Проксирование action обратно на бэкенд
   server_action?: AssistantServerAction;
-  /* Экшен, выполяет действие от имени пользователя */
+  // Выполнение действия от имени пользователя
   action?: AssistantAction | { type: string };
-  /* Дополнительные данные для бэкенда */
+  // Дополнительные данные для бэкенд
   [key: string]: any;
 }
 ```
 
-Например, когда пользователь говорит "Покажи 1", бэкенду нужно понимать что скрывается за единицей (какой элемент у пользователя пронумерован единицей). Ниже пример стейта, который позволяет понять бэкенду, что пользователь хочет чипсы.
+Например, когда пользователь говорит "Покажи 1", бэкенд должен понимать, что скрывается за единицей (то есть, какой элемент у пользователя пронумерован этой цифрой). Ниже пример состояния, который позволяет понять бэкенду, что, называя "1", пользователь хочет чипсы.
 
 ```js
 {
   item_selector: {
     ignored_words: ["покажи"],
     items: [
-      { title: 'Кола' },
       { title: 'Сладкий попкорн' },
       { title: 'Соленый попкорн' },
       { title: 'Чипсы', number: 1 },
       { title: 'Начос', number: 2 },
-      { title: 'Пиво', number: 3 }
+      { title: 'Кола', number: 3 }
     ]
   }
 }
 ```
 
-#### Формат объекта `AssistantServerAction`
+### `AssistantServerAction`
 
-<a name="AssistantServerAction"></a>
-
-`AssistantServerAction` - это любое сообщение, отправляемое от клиентской части приложения в бэкенд. Оно может быть как привязано к ui-элементу и приходить с бэка (в основном, для message-based аппов), так и формироваться самостоятельно фронтовой частью аппа при обработке событий внутри веб-вью аппа..
+Объект `AssistantServerAction` - это любое сообщение, которое отправляется с фронтенда на бэкенд. Оно может быть привязано к ui-элементу и приходить с бэкенд, или формироваться самостоятельно фронтовой частью приложения при обработке событий внутри WebView смартапа.
 
 ```typescript
 interface AssistantServerAction {
-  /* Тип сервер-экшена */
+  // Тип Server Action
   action_id: string;
-  /* любые параметры */
+  // Любые параметры
   parameters?: Record<string, any>;
 }
 ```
 
-#### Формат объекта `AssistantCharacterCommand`
+### `AssistantCharacterCommand`
 
-<a name="AssistantCharacterCommand"></a>
-
-`AssistantCharacterCommand` - информирует смартап о текущем ассистенте.
+Объект `AssistantCharacterCommand` - информирует смартап о текущем персонаже (Сбер, Афина или Джой). Персонаж может быть изменен в любой момент по инициативе пользователя. Поэтому разработчик может дополнительно добавить обработку таких изменений. 
 
 ```typescript
 interface AssistantCharacterCommand {
@@ -198,17 +245,15 @@ interface AssistantCharacterCommand {
 }
 ```
 
-#### Формат объекта `AssistantNavigationCommand`
+### `AssistantNavigationCommand`
 
-<a name="AssistantNavigationCommand"></a>
-
-`AssistantNavigationCommand` - команда навигации пользователя по смартапу. Большая часть навигационных команд может быть выполнена стандартным средствами Assistant Client. В платформе виртуального ассистента есть стандартные фразы, которые обрабатываются единым образом. Они обрабатываются и приходят одинаково для всех смартапов.
+Объект `AssistantNavigationCommand` - команда навигации пользователя по смартапу (например, "вперед, назад, дальше" и т.д.). В платформе виртуального ассистента есть стандартные фразы, которые приходят и обрабатываются одинаково для всех смартапов.
 
 ```typescript
 interface AssistantNavigationCommand {
-  /* Тип команды */
+  // Тип команды
   type: "navigation";
-  /* Навигационная команда (направление навигации) */
+  // Навигационная команда (направление навигации)
   navigation: { command: "UP" | "DOWN" | "LEFT" | "RIGHT" | "FORWARD" | "BACK" };
   sdkMeta: {
     requestId: string;
@@ -216,17 +261,15 @@ interface AssistantNavigationCommand {
 }
 ```
 
-#### Формат объекта `AssistantSmartAppCommand`
+### `AssistantSmartAppCommand`
 
-<a name="AssistantSmartAppCommand"></a>
-
-`AssistantSmartAppCommand` - это команда для передачи смартапу любых данных с бэкенда.
+Объект `AssistantSmartAppCommand` - это команда передачи смартапу любых данных с бэкенд.
 
 ```typescript
 interface AssistantSmartAppCommand {
-  /* Тип команды */
+  // Тип команды 
   type: "smart_app_data";
-  /* Любые данные, которые нужны смартапу */
+  // Любые данные, которые нужны смартапу
   smart_app_data: Record<string, any>;
   sdkMeta: {
     requestId: string;
@@ -234,10 +277,9 @@ interface AssistantSmartAppCommand {
 }
 ```
 
-## Разрешения устройств
+____
 
-Смартапы должны корректно отображаться на разных устройствах (SberBox, SberPortal и др). Для этого, необходимо проверять смартап на следующих разрешениях: 559x568, 768x400, 959x400, 1920x1080. Рекомендуется настроить эти разрешения на [вкладке Devices Chrome](https://developers.google.com/web/tools/chrome-devtools/device-mode#custom).
 
-## FAQ
-### Как получить токен?
-Заведите аккаунт в [SmartApp Studio](https://smartapp-studio.sberdevices.ru/) и создайте приложение типа CanvasApp. Токен доступен во вкладке «Настройка профиля» в секции «Auth Token».
+## Требования к устройствам
+
+Смартапы должны корректно отображаться на разных устройствах (SberBox, SberPortal и др). Для этого необходимо проверять смартап на следующих разрешениях: 559x568, 768x400, 959x400, 1920x1080. Настроить эти разрешения можно на [вкладке Devices Chrome](https://developers.google.com/web/tools/chrome-devtools/device-mode#custom).
