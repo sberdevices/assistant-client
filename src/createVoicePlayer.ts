@@ -11,6 +11,8 @@ type BytesArraysSizes = {
     prepend: number | null;
 };
 
+type StreamDataCallbacks = undefined | { onStart(): void; onFinish(): void };
+
 const createSoundBuffer = (
     ctx: AudioContext,
     sampleRate: number,
@@ -114,17 +116,21 @@ export const createVoicePlayer = (params?: VoicePlayerSettings) => {
         audioSlices = [];
     };
 
-    const streamToDataToPlayer = (data: Uint8Array) => {
+    const streamToDataToPlayer = (data: Uint8Array, callbacks?: StreamDataCallbacks) => {
         let slicePoint = 0;
         if (audioSlices.length === 0) {
             audioContextForPlayback = new AudioContext();
             soundBuffer = createSoundBuffer(
                 audioContextForPlayback,
                 24000,
-                finishPlayback,
+                () => {
+                    finishPlayback();
+                    callbacks?.onFinish();
+                },
                 1000,
                 (params?.startVoiceDelay || 0) > 0 ? params?.startVoiceDelay : 0.2,
             );
+            callbacks?.onStart();
             slicePoint = 44;
         }
 
@@ -152,5 +158,6 @@ export const createVoicePlayer = (params?: VoicePlayerSettings) => {
 
     return {
         streamToDataToPlayer,
+        finishPlayback,
     };
 };

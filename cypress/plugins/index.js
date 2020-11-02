@@ -19,7 +19,7 @@ module.exports = (on, config) => {
                         options: { transpileOnly: true },
                     },
                     {
-                        test: /\.(png|jpe?g|gif)$/i,
+                        test: /\.(png|jpe?g|gif|css)$/i,
                         use: [
                             {
                                 loader: 'file-loader',

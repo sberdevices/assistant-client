@@ -3,15 +3,23 @@
 
 import { createClient } from './client';
 import { renderNativePanel, NativePanelParams } from './NativePanel/NativePanel';
-import { SystemMessageDataType, SuggestionButtonType, ClientLogger } from './typings';
+import {
+    SystemMessageDataType,
+    SuggestionButtonType,
+    ClientLogger,
+    EmotionEventsType,
+} from './typings';
 import { createAudioRecorder } from './createAudioRecorder';
 import { renderAssistantRecordPanel } from './record';
 import { createCallbackLogger } from './record/callback-logger';
 import { createConsoleLogger } from './record/console-logger';
 import { createLogCallbackRecorder, RecorderCallback } from './record/callback-recorder';
 import { createRecordDownloader } from './record/record-downloader';
-import { ISettings } from './proto';
+import { createNanoEvents } from './nanoevents';
+import { createVoiceStreamFactory } from './createVoiceStream';
+import { bindEmotionListener, createVoicePlayerListener } from './clientListeners';
 import { VoicePlayerSettings } from './createVoicePlayer';
+import { ISettings } from './proto';
 
 const SDK_VERSION = '20.09.1.3576';
 const APP_VERSION = '20.09.1.3576';
@@ -61,6 +69,7 @@ export const initializeAssistantSDK = ({
     recordParams,
     settings: settingsOverride,
     voiceSettings,
+    vpsVersion = 3,
 }: {
     initPhrase: string;
     url: string;
@@ -81,6 +90,7 @@ export const initializeAssistantSDK = ({
     };
     settings?: ISettings;
     voiceSettings?: VoicePlayerSettings;
+    vpsVersion?: number;
 }) => {
     const device = {
         platformType: 'WEBDBG',
@@ -109,7 +119,7 @@ export const initializeAssistantSDK = ({
     if (enableRecord && recordParams?.logger == null) {
         clientLogger = createCallbackLogger((logEntry) => loggerCb && loggerCb(logEntry));
     }
-
+    const { on: onEmotion, emit: emitEmotion } = createNanoEvents<EmotionEventsType>();
     const vpsClient = createClient(
         {
             url,
@@ -120,10 +130,9 @@ export const initializeAssistantSDK = ({
             device,
             legacyDevice,
             settings: settingsOverride || settings,
-            version: 3,
+            version: vpsVersion,
         },
         clientLogger,
-        voiceSettings,
     );
 
     let appInfo: SystemMessageDataType['app_info'] | void;
@@ -182,24 +191,21 @@ export const initializeAssistantSDK = ({
         }
     };
 
-    const sendState = () => {
-        return vpsClient.sendSystemMessage(
-            {
-                data: {
-                    ...createSystemMessageBase(),
-                },
-                messageName: '',
-            },
-            false,
-        );
-    };
-
     const sendText = (text: string, params: {} = {}) => {
         updateState();
 
-        return vpsClient.batch(() => {
-            state && sendState();
-            return vpsClient.sendText(text, params);
+        return vpsClient.batch(({ sendSystemMessage, sendText: sendBatchedText }) => {
+            state &&
+                sendSystemMessage(
+                    {
+                        data: {
+                            ...createSystemMessageBase(),
+                        },
+                        messageName: '',
+                    },
+                    false,
+                );
+            return sendBatchedText(text, params);
         });
     };
 
@@ -270,10 +276,10 @@ export const initializeAssistantSDK = ({
         setSuggest() {},
     };
 
+    const voiceStreamFactory = createVoiceStreamFactory(vpsClient, emitEmotion)
     const createVoiceStream = () => {
         updateState();
-
-        return vpsClient.createVoiceStream(createSystemMessageBase());
+        return voiceStreamFactory()
     };
 
     const updateDevUI = (suggestions: SuggestionButtonType[] = []) => {
@@ -304,6 +310,12 @@ export const initializeAssistantSDK = ({
         updateDevUI(message.suggestions?.buttons ?? []);
     });
 
+    // добавляем возможность прослушивания входящих голосовых сообщений
+    const voicePlayer = createVoicePlayerListener(vpsClient, emitEmotion, voiceSettings);
+
+    // добавляем эмиттер для эмоций
+    bindEmotionListener(vpsClient, emitEmotion);
+
     updateDevUI();
     enableRecord && renderAssistantRecordPanel(recorder, saver);
 
@@ -313,5 +325,7 @@ export const initializeAssistantSDK = ({
         createAudioRecorder,
         on: vpsClient.on,
         destroy: vpsClient.destroy,
+        onEmotion,
+        finishVoicePlayback: voicePlayer.finishPlayback,
     };
 };

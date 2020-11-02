@@ -118,10 +118,12 @@ export interface AssistantActionCommand {
     action: { type: 'deep_link'; deep_link: string };
 }
 
+export type AssistantCharacterType = 'sber' | 'eva' | 'joy';
+
 export interface AssistantCharacterCommand {
     type: 'character';
     character: {
-        id: 'sber' | 'eva' | 'joy';
+        id: AssistantCharacterType;
     };
     sdkMeta?: {
         mid?: number;
@@ -234,6 +236,58 @@ export type EventsType = {
     outcoming: (message: OriginalMessageType) => void;
 };
 
+export type VoiceEmotionType = {
+    name?: 'positive' | 'negative' | 'neutral';
+    confidence?: number; // 0.0 to 1.0
+};
+
+export type AssistantEmotionId =
+    | 'bespokoistvo'
+    | 'idle'
+    | 'igrivost'
+    | 'laugh'
+    | 'listen'
+    | 'load'
+    | 'neznayu'
+    | 'ok_prinyato'
+    | 'oups'
+    | 'podavleniye_gneva'
+    | 'predvkusheniye'
+    | 'simpatiya'
+    | 'smushchennaya_ulibka'
+    | 'talk'
+    | 'udovolstvie'
+    | 'vinovatiy'
+    | 'zadumalsa'
+    | 'zhdu_otvet';
+
+type AssistantEmotionResponse = {
+    emotionId?: AssistantEmotionId;
+    ttsAnimation?: string;
+};
+
+export type AssistantVoiceStatus = 'recordStarted' | 'recordStoped' | 'playStarted' | 'playStoped';
+
+export type AssistantEmotionType = AssistantEmotionResponse & {
+    voiceStatus?: AssistantVoiceStatus;
+    messageId: number;
+};
+
+export type EmotionEventsType = {
+    voiceEmotion(emotions: VoiceEmotionType[]): void;
+    emotion(emotion: AssistantEmotionType): void;
+};
+
+export type EmotionEmitterType = <K extends keyof EmotionEventsType>(
+    event: K,
+    ...args: Parameters<EmotionEventsType[K]>
+) => void;
+
+export type EmotionListenerType = <K extends 'voiceEmotion' | 'emotion'>(
+    event: K,
+    cb: EmotionEventsType[K],
+) => () => void;
+
 export type AppInfoType = {
     applicationId: string;
     appversionId: string;
@@ -265,11 +319,12 @@ export type SystemMessageDataType = {
         buttons: Array<SuggestionButtonType>;
     };
     character?: {
-        id: 'sber' | 'eva' | 'joy';
+        id: AssistantCharacterType;
     };
     sdk_meta?: {
         requestId?: string;
     };
+    emotion?: AssistantEmotionResponse;
 };
 
 export interface OriginalMessageType {
