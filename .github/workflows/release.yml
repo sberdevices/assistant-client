@@ -16,6 +16,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       NPM_REGISTRY_TOKEN: ${{ secrets.NPM_REGISTRY_TOKEN }}
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
     steps:
       - uses: actions/checkout@v2
 
@@ -31,9 +32,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           runTests: false
-
-      - name: Install peer dependencies
-        run: npx npm-install-peers
+          record: true
 
       - name: Cypress run
         uses: cypress-io/github-action@v2
@@ -41,6 +40,7 @@ jobs:
           install: false
           browser: chrome
           headless: true
+          record: true
 
       - name: Lint
         run: npm run lint

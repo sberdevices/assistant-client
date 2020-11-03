@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 import { WebSocket, Server } from 'mock-socket';
-import { initProtocol } from '../support/helpers/socket.helpers';
 
+import { initProtocol } from '../support/helpers/socket.helpers';
 import { initializeAssistantSDK } from '../../src/dev';
 import { Message, SystemMessage } from '../../src/proto';
 import { AssistantAppState, SystemMessageDataType } from '../../src/typings';
@@ -26,9 +26,9 @@ describe('Проверяем', () => {
     });
 
     it('Корректная инициализация ассистента по-умолчанию - ожидаем отправку OPEN_ASSISTANT, InitalSettings, initPhrase', (done) => {
-        let settingsReceived: boolean = undefined;
-        let openReceived: boolean = undefined;
-        let phraseReceived: boolean = undefined;
+        let settingsReceived: boolean;
+        let openReceived: boolean;
+        let phraseReceived: boolean;
         server.on('connection', (socket) => {
             socket.binaryType = 'arraybuffer';
             initProtocol(socket);
@@ -50,6 +50,7 @@ describe('Проверяем', () => {
                     phraseReceived = true;
                 }
 
+                // eslint-disable-next-line eqeqeq
                 if (openReceived != undefined && settingsReceived != undefined && phraseReceived != undefined) {
                     expect(openReceived, 'OPEN_ASSISTANT получен').to.be.true;
                     expect(settingsReceived, 'initialSetting получен').to.be.true;

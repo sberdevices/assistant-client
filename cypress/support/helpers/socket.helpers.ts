@@ -13,24 +13,6 @@ export const appendHeader = (buffer: Uint8Array) => {
     return uint8Array;
 };
 
-export const initProtocol = (socket: any) => {
-    socket.on('message', (data: Uint8Array) => {
-        const message = Message.decode(data.slice(4));
-        if (message.messageName === 'OPEN_ASSISTANT') {
-            sendMessage(socket, message.messageId, {
-                app_info: {
-                    applicationId: '',
-                    appversionId: '',
-                    frontendEndpoint: '',
-                    frontendType: '',
-                    projectId: '',
-                },
-                items: [],
-            });
-        }
-    });
-};
-
 export const sendMessage = (socket: any, messageId: number | Long, systemMessageData: SystemMessageDataType) => {
     const message = Message.create({
         messageName: 'ANSWER_TO_USER',
@@ -46,5 +28,24 @@ export const sendMessage = (socket: any, messageId: number | Long, systemMessage
     socket.dispatchEvent({
         type: 'message',
         data: bufferWithHeader,
+    });
+};
+
+export const initProtocol = (socket: any) => {
+    socket.on('message', (data: Uint8Array) => {
+        const message = Message.decode(data.slice(4));
+        if (message.messageName === 'OPEN_ASSISTANT') {
+            sendMessage(socket, message.messageId, {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                app_info: {
+                    applicationId: '',
+                    appversionId: '',
+                    frontendEndpoint: '',
+                    frontendType: '',
+                    projectId: '',
+                },
+                items: [],
+            });
+        }
     });
 };
