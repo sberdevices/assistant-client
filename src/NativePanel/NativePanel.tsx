@@ -127,6 +127,7 @@ export const NativePanel: React.FC<NativePanelProps> = ({
                 }}
             />
 
+            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
             <label htmlFor="voice" className="label">
                 Попробуйте
             </label>

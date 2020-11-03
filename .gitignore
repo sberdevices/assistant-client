@@ -13,6 +13,7 @@
 
 ##### BUILD
 node_modules/
+cypress/videos/
 npm-debug.log
 dist/
 *.tsbuildinfo
