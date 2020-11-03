@@ -4,12 +4,14 @@
     "description": "Модуль взаимодействия с виртуальным ассистентом",
     "main": "dist/index.js",
     "scripts": {
+        "release": "auto shipit",
         "prepublishOnly": "rm -rf dist tsconfig.tsbuildinfo && tsc && rsync -rlptgoD --include=\"*/\" --include '*.png' --include '*.css' --exclude '*' src/ dist/",
         "proto": "pbjs -t static-module src/proto.proto > src/proto.js && pbts src/proto.js -o src/proto.d.ts",
         "asr": "pbjs -t static-module src/asr/index.proto > src/asr/index.js && pbts src/asr/index.js -o src/asr/index.d.ts",
         "cy:open": "cypress open",
         "cy:run": "cypress run",
         "test:cy": "cypress run -b chromium --headless",
+        "lint": "eslint --ext .js,.ts,.tsx .",
         "test": "echo \"Error: no test specified\""
     },
     "repository": {
@@ -21,7 +23,7 @@
         "assistant",
         "smartapp"
     ],
-    "author": "SberDevices Frontend Team",
+    "author": "SberDevices Frontend Team <sberdevices.frontend@gmail.com>",
     "license": "Sber Public License at-nc-sa v.2",
     "dependencies": {
         "axios": "0.19.2",
@@ -33,12 +35,17 @@
         "last 1 Chrome versions"
     ],
     "devDependencies": {
+        "@auto-it/conventional-commits": "10.2.0",
+        "@auto-it/npm": "10.2.0",
+        "@commitlint/cli": "11.0.0",
+        "@commitlint/config-conventional": "11.0.0",
         "@cypress/webpack-preprocessor": "5.4.5",
         "@types/jest": "26.0.14",
         "@types/mocha": "8.0.3",
         "@types/react": "16.9.35",
         "@types/react-dom": "16.9.8",
         "@types/uuid": "7.0.3",
+        "auto": "10.2.0",
         "cypress": "4.11.0",
         "cypress-react-unit-test": "4.14.2",
         "eslint": "6.8.0",
@@ -70,5 +77,16 @@
     },
     "files": [
         "dist"
-    ]
+    ],
+    "auto": {
+        "plugins": [
+            [
+                "npm",
+                {
+                    "setRcToken": false
+                }
+            ],
+            "conventional-commits"
+        ]
+    }
 }

@@ -1,5 +1,6 @@
 {
     "hooks": {
-        "pre-commit": "pretty-quick --staged --pattern 'src/*.*'"
+        "pre-commit": "pretty-quick --staged --pattern 'src/*.*'",
+        "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
 }
