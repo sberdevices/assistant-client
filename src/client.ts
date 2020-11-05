@@ -415,6 +415,7 @@ export const createClient = (
 
             if (message.voice?.data?.length) voicePlayer.streamToDataToPlayer(message.voice.data);
             if (message.last === 1) {
+                voicePlayer.setFinish();
                 commitedMessages.set(message.messageId, messages);
                 pendingMessages.delete(message.messageId);
             } else {
