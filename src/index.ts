@@ -134,6 +134,19 @@ export const createAssistantDev = ({
     return createAssistant({ getState, getRecoveryState });
 };
 
+const parseJwt = (token: string) => {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+        atob(base64)
+            .split('')
+            .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
+            .join(''),
+    );
+
+    return JSON.parse(jsonPayload);
+};
+
 // Публичный метод, использующий токен из SmartApp Studio
 export const createSmartappDebugger = ({
     token,
@@ -146,6 +159,20 @@ export const createSmartappDebugger = ({
     getState: () => AssistantAppState;
     getRecoveryState?: () => Record<string, any> | undefined;
 }) => {
+    try {
+        const { exp } = parseJwt(token);
+        if (exp * 1000 <= Date.now()) {
+            alert('Срок действия токена истек!');
+            throw new Error('Token expired');
+        }
+    } catch (exc) {
+        if (exc.message !== 'Token expired') {
+            alert('Указан невалидный токен!');
+            throw new Error('Wrong token');
+        }
+        throw exc;
+    }
+
     return createAssistantDev({
         initPhrase,
         token,
