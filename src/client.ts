@@ -13,9 +13,16 @@ import {
     IInitialSettings,
 } from './proto';
 import { PacketWrapperFromServer } from './asr';
-import { EventsType, SystemMessageDataType, VpsVersion, CreateClientDataType, ClientLogger } from './typings';
+import {
+    EventsType,
+    SystemMessageDataType,
+    VpsVersion,
+    CreateClientDataType,
+    ClientLogger,
+    VoicePlayerSettings,
+} from './typings';
 import { createNanoEvents } from './nanoevents';
-import { createVoicePlayer, VoicePlayerSettings } from './createVoicePlayer';
+import { createVoicePlayer } from './createVoicePlayer';
 
 export const MESSAGE_NAMES = {
     ANSWER_TO_USER: 'ANSWER_TO_USER',

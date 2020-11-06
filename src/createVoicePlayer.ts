@@ -1,8 +1,6 @@
-const AudioContext = window.AudioContext || window.webkitAudioContext;
+import { VoicePlayerSettings } from './typings';
 
-export interface VoicePlayerSettings {
-    startVoiceDelay?: number;
-}
+const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 type BytesArraysSizes = {
     incomingMessageVoiceDataLength: number;
@@ -56,6 +54,12 @@ const createSoundBuffer = (
         chunks.forEach((chunk) => chunkStart(chunk));
     };
 
+    const finish = () => {
+        if (totalChunksDuration <= delay && !isPlaying) {
+            doPlay();
+        }
+    };
+
     const write = (data: Float32Array) => {
         const chunk = createChunk(data);
         chunks.push(chunk);
@@ -67,6 +71,7 @@ const createSoundBuffer = (
     };
 
     return {
+        finish,
         write,
     };
 };
@@ -114,6 +119,10 @@ export const createVoicePlayer = (params?: VoicePlayerSettings) => {
         audioSlices = [];
     };
 
+    const setFinish = () => {
+        soundBuffer?.finish();
+    };
+
     const streamToDataToPlayer = (data: Uint8Array) => {
         let slicePoint = 0;
         if (audioSlices.length === 0) {
@@ -151,6 +160,7 @@ export const createVoicePlayer = (params?: VoicePlayerSettings) => {
     };
 
     return {
+        setFinish,
         streamToDataToPlayer,
     };
 };
