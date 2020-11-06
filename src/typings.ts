@@ -362,3 +362,7 @@ export interface RecordPlayer {
 export interface RecordSaver {
     save: (record: AssistantRecord) => void;
 }
+
+export interface VoicePlayerSettings {
+    startVoiceDelay?: number;
+}

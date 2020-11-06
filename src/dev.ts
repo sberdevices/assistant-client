@@ -3,7 +3,7 @@
 
 import { createClient } from './client';
 import { renderNativePanel, NativePanelParams } from './NativePanel/NativePanel';
-import { SystemMessageDataType, SuggestionButtonType, ClientLogger } from './typings';
+import { SystemMessageDataType, SuggestionButtonType, ClientLogger, VoicePlayerSettings } from './typings';
 import { createAudioRecorder } from './createAudioRecorder';
 import { renderAssistantRecordPanel } from './record';
 import { createCallbackLogger } from './record/callback-logger';
@@ -11,7 +11,6 @@ import { createConsoleLogger } from './record/console-logger';
 import { createLogCallbackRecorder, RecorderCallback } from './record/callback-recorder';
 import { createRecordDownloader } from './record/record-downloader';
 import { ISettings } from './proto';
-import { VoicePlayerSettings } from './createVoicePlayer';
 
 const SDK_VERSION = '20.09.1.3576';
 const APP_VERSION = '20.09.1.3576';

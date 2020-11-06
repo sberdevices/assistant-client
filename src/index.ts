@@ -5,12 +5,12 @@ import {
     AssistantServerAction,
     AssistantSmartAppCommand,
     ClientLogger,
+    Settings,
+    VoicePlayerSettings,
 } from './typings';
 import { createNanoEvents } from './nanoevents';
 import { initializeAssistantSDK, settings } from './dev';
 import { NativePanelParams } from './NativePanel/NativePanel';
-import { ISettings } from './proto';
-import { VoicePlayerSettings } from './createVoicePlayer';
 
 export interface AssistantEvents {
     start: () => void;
@@ -112,7 +112,7 @@ export const createAssistantDev = ({
         defaultActive?: boolean;
         logger?: ClientLogger;
     };
-    settings?: ISettings;
+    settings?: Settings;
     voiceSettings?: VoicePlayerSettings; // настройки озвучки
 }) => {
     initializeAssistantSDK({
