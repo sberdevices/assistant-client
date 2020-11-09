@@ -19,6 +19,11 @@ module.exports = (on, config) => {
                         options: { transpileOnly: true },
                     },
                     {
+                        test: /\.css$/,
+                        exclude: [/node_modules/],
+                        use: ['style-loader', 'css-loader'],
+                    },
+                    {
                         test: /\.(png|jpe?g|gif)$/i,
                         use: [
                             {
