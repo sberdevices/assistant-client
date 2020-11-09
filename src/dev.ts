@@ -181,24 +181,21 @@ export const initializeAssistantSDK = ({
         }
     };
 
-    const sendState = () => {
-        return vpsClient.sendSystemMessage(
-            {
-                data: {
-                    ...createSystemMessageBase(),
-                },
-                messageName: '',
-            },
-            false,
-        );
-    };
-
     const sendText = (text: string, params: {} = {}) => {
         updateState();
 
-        return vpsClient.batch(() => {
-            state && sendState();
-            return vpsClient.sendText(text, params);
+        return vpsClient.batch(({ sendText, sendSystemMessage }) => {
+            state &&
+                sendSystemMessage(
+                    {
+                        data: {
+                            ...createSystemMessageBase(),
+                        },
+                        messageName: '',
+                    },
+                    false,
+                );
+            return sendText(text, params);
         });
     };
 
