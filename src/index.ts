@@ -195,5 +195,6 @@ export { NativePanelParams } from './NativePanel/NativePanel';
 export * from './typings';
 export * from './dev';
 export { createClient } from './client';
-export { createAudioRecorder } from './createAudioRecorder';
+export { createVoiceListener } from './createVoiceListener';
+export { createVoicePlayer } from './createVoicePlayer';
 export { initializeDebugging } from './debug';
