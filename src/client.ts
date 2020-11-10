@@ -12,17 +12,8 @@ import {
     InitialSettings,
     IInitialSettings,
 } from './proto';
-import { PacketWrapperFromServer } from './asr';
-import {
-    EventsType,
-    SystemMessageDataType,
-    VpsVersion,
-    CreateClientDataType,
-    ClientLogger,
-    VoicePlayerSettings,
-} from './typings';
+import { EventsType, SystemMessageDataType, VpsVersion, CreateClientDataType, ClientLogger } from './typings';
 import { createNanoEvents } from './nanoevents';
-import { createVoicePlayer } from './createVoicePlayer';
 
 export const MESSAGE_NAMES = {
     ANSWER_TO_USER: 'ANSWER_TO_USER',
@@ -74,11 +65,7 @@ const compileBasePayload = ({
     };
 };
 
-export const createClient = (
-    clientParams: CreateClientDataType,
-    logger?: ClientLogger,
-    voiceSettings?: VoicePlayerSettings,
-) => {
+export const createClient = (clientParams: CreateClientDataType, logger?: ClientLogger) => {
     const {
         url,
         userId,
@@ -110,8 +97,6 @@ export const createClient = (
     let ws: WebSocket;
     let timeOut: number | undefined;
     let clearRetryTimer: number;
-
-    const voicePlayer = createVoicePlayer(voiceSettings);
 
     const getMessageId = () => {
         return currentMessageId++;
@@ -256,73 +241,6 @@ export const createClient = (
         return waitForAnswerToUser(messageId);
     };
 
-    const createVoiceStream = (meta?: Record<string, any>, messageId = getMessageId()) => {
-        let hasFinished = false;
-
-        type voiceStreamEvents = {
-            stt: (text: string, last: boolean) => void;
-        };
-
-        const voiceStreamEM = createNanoEvents<voiceStreamEvents>();
-
-        const write = (data: ArrayBuffer, last = false) => {
-            if (!hasFinished) {
-                send({
-                    payload: {
-                        voice: Voice.create({
-                            data: new Uint8Array(data),
-                        }),
-                        last: -1,
-                    },
-                    messageId,
-                });
-
-                hasFinished = last;
-            }
-        };
-
-        meta &&
-            send({
-                payload: { systemMessage: SystemMessage.create({ data: JSON.stringify(meta) }), last: -1 },
-                messageId,
-            });
-
-        on('message', (message) => {
-            if (message.status && message.status.code != null && message.status.code < 0) {
-                hasFinished = true;
-            }
-
-            if (message.messageId === messageId && message.messageName === MESSAGE_NAMES.STT) {
-                if (message.last === 1) {
-                    hasFinished = true;
-                    send({ payload: { voice: Voice.create(), last: 1 }, messageId });
-                }
-
-                if (message.text) {
-                    voiceStreamEM.emit('stt', message.text.data || '', message.last === 1);
-                }
-
-                if (message.bytes?.data) {
-                    const { decoderResultField } = PacketWrapperFromServer.decode(message.bytes.data);
-
-                    if (decoderResultField && decoderResultField.hypothesis?.length) {
-                        voiceStreamEM.emit(
-                            'stt',
-                            decoderResultField.hypothesis[0].normalizedText || '',
-                            !!decoderResultField.isFinal,
-                        );
-                    }
-                }
-            }
-        });
-
-        return {
-            write,
-            answerToUser: waitForAnswerToUser(messageId),
-            on: voiceStreamEM.on,
-        };
-    };
-
     const sendSystemMessage = (
         { data, messageName = '' }: { data: Record<string, any>; messageName?: string },
         last = true,
@@ -340,6 +258,18 @@ export const createClient = (
         });
 
         return waitForAnswerToUser(messageId);
+    };
+
+    const sendVoice = (data: Uint8Array, last = true, messageId = getMessageId()) => {
+        return send({
+            payload: {
+                voice: Voice.create({
+                    data: new Uint8Array(data),
+                }),
+                last: last ? 1 : -1,
+            },
+            messageId,
+        });
     };
 
     const updateDefauls = (obj: Partial<typeof basePayload>) => {
@@ -420,9 +350,7 @@ export const createClient = (
 
             messages.push(message);
 
-            if (message.voice?.data?.length) voicePlayer.streamToDataToPlayer(message.voice.data);
             if (message.last === 1) {
-                voicePlayer.setFinish();
                 commitedMessages.set(message.messageId, messages);
                 pendingMessages.delete(message.messageId);
             } else {
@@ -447,8 +375,9 @@ export const createClient = (
         sendInitialSettings: typeof sendInitialSettings;
         send: typeof send;
         sendText: typeof sendText;
-        createVoiceStream: typeof createVoiceStream;
         sendSystemMessage: typeof sendSystemMessage;
+        sendVoice: typeof sendVoice;
+        messageId: number;
     };
 
     const batch = <T>(cb: (methods: BatchableMethods) => T): T => {
@@ -489,29 +418,23 @@ export const createClient = (
             return sendText(data, params, type, batchingMessageId);
         };
 
-        const upgradedCreateVoiceStream: typeof createVoiceStream = (meta) => {
-            const stream = createVoiceStream(meta, batchingMessageId);
-
-            return {
-                ...stream,
-                write: (data, last) => {
-                    checkLastMessageStatus(last);
-                    return stream.write(data, last);
-                },
-            };
-        };
-
         const upgradedSendSystemMessage: typeof sendSystemMessage = (data, last) => {
             checkLastMessageStatus(last);
             return sendSystemMessage(data, last, batchingMessageId);
+        };
+
+        const upgradedSendVoice: typeof sendVoice = (data, last) => {
+            checkLastMessageStatus(last);
+            return sendVoice(data, last, batchingMessageId);
         };
 
         return cb({
             ...threeParamsMethods,
             send: upgradedSend,
             sendText: upgradedSendText,
-            createVoiceStream: upgradedCreateVoiceStream,
             sendSystemMessage: upgradedSendSystemMessage,
+            sendVoice: upgradedSendVoice,
+            messageId: batchingMessageId,
         });
     };
 
@@ -522,7 +445,8 @@ export const createClient = (
         sendLegacyDevice,
         sendSettings,
         sendText,
-        createVoiceStream,
+        sendVoice,
+        waitForAnswerToUser,
         sendSystemMessage,
         on,
         updateDefauls,

@@ -1,5 +1,3 @@
-import { createNanoEvents } from './nanoevents';
-
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 let context: AudioContext;
@@ -42,13 +40,7 @@ const downsampleBuffer = (buffer: Float32Array, sampleRate: number, outSampleRat
 
 const TARGET_SAMPLE_RATE = 16000;
 
-type EventsType = {
-    data: (buffer: ArrayBuffer, last: boolean) => void;
-    stop: () => void;
-};
-
-export const createAudioRecorder = (stream: MediaStream) => {
-    const { on, emit } = createNanoEvents<EventsType>();
+const createAudioRecorder = (stream: MediaStream, cb: (buffer: ArrayBuffer, last: boolean) => void) => {
     let state: 'inactive' | 'recording' = 'inactive';
     let input: MediaStreamAudioSourceNode;
 
@@ -76,7 +68,7 @@ export const createAudioRecorder = (stream: MediaStream) => {
             const data = downsampleBuffer(buffer, context.sampleRate, TARGET_SAMPLE_RATE);
 
             const last = state === 'inactive';
-            emit('data', data.buffer, last);
+            cb(data.buffer, last);
 
             if (last) {
                 processor.removeEventListener('audioprocess', listener);
@@ -101,13 +93,14 @@ export const createAudioRecorder = (stream: MediaStream) => {
         input.disconnect();
     };
 
-    return {
-        get state() {
-            return state;
-        },
-        start,
-        stop,
-        on,
-        sampleRate: TARGET_SAMPLE_RATE,
-    };
+    start();
+
+    return stop;
 };
+
+export const createNavigatorAudioProvider = (cb: (buffer: ArrayBuffer, last: boolean) => void) =>
+    navigator.mediaDevices
+        .getUserMedia({
+            audio: true,
+        })
+        .then((stream) => createAudioRecorder(stream, cb));

@@ -5,7 +5,7 @@ import { Message } from '../../../src/proto';
 import { legacyDevice, settings } from '../../../src/dev';
 import { EventsType } from '../../../src/typings';
 
-export const createAnswerBuffer = (messageId: number, last?: number) => {
+export const createAnswerBuffer = (messageId: number | Long, last?: number) => {
     const encodedAsNodeBuffer = appendHeader(
         Message.encode({
             messageId,
@@ -43,7 +43,7 @@ export const getClient = (socketUrl: string) =>
         legacyDevice,
         settings,
         version: 3,
-        userChannel: 'B2C',
+        userChannel: 'test',
     });
 
 export const createOnPromise = (client: ReturnType<typeof getClient>, eventName: keyof EventsType) =>

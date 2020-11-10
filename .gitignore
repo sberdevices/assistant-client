@@ -18,6 +18,9 @@ npm-debug.log
 dist/
 *.tsbuildinfo
 
+# cypress
+cypress/screenshots/
+cypress/videos/
 
 .cache
 .env

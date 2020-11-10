@@ -1,17 +1,6 @@
 import { Message } from '../../../src/proto';
+import { appendHeader } from '../../../src/client';
 import { SystemMessageDataType } from '../../../src/typings';
-
-export const appendHeader = (buffer: Uint8Array) => {
-    // Добавляем 4 байта в начало с длинной сообщения
-    const arrayBuffer = new ArrayBuffer(4);
-    const dataView = new DataView(arrayBuffer, 0);
-    dataView.setInt32(0, buffer.length, true);
-    const uint8Array = new Uint8Array(4 + buffer.length);
-    uint8Array.set(new Uint8Array(arrayBuffer));
-    uint8Array.set(buffer, 4);
-
-    return uint8Array;
-};
 
 export const sendMessage = (socket: any, messageId: number | Long, systemMessageData: SystemMessageDataType) => {
     const message = Message.create({

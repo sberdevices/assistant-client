@@ -1,8 +1,7 @@
 /* stylelint-disable */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { render } from 'react-dom';
 
-import { createAudioRecorder } from '../createAudioRecorder';
 import { SuggestionButtonType } from '../typings';
 
 import assistantSphereIcon from './sphere.png';
@@ -16,16 +15,15 @@ export interface NativePanelParams {
 }
 
 interface NativePanelProps extends NativePanelParams {
-    createVoiceStream: () => {
-        write: (data: ArrayBuffer, last?: boolean) => void;
-        on: <K extends 'stt'>(event: K, cb: (text: string, last?: boolean) => void) => void;
-    };
     defaultText: string;
     sendText: (text: string) => void;
     className?: string;
     tabIndex?: number;
     suggestions: SuggestionButtonType[];
     bubbleText: string;
+    onListen: () => void;
+    onSubscribeListenStatus: (cb: (type: 'listen' | 'stopped') => void) => () => void;
+    onSubscribeHypotesis: (cb: (hypotesis: string, last: boolean) => void) => () => void;
 }
 
 export const NativePanel: React.FC<NativePanelProps> = ({
@@ -33,9 +31,11 @@ export const NativePanel: React.FC<NativePanelProps> = ({
     sendText,
     className,
     tabIndex,
-    createVoiceStream,
     suggestions,
     bubbleText,
+    onListen,
+    onSubscribeListenStatus,
+    onSubscribeHypotesis,
 }) => {
     const [value, setValue] = useState(defaultText);
     const [recording, setRecording] = useState(false);
@@ -47,65 +47,33 @@ export const NativePanel: React.FC<NativePanelProps> = ({
         setBubble(bubbleText);
     }
 
-    const handleSphereClick = () => {
+    const handleSphereClick = useCallback(() => {
         setValue('');
-        setRecording(!recording);
-    };
+        onListen();
+    }, [onListen]);
 
     const createSuggestClickHandler = (suggest: SuggestionButtonType) => () => {
         const { action } = suggest;
 
-        if (action.type === 'text' && action.text != null) {
+        if ('text' in action) {
             sendText(action.text);
         }
     };
 
     useEffect(() => {
-        if (recording) {
-            let outerAudioRecorder: ReturnType<typeof createAudioRecorder> | null = null;
-            let outerStream: MediaStream | null = null;
-            let finished = false;
+        const unsubscribeStatus = onSubscribeListenStatus((type: 'listen' | 'stopped') => {
+            setRecording(type === 'listen');
+        });
 
-            navigator.mediaDevices
-                .getUserMedia({
-                    audio: true,
-                })
-                .then((stream) => {
-                    outerStream = stream;
-                    const audioRecorder = createAudioRecorder(stream);
-                    outerAudioRecorder = audioRecorder;
+        const unsubscribeHypotesis = onSubscribeHypotesis((hypotesis: string, last: boolean) => {
+            setValue(last ? '' : hypotesis);
+        });
 
-                    const voiceStream = createVoiceStream();
-
-                    audioRecorder.start();
-                    audioRecorder.on('data', (chunk, last) => {
-                        if (!finished) {
-                            voiceStream.write(new Uint8Array(chunk), last);
-                        }
-                    });
-
-                    voiceStream.on('stt', (text: string, last?: boolean) => {
-                        if (last) {
-                            finished = true;
-                            setRecording(false);
-                            setValue('');
-                        } else {
-                            setValue(text);
-                        }
-                    });
-                });
-
-            return () => {
-                outerAudioRecorder?.stop();
-
-                if (outerStream) {
-                    outerStream.getTracks().forEach((track) => track.stop());
-                }
-            };
-        }
-
-        return undefined;
-    }, [createVoiceStream, recording, sendText]);
+        return () => {
+            unsubscribeStatus();
+            unsubscribeHypotesis();
+        };
+    }, [onSubscribeListenStatus, onSubscribeHypotesis]);
 
     return (
         <div className={className ? `nativePanel ${className}` : 'nativePanel'}>
@@ -117,11 +85,7 @@ export const NativePanel: React.FC<NativePanelProps> = ({
 
             <div
                 className={recording ? 'sphere active' : 'sphere'}
-                onClick={() => {
-                    if (!recording) {
-                        handleSphereClick();
-                    }
-                }}
+                onClick={handleSphereClick}
                 style={{
                     backgroundImage: `url(${assistantSphereIcon})`,
                 }}

@@ -13,13 +13,15 @@ import {
     AssistantCharacterCommand,
     AssistantNavigationCommand,
     AssistantSmartAppCommand,
+    OriginalMessageType,
 } from './typings';
-import { createAudioRecorder } from './createAudioRecorder';
 import { renderAssistantRecordPanel } from './record';
 import { createCallbackLogger } from './record/callback-logger';
 import { createConsoleLogger } from './record/console-logger';
 import { createLogCallbackRecorder, RecorderCallback } from './record/callback-recorder';
 import { createRecordDownloader } from './record/record-downloader';
+import { createVoiceListener } from './createVoiceListener';
+import { createVoicePlayer } from './createVoicePlayer';
 
 const SDK_VERSION = '20.09.1.3576';
 const APP_VERSION = '20.09.1.3576';
@@ -64,6 +66,7 @@ export const initializeAssistantSDK = ({
     recordParams,
     settings = {},
     voiceSettings,
+    vpsVersion = 3,
 }: {
     initPhrase: string;
     url: string;
@@ -84,6 +87,7 @@ export const initializeAssistantSDK = ({
     };
     settings?: AssistantSettings;
     voiceSettings?: VoicePlayerSettings;
+    vpsVersion?: number;
 }) => {
     const device = {
         platformType: 'WEBDBG',
@@ -100,6 +104,7 @@ export const initializeAssistantSDK = ({
         }),
     };
 
+    const voicePlayer = createVoicePlayer(voiceSettings);
     let clientLogger = recordParams?.logger ? recordParams.logger : createConsoleLogger();
     let loggerCb: RecorderCallback;
     const recorder = createLogCallbackRecorder(
@@ -127,10 +132,9 @@ export const initializeAssistantSDK = ({
                 dubbing: settings.dubbing === false ? -1 : 1,
                 echo: settings.echo || -1,
             },
-            version: 3,
+            version: vpsVersion,
         },
         clientLogger,
-        voiceSettings,
     );
 
     let appInfo: SystemMessageDataType['app_info'] | void;
@@ -192,6 +196,8 @@ export const initializeAssistantSDK = ({
     };
 
     const sendText = (text: string, params: {} = {}) => {
+        voicePlayer.active = false;
+        voicePlayer.active = true;
         updateState();
 
         return vpsClient.batch(({ sendText: batchedSendText, sendSystemMessage }) => {
@@ -279,10 +285,44 @@ export const initializeAssistantSDK = ({
         setSuggest() {},
     };
 
-    const createVoiceStream = () => {
+    const voiceListener = createVoiceListener();
+    const subscribeToListenerStatus = (cb: (event: 'listen' | 'stopped') => void): (() => void) =>
+        voiceListener.on('status', cb);
+    const subscribeToListenerHypotesis = (cb: (hypotesis: string, last: boolean) => void): (() => void) =>
+        voiceListener.on('hypotesis', cb);
+    voiceListener.on('status', (status: 'listen' | 'stopped') => {
+        if (status === 'listen') {
+            voicePlayer.active = false;
+        } else {
+            voicePlayer.active = true;
+        }
+    });
+    const handleListen = () => {
+        if (voiceListener.status === 'listen') {
+            voiceListener.stop();
+            return;
+        }
+
         updateState();
 
-        return vpsClient.createVoiceStream(createSystemMessageBase());
+        vpsClient.batch(({ sendSystemMessage, sendVoice, messageId }) => {
+            state &&
+                sendSystemMessage(
+                    {
+                        data: {
+                            ...createSystemMessageBase(),
+                        },
+                        messageName: '',
+                    },
+                    false,
+                );
+
+            voiceListener.listen({
+                sendVoice,
+                messageId,
+                onMessage: (cb: (message: OriginalMessageType) => void) => vpsClient.on('message', cb),
+            });
+        });
     };
 
     const updateDevUI = (suggestions: SuggestionButtonType[] = [], bubbleText = '') => {
@@ -292,9 +332,11 @@ export const initializeAssistantSDK = ({
             (render || renderNativePanel)({
                 ...props,
                 sendText,
-                createVoiceStream,
-                suggestions,
+                onListen: handleListen,
+                suggestions: suggestions || [],
                 bubbleText,
+                onSubscribeListenStatus: subscribeToListenerStatus,
+                onSubscribeHypotesis: subscribeToListenerHypotesis,
             });
         }
     };
@@ -329,13 +371,21 @@ export const initializeAssistantSDK = ({
         updateDevUI(message.suggestions?.buttons ?? [], bubbleText);
     });
 
+    vpsClient.on('message', (message: OriginalMessageType) => {
+        if (message.voice) {
+            voicePlayer.append(
+                message.voice.data || new Uint8Array(),
+                message.messageId.toString(),
+                message.last === 1,
+            );
+        }
+    });
+
     updateDevUI();
     enableRecord && renderAssistantRecordPanel(recorder, saver);
 
     return {
         sendText,
-        createVoiceStream,
-        createAudioRecorder,
         on: vpsClient.on,
         destroy: vpsClient.destroy,
     };

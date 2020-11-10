@@ -260,6 +260,31 @@ export type SuggestionButtonType = {
     action: AssistantAction;
 };
 
+export type AssistantEmotionId =
+    | 'bespokoistvo'
+    | 'idle'
+    | 'igrivost'
+    | 'laugh'
+    | 'listen'
+    | 'load'
+    | 'neznayu'
+    | 'ok_prinyato'
+    | 'oups'
+    | 'podavleniye_gneva'
+    | 'predvkusheniye'
+    | 'simpatiya'
+    | 'smushchennaya_ulibka'
+    | 'talk'
+    | 'udovolstvie'
+    | 'vinovatiy'
+    | 'zadumalsa'
+    | 'zhdu_otvet';
+
+type AssistantEmotionResponse = {
+    emotionId?: AssistantEmotionId;
+    ttsAnimation?: string;
+};
+
 export type SystemMessageDataType = {
     app_info: AppInfoType;
     items: Array<itemType>;
@@ -272,6 +297,7 @@ export type SystemMessageDataType = {
     sdk_meta?: {
         requestId?: string;
     };
+    emotion?: AssistantEmotionResponse;
 };
 
 export interface OriginalMessageType {
@@ -367,6 +393,8 @@ export interface RecordSaver {
 
 export interface VoicePlayerSettings {
     startVoiceDelay?: number;
+    sampleRate?: number;
+    numberOfChannels?: number;
 }
 
 export interface AssistantSettings {
