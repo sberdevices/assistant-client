@@ -369,5 +369,11 @@ export interface VoicePlayerSettings {
 
 export interface AssistantSettings {
     dubbing?: boolean;
-    authConnector?: string;
+    echo?: number | null;
+    ttsEngine?: string | null;
+    asrEngine?: string | null;
+    asrAutoStop?: number | null;
+    devMode?: number | null;
+    authConnector?: string | null;
+    surface?: string | null;
 }

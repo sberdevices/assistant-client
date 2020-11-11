@@ -121,7 +121,7 @@ export const initializeAssistantSDK = ({
             settings: {
                 ...settings,
                 dubbing: settings.dubbing === false ? -1 : 1,
-                echo: -1,
+                echo: settings.echo || -1,
             },
             version: 3,
         },
