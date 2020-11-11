@@ -276,7 +276,7 @@ export const initializeAssistantSDK = ({
         return vpsClient.createVoiceStream(createSystemMessageBase());
     };
 
-    const updateDevUI = (suggestions: SuggestionButtonType[] = [], bubbleText: string = '') => {
+    const updateDevUI = (suggestions: SuggestionButtonType[] = [], bubbleText = '') => {
         if (nativePanel) {
             const { render, ...props } = nativePanel;
 
