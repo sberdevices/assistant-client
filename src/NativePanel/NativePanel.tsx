@@ -40,6 +40,12 @@ export const NativePanel: React.FC<NativePanelProps> = ({
     const [value, setValue] = useState(defaultText);
     const [recording, setRecording] = useState(false);
     const [bubble, setBubble] = useState(bubbleText);
+    const [prevBubbleText, setPrevBubbleText] = useState(bubbleText);
+
+    if (bubbleText !== prevBubbleText) {
+        setPrevBubbleText(bubbleText);
+        setBubble(bubbleText);
+    }
 
     const handleSphereClick = () => {
         setValue('');
@@ -100,8 +106,6 @@ export const NativePanel: React.FC<NativePanelProps> = ({
 
         return undefined;
     }, [createVoiceStream, recording, sendText]);
-
-    useEffect(() => setBubble(bubbleText), [bubbleText]);
 
     return (
         <div className={className ? `nativePanel ${className}` : 'nativePanel'}>
