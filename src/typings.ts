@@ -366,3 +366,14 @@ export interface RecordSaver {
 export interface VoicePlayerSettings {
     startVoiceDelay?: number;
 }
+
+export interface AssistantSettings {
+    dubbing?: boolean;
+    echo?: number | null;
+    ttsEngine?: string | null;
+    asrEngine?: string | null;
+    asrAutoStop?: number | null;
+    devMode?: number | null;
+    authConnector?: string | null;
+    surface?: string | null;
+}
