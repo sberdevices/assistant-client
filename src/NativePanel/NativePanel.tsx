@@ -25,6 +25,7 @@ interface NativePanelProps extends NativePanelParams {
     className?: string;
     tabIndex?: number;
     suggestions: SuggestionButtonType[];
+    bubbleText: string;
 }
 
 export const NativePanel: React.FC<NativePanelProps> = ({
@@ -34,6 +35,7 @@ export const NativePanel: React.FC<NativePanelProps> = ({
     tabIndex,
     createVoiceStream,
     suggestions,
+    bubbleText,
 }) => {
     const [value, setValue] = useState(defaultText);
     const [recording, setRecording] = useState(false);
@@ -100,6 +102,8 @@ export const NativePanel: React.FC<NativePanelProps> = ({
 
     return (
         <div className={className ? `nativePanel ${className}` : 'nativePanel'}>
+            {bubbleText && <div className="bubble">{bubbleText}</div>}
+
             <div
                 className={recording ? 'sphere active' : 'sphere'}
                 onClick={() => {
@@ -112,7 +116,9 @@ export const NativePanel: React.FC<NativePanelProps> = ({
                 }}
             />
 
-            <label htmlFor="voice" className="label">Попробуйте</label>
+            <label htmlFor="voice" className="label">
+                Попробуйте
+            </label>
 
             <input
                 id="voice"

@@ -24,6 +24,20 @@
     border-top-right-radius: 24px;
 }
 
+.bubble {
+    position: absolute;
+    bottom: calc(100% - 36px);
+    max-width: 500px;
+    border-radius: 24px 24px 24px 6px;
+    background-color: rgba(255, 255, 255, 0.08);
+    padding: 12px 24px;
+    font-size: 24px;
+    line-height: 24px;
+    font-weight: 500;
+    color: #fff;
+    z-index: -1;
+}
+
 .sphere {
     background-size: contain;
     width: 72px;
@@ -34,7 +48,7 @@
 }
 
 .sphere:hover {
-    transform: scale(1.1);	
+    transform: scale(1.1);
 }
 
 .sphere.active {

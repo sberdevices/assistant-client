@@ -5,11 +5,11 @@ import {
     AssistantServerAction,
     AssistantSmartAppCommand,
     ClientLogger,
-    Settings,
     VoicePlayerSettings,
+    AssistantSettings,
 } from './typings';
 import { createNanoEvents } from './nanoevents';
-import { initializeAssistantSDK, settings } from './dev';
+import { initializeAssistantSDK } from './dev';
 import { NativePanelParams } from './NativePanel/NativePanel';
 
 export interface AssistantEvents {
@@ -112,7 +112,7 @@ export const createAssistantDev = ({
         defaultActive?: boolean;
         logger?: ClientLogger;
     };
-    settings?: Settings;
+    settings?: AssistantSettings;
     voiceSettings?: VoicePlayerSettings; // настройки озвучки
 }) => {
     initializeAssistantSDK({
@@ -153,11 +153,13 @@ export const createSmartappDebugger = ({
     initPhrase,
     getState,
     getRecoveryState,
+    settings = {},
 }: {
     token: string;
     initPhrase: string;
     getState: () => AssistantAppState;
     getRecoveryState?: () => Record<string, any> | undefined;
+    settings?: Pick<AssistantSettings, 'dubbing'>;
 }) => {
     try {
         const { exp } = parseJwt(token);
