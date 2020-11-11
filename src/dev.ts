@@ -272,7 +272,7 @@ export const initializeAssistantSDK = ({
         return vpsClient.createVoiceStream(createSystemMessageBase());
     };
 
-    const updateDevUI = (suggestions: SuggestionButtonType[] = []) => {
+    const updateDevUI = (suggestions: SuggestionButtonType[] = [], bubbleText: string = '') => {
         if (nativePanel) {
             const { render, ...props } = nativePanel;
 
@@ -281,12 +281,15 @@ export const initializeAssistantSDK = ({
                 sendText,
                 createVoiceStream,
                 suggestions,
+                bubbleText,
             });
         }
     };
 
     vpsClient.on('systemMessage', (message, original) => {
         for (const item of message.items) {
+            updateDevUI(message.suggestions?.buttons ?? [], item.bubble?.text ?? '');
+
             if (item.command) {
                 if (clientReady && assistantReady && window.AssistantClient?.onData) {
                     window.AssistantClient.onData({
@@ -296,8 +299,6 @@ export const initializeAssistantSDK = ({
                 }
             }
         }
-
-        updateDevUI(message.suggestions?.buttons ?? []);
     });
 
     updateDevUI();
