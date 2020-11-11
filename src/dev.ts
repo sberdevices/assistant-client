@@ -3,14 +3,19 @@
 
 import { createClient } from './client';
 import { renderNativePanel, NativePanelParams } from './NativePanel/NativePanel';
-import { SystemMessageDataType, SuggestionButtonType, ClientLogger, VoicePlayerSettings } from './typings';
+import {
+    SystemMessageDataType,
+    SuggestionButtonType,
+    ClientLogger,
+    VoicePlayerSettings,
+    AssistantSettings,
+} from './typings';
 import { createAudioRecorder } from './createAudioRecorder';
 import { renderAssistantRecordPanel } from './record';
 import { createCallbackLogger } from './record/callback-logger';
 import { createConsoleLogger } from './record/console-logger';
 import { createLogCallbackRecorder, RecorderCallback } from './record/callback-recorder';
 import { createRecordDownloader } from './record/record-downloader';
-import { ISettings } from './proto';
 
 const SDK_VERSION = '20.09.1.3576';
 const APP_VERSION = '20.09.1.3576';
@@ -30,11 +35,6 @@ export const legacyDevice = {
     channelVersion: '8.1.0.2932_RC',
     platformName: 'WEBDBG 1.0',
     platformVersion: '1.0',
-};
-
-export const settings = {
-    dubbing: 1,
-    echo: -1,
 };
 
 export const initializeAssistantSDK = ({
@@ -58,7 +58,7 @@ export const initializeAssistantSDK = ({
     sdkVersion = SDK_VERSION,
     enableRecord,
     recordParams,
-    settings: settingsOverride,
+    settings = {},
     voiceSettings,
 }: {
     initPhrase: string;
@@ -78,7 +78,7 @@ export const initializeAssistantSDK = ({
         defaultActive?: boolean;
         logger?: ClientLogger;
     };
-    settings?: ISettings;
+    settings?: AssistantSettings;
     voiceSettings?: VoicePlayerSettings;
 }) => {
     const device = {
@@ -118,7 +118,11 @@ export const initializeAssistantSDK = ({
             locale,
             device,
             legacyDevice,
-            settings: settingsOverride || settings,
+            settings: {
+                ...settings,
+                dubbing: settings.dubbing === false ? -1 : 1,
+                echo: -1,
+            },
             version: 3,
         },
         clientLogger,
@@ -287,8 +291,12 @@ export const initializeAssistantSDK = ({
     };
 
     vpsClient.on('systemMessage', (message, original) => {
+        let bubbleText = '';
+
         for (const item of message.items) {
-            updateDevUI(message.suggestions?.buttons ?? [], item.bubble?.text ?? '');
+            if (item.bubble) {
+                bubbleText = item.bubble.text;
+            }
 
             if (item.command) {
                 if (clientReady && assistantReady && window.AssistantClient?.onData) {
@@ -299,6 +307,8 @@ export const initializeAssistantSDK = ({
                 }
             }
         }
+
+        updateDevUI(message.suggestions?.buttons ?? [], bubbleText);
     });
 
     updateDevUI();

@@ -366,3 +366,8 @@ export interface RecordSaver {
 export interface VoicePlayerSettings {
     startVoiceDelay?: number;
 }
+
+export interface AssistantSettings {
+    dubbing?: boolean;
+    authConnector?: string;
+}
