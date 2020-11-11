@@ -153,11 +153,13 @@ export const createSmartappDebugger = ({
     initPhrase,
     getState,
     getRecoveryState,
+    settings: settingsOverride,
 }: {
     token: string;
     initPhrase: string;
     getState: () => AssistantAppState;
     getRecoveryState?: () => Record<string, any> | undefined;
+    settings?: Pick<Settings, 'dubbing'>;
 }) => {
     try {
         const { exp } = parseJwt(token);
@@ -177,7 +179,7 @@ export const createSmartappDebugger = ({
         initPhrase,
         token,
         settings: {
-            ...settings,
+            ...(settingsOverride || settings),
             authConnector: 'developer_portal_jwt',
         },
         getState,
