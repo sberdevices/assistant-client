@@ -62,7 +62,7 @@ export const createAssistant = ({
             if (window.AssistantHost?.sendDataContainer) {
                 /* eslint-disable-next-line @typescript-eslint/camelcase */
                 window.AssistantHost?.sendDataContainer(
-                    JSON.stringify({ data: action, message_name: name || null, requestId }),
+                    JSON.stringify({ data: action, message_name: name || '', requestId }),
                 );
             } else {
                 window.AssistantHost?.sendData(JSON.stringify(action), name || null);
