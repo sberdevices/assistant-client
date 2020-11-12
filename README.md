@@ -10,19 +10,19 @@ Assistant Client - это инструмент для локального те�
    * [Конфигурация](#Конфигурация)
      * [Аутентификация](#Аутентификация)
      * [Установка](#Установка)
-     * [Использование](#Пример)
+     * [Использование](#пример-использования)
    * [API](#API)
      * [createAssistant](#createAssistant)
      * [createSmartappDebugger](#createSmartappDebugger)
      * [getInitialData](#getInitialData)
      * [getRecoveryState](#getRecoveryState)
-   * [Форматы объектов](#Форматы)
+   * [Форматы объектов](#форматы-объектов)
      * [AssistantAppState](#AssistantAppState)
      * [AssistantServerAction](#AssistantServerAction)
      * [AssistantCharacterCommand](#AssistantCharacterCommand)
      * [AssistantNavigationCommand](#AssistantNavigationCommand)
      * [AssistantSmartAppCommand](#AssistantSmartAppCommand)
-   * [Требования](#Требования)
+   * [Требования](#требования-к-устройствам)
 
 ____
 
