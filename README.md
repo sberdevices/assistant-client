@@ -48,6 +48,15 @@ ____
 $ npm i @sberdevices/assistant-client
 ```
 
+#### Альтернативное подключение
+
+Assitant-client доступен для подключения через `<script>`. В этом случае, подключение react обязательно. Версии react и assistant-client можно поменять в src.
+```html
+<script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@sberdevices/assistant-client@2.1.0/umd/assistant.min.js"></script>
+```
+
 
 ### Пример использования
 
