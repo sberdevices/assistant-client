@@ -35,7 +35,7 @@ const FEATURES = JSON.stringify({
     appTypes: ['DIALOG', 'WEB_APP'],
 });
 
-export const legacyDevice = {
+const legacyDevice = {
     clientType: 'simple',
     channel: 'Android_SB',
     channelVersion: '8.1.0.2932_RC',

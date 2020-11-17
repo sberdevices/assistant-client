@@ -120,14 +120,15 @@ export interface AssistantActionCommand {
 
 export type AssistantCharacterType = 'sber' | 'eva' | 'joy';
 
+export interface SdkMeta {
+    mid?: number;
+    requestId?: string;
+}
+
 export interface AssistantCharacterCommand {
     type: 'character';
     character: {
         id: AssistantCharacterType;
-    };
-    sdkMeta?: {
-        mid?: number;
-        requestId?: string;
     };
 }
 
@@ -138,10 +139,7 @@ export interface AssistantCloseAppCommand {
 export interface AssistantNavigationCommand {
     type: 'navigation';
     navigation: { command: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'BACK' | 'FORWARD' };
-    sdkMeta?: {
-        mid?: number;
-        requestId?: string;
-    };
+    sdkMeta?: SdkMeta;
 }
 
 export interface AssistantSmartAppCommand {
@@ -150,10 +148,7 @@ export interface AssistantSmartAppCommand {
         command: string;
         [key: string]: unknown;
     };
-    sdkMeta?: {
-        mid?: number;
-        requestId?: string;
-    };
+    sdkMeta?: SdkMeta;
 }
 
 export interface AssistantPlayerCommand {

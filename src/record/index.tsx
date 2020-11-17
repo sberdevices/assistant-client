@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { render } from 'react-dom';
 
 import { AssistantRecord, LogRecorder, RecordSaver } from '../typings';
-import './styles.css';
 
 interface AssistantRecordPanelProps {
     recorder: LogRecorder;
@@ -59,3 +58,21 @@ export const renderAssistantRecordPanel = (recorder: LogRecorder, saver: RecordS
 
     render(<AssistantRecordPanel recorder={recorder} onSave={saver.save} />, div);
 };
+
+const RecordPanelStyles = `
+.recordPanel {
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    right: 0;
+}
+
+.recordButton {
+    margin-right: 8px;
+    margin-top: 8px;
+}
+`;
+
+const style = document.createElement('style');
+style.appendChild(document.createTextNode(RecordPanelStyles));
+document.getElementsByTagName('head')[0].appendChild(style);
