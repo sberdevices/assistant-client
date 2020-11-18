@@ -5,6 +5,7 @@
 
 Assistant Client - это инструмент для локального тестирования и отладки [Сanvas App](https://smartapp-code.sberdevices.ru/documentation/#/docs/ru/methodology/research/canvasapp) c виртуальным ассистентом. Он реализован в виде JavaScript протокола, который эмулирует среду Android и вызывает нативные методы. Такой подход не требует от разработчика наличия физических устройств и позволяет запустить виртуального ассистента через браузер.
 
+Пример использования - [небольшое Todo приложение](https://github.com/sberdevices/assistant-client/tree/main/examples/todo-canvas-app), демонстрирует пример взаимодействия с Assistant Client.
 
 ## Оглавление
    * [Конфигурация](#Конфигурация)
@@ -35,7 +36,7 @@ ____
 2. Создать приложение с типом [Сanvas App](https://smartapp-code.sberdevices.ru/documentation/#/docs/ru/methodology/research/canvasapp).
 3. Получить токен в Кабинете разработчика и передать его в запросе.
 
-Для получения токена необходимо авторизоваться в [SmartApp Studio](https://smartapp-studio.sberdevices.ru/login) и в рамках Кабинета разработчика перейти в *Настройки профиля* > пункт *Auth Token* > опция *Скопировать ключ*. Полученный токен необходимо передавать в методе `createSmartappDebugger` в параметре `token`.  
+Для получения токена необходимо авторизоваться в [SmartApp Studio](https://smartapp-studio.sberdevices.ru/login) и в рамках Кабинета разработчика перейти в *Настройки профиля* > пункт *Auth Token* > опция *Скопировать ключ*. Полученный токен необходимо передавать в методе `createSmartappDebugger` в параметре `token`.
 
 
 ### Установка

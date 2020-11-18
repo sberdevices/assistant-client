@@ -3,8 +3,8 @@ import { WebSocket, Server } from 'mock-socket';
 
 import { initProtocol } from '../support/helpers/socket.helpers';
 import { initializeAssistantSDK } from '../../src/dev';
-import { Message, SystemMessage } from '../../src/proto';
-import { AssistantAppState, SystemMessageDataType } from '../../src/typings';
+import { Message } from '../../src/proto';
+import { AssistantAppState } from '../../src/typings';
 
 const INIT_PHRASE = 'Integration test';
 const USER_CHANNEL = 'TEST_CHANNEL';
