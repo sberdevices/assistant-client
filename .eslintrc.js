@@ -10,7 +10,7 @@ module.exports = {
     parser: '@typescript-eslint/parser',
     plugins: ['react', 'import', 'prettier', 'cypress'],
     rules: {
-        "@typescript-eslint/no-empty-function": 'off',
+        '@typescript-eslint/no-empty-function': 'off',
         'no-restricted-syntax': 'off', // В for...of циклах ничего плохого нет
         'spaced-comment': ['error', 'always', { markers: ['/'] }], /// разрешаем ts-require directive
         'comma-dangle': ['error', 'always-multiline'],
