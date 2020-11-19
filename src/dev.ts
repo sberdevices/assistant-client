@@ -159,6 +159,7 @@ export const initializeAssistantSDK = ({
         message_name,
         requestId,
     }: {
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
         data: any;
         /* eslint-disable-next-line @typescript-eslint/camelcase */
         message_name?: string | null;
@@ -193,7 +194,7 @@ export const initializeAssistantSDK = ({
     const sendText = (text: string, params: {} = {}) => {
         updateState();
 
-        return vpsClient.batch(({ sendText, sendSystemMessage }) => {
+        return vpsClient.batch(({ sendText: batchedSendText, sendSystemMessage }) => {
             state &&
                 sendSystemMessage(
                     {
@@ -204,7 +205,7 @@ export const initializeAssistantSDK = ({
                     },
                     false,
                 );
-            return sendText(text, params);
+            return batchedSendText(text, params);
         });
     };
 
