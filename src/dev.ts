@@ -385,6 +385,8 @@ export const initializeAssistantSDK = ({
     updateDevUI();
     enableRecord && renderAssistantRecordPanel(recorder, saver);
 
+    window.__dangerouslySendTextMessage = sendText;
+
     return {
         sendText,
         on: vpsClient.on,

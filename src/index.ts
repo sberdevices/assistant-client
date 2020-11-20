@@ -152,12 +152,19 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
     getState,
     getRecoveryState,
     settings = {},
+    enableRecord,
+    recordParams,
 }: {
     token: string;
     initPhrase: string;
     getState: () => AssistantAppState;
     getRecoveryState?: () => Record<string, any> | undefined;
     settings?: Pick<AssistantSettings, 'dubbing'>;
+    enableRecord?: boolean;
+    recordParams?: {
+        defaultActive?: boolean;
+        logger?: ClientLogger;
+    };
 }) => {
     try {
         const { exp } = parseJwt(token);
@@ -185,10 +192,13 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
         url: 'wss://nlp2vps.online.sberbank.ru:443/vps/',
         surface: 'SBERBOX',
         userChannel: 'B2C',
+        enableRecord,
+        recordParams,
     });
 };
 
 export { createRecordOfflinePlayer as createRecordPlayer } from './record/offline-player';
+export { createOnlineRecordPlayer } from './record/online-player';
 export { NativePanelParams } from './NativePanel/NativePanel';
 export * from './typings';
 export * from './dev';
@@ -196,3 +206,9 @@ export { createClient } from './client';
 export { createVoiceListener } from './createVoiceListener';
 export { createVoicePlayer } from './createVoicePlayer';
 export { initializeDebugging } from './debug';
+export {
+    createAssistantHostMock,
+    createAssistantHostMockWithRecord,
+    AssistantActionResult,
+    CommandParams,
+} from './mock';

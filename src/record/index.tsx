@@ -3,12 +3,14 @@ import { render } from 'react-dom';
 
 import { AssistantRecord, LogRecorder, RecordSaver } from '../typings';
 
+export const CURRENT_VERSION = '0.1.0';
+
 interface AssistantRecordPanelProps {
     recorder: LogRecorder;
     onSave: (record: AssistantRecord) => void;
 }
 
-const AssistantRecordPanel: React.FC<AssistantRecordPanelProps> = ({ recorder, onSave }) => {
+const AssistantRecordPanel: React.FC<AssistantRecordPanelProps> = ({ recorder, onSave }: AssistantRecordPanelProps) => {
     const [isRecording, setIsRecording] = useState(true);
     const [record, setRecord] = useState<AssistantRecord>();
     const recorderRef = useRef<LogRecorder>();
