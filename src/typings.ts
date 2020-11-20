@@ -148,10 +148,7 @@ export interface AssistantNavigationCommand {
 
 export interface AssistantSmartAppData {
     type: 'smart_app_data';
-    sdkMeta?: {
-        mid?: number;
-        requestId?: string;
-    };
+    sdkMeta?: SdkMeta;
 }
 
 export interface AssistantSmartAppCommand extends AssistantSmartAppData {
@@ -159,6 +156,7 @@ export interface AssistantSmartAppCommand extends AssistantSmartAppData {
         command: string;
         [key: string]: unknown;
     };
+    [key: string]: unknown;
 }
 
 export interface AssistantPlayerCommand {
@@ -200,6 +198,7 @@ export interface AssistantWindow {
     __dangerouslySendDataMessage?: (data: {}, name: string) => void;
     __dangerouslySendVoiceMessage?: (message: string) => void;
     __dangerouslyGetAssistantAppState?: () => AssistantAppState;
+    __dangerouslySendTextMessage?: (text: string) => void;
 }
 
 export interface Device {
@@ -303,10 +302,8 @@ export type SystemMessageDataType = {
     character?: {
         id: AssistantCharacterType;
     };
-    sdk_meta?: {
-        requestId?: string;
-    };
     emotion?: AssistantEmotionResponse;
+    sdk_meta?: SdkMeta;
 };
 
 export interface OriginalMessageType {
@@ -363,13 +360,13 @@ export type CreateClientDataType = {
 export interface IncomingMessage {
     type: 'incoming';
     text?: { data?: string | null };
-    message?: { data: SystemMessageDataType; name: string };
+    message?: { data: SystemMessageDataType; name: string; sdk_meta?: SdkMeta };
 }
 
 export interface OutcomingMessage {
     type: 'outcoming';
     text?: { data?: string | null };
-    message?: { data: Record<string, any>; name: string };
+    message?: { data: { server_action?: any; [key: string]: any }; name: string; sdk_meta?: SdkMeta };
 }
 
 export interface AssistantRecord {
@@ -388,12 +385,6 @@ export interface LogRecorder {
     getRecord: () => AssistantRecord;
     start: () => void;
     stop: () => void;
-}
-
-export interface RecordPlayer {
-    continue: () => boolean;
-    play: () => void;
-    setRecord: (record: AssistantRecord) => void;
 }
 
 export interface RecordSaver {
