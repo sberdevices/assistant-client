@@ -1,3 +1,15 @@
+# v2.0.0 (Mon Nov 23 2020)
+
+#### 💥 Breaking Change
+
+- refactor: Переделана работа с озвучкой и голосом [#47](https://github.com/sberdevices/assistant-client/pull/47) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v1.2.0 (Thu Nov 19 2020)
 
 #### 🚀 Enhancement
