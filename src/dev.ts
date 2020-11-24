@@ -223,6 +223,7 @@ export const initializeAssistantSDK = ({
         await vpsClient.sendSystemMessage({ data: {}, messageName: 'OPEN_ASSISTANT' });
 
         if (initPhrase) {
+            const messageId = vpsClient.currentMessageId;
             const res = await vpsClient.sendText(initPhrase);
             appInfo = res?.app_info;
             if (res?.character) {
@@ -232,7 +233,7 @@ export const initializeAssistantSDK = ({
 
             for (const item of res?.items || []) {
                 if (item.command != null) {
-                    initialSmartAppData.push(item.command);
+                    initialSmartAppData.push({ ...item.command, sdkMeta: { mid: messageId } });
                 }
             }
 
