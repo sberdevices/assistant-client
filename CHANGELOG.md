@@ -1,3 +1,15 @@
+# v2.0.1 (Tue Nov 24 2020)
+
+#### 🐛 Bug Fix
+
+- fix: Пробрасывать sdkMeta в сообщения в window.appInitialData [#56](https://github.com/sberdevices/assistant-client/pull/56) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.0.0 (Mon Nov 23 2020)
 
 #### 💥 Breaking Change
