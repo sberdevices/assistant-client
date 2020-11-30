@@ -1,23 +1,22 @@
 import {
     AssistantAppState,
-    AssistantCharacterCommand,
-    AssistantNavigationCommand,
     AssistantServerAction,
-    AssistantSmartAppCommand,
     ClientLogger,
     VoicePlayerSettings,
     AssistantSettings,
+    AssistantClientCustomizedCommand,
+    AssistantSmartAppData,
 } from './typings';
 import { createNanoEvents } from './nanoevents';
 import { initializeAssistantSDK } from './dev';
 import { NativePanelParams } from './NativePanel/NativePanel';
 
-export interface AssistantEvents {
+export interface AssistantEvents<A extends AssistantSmartAppData> {
     start: () => void;
-    data: (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) => void;
+    data: (command: AssistantClientCustomizedCommand<A>) => void;
 }
 
-export const createAssistant = ({
+export const createAssistant = <A extends AssistantSmartAppData>({
     getState,
     getRecoveryState,
 }: {
@@ -26,11 +25,10 @@ export const createAssistant = ({
 }) => {
     let currentGetState = getState;
     let currentGetRecoveryState = getRecoveryState;
-    const { on, emit } = createNanoEvents<AssistantEvents>();
+    const { on, emit } = createNanoEvents<AssistantEvents<A>>();
 
     window.AssistantClient = {
-        onData: (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) =>
-            emit('data', command),
+        onData: (command: unknown) => emit('data', command as A),
         onRequestState: () => {
             return currentGetState();
         },
@@ -78,7 +76,7 @@ export const createAssistant = ({
     };
 };
 
-export const createAssistantDev = ({
+export const createAssistantDev = <A extends AssistantSmartAppData>({
     getState,
     getRecoveryState,
     initPhrase,
@@ -131,7 +129,7 @@ export const createAssistantDev = ({
         voiceSettings: voiceSettings || { startVoiceDelay: 1 },
     });
 
-    return createAssistant({ getState, getRecoveryState });
+    return createAssistant<A>({ getState, getRecoveryState });
 };
 
 const parseJwt = (token: string) => {
@@ -148,7 +146,7 @@ const parseJwt = (token: string) => {
 };
 
 // Публичный метод, использующий токен из SmartApp Studio
-export const createSmartappDebugger = ({
+export const createSmartappDebugger = <A extends AssistantSmartAppData>({
     token,
     initPhrase,
     getState,
@@ -175,7 +173,7 @@ export const createSmartappDebugger = ({
         throw exc;
     }
 
-    return createAssistantDev({
+    return createAssistantDev<A>({
         initPhrase,
         token,
         settings: {
