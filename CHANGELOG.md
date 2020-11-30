@@ -1,3 +1,15 @@
+# v2.2.0 (Mon Nov 30 2020)
+
+#### 🚀 Enhancement
+
+- feat: ts-дженерики для входящих комманд ассистента [#58](https://github.com/sberdevices/assistant-client/pull/58) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.1.0 (Mon Nov 30 2020)
 
 #### 🚀 Enhancement
