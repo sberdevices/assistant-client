@@ -142,13 +142,19 @@ export interface AssistantNavigationCommand {
     sdkMeta?: SdkMeta;
 }
 
-export interface AssistantSmartAppCommand {
+export interface AssistantSmartAppData {
     type: 'smart_app_data';
+    sdkMeta?: {
+        mid?: number;
+        requestId?: string;
+    };
+}
+
+export interface AssistantSmartAppCommand extends AssistantSmartAppData {
     smart_app_data: {
         command: string;
         [key: string]: unknown;
     };
-    sdkMeta?: SdkMeta;
 }
 
 export interface AssistantPlayerCommand {
@@ -161,11 +167,15 @@ export interface AssistantSystemCommand {
     system: { command: string; [key: string]: unknown };
 }
 
+export type AssistantClientCustomizedCommand<T> = AssistantCharacterCommand | AssistantNavigationCommand | T;
+
+export type AssistantClientCommand = AssistantClientCustomizedCommand<AssistantSmartAppCommand>;
+
 export interface AssistantClient {
     onStart?: () => void;
     onRequestState?: () => Record<string, any>;
     onRequestRecoveryState?: () => any;
-    onData?: (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) => void;
+    onData?: (command: AssistantClientCommand) => void;
 }
 
 export interface AssistantHost {
