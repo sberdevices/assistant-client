@@ -1,3 +1,19 @@
+# v2.1.0 (Mon Nov 30 2020)
+
+#### 🚀 Enhancement
+
+- feat: UMD для unpkg [#48](https://github.com/sberdevices/assistant-client/pull/48) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- docs: Update README.md [#57](https://github.com/sberdevices/assistant-client/pull/57) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.0.1 (Tue Nov 24 2020)
 
 #### 🐛 Bug Fix
