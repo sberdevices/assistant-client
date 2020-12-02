@@ -1,3 +1,15 @@
+# v2.2.1 (Wed Dec 02 2020)
+
+#### 🐛 Bug Fix
+
+- fix: воспроизведение озвучки из буфера при остановленном плеере [#59](https://github.com/sberdevices/assistant-client/pull/59) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.2.0 (Mon Nov 30 2020)
 
 #### 🚀 Enhancement
