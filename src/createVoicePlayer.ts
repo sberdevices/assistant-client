@@ -368,6 +368,9 @@ export const createVoicePlayer = ({
             tracks.getByIndex(cursor).stop();
             cursor++;
         }
+
+        ctx?.close();
+        ctx = null;
     };
 
     return {
