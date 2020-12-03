@@ -44,19 +44,21 @@ export interface DPMessage {
     };
 }
 
-export interface AssistantAppState {
+export interface AssistantAppStateBase<T> {
     /* Любые данные, которые могут потребоваться Backend'у для принятия решений */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
     item_selector?: {
         ignored_words?: string[];
         /* Список соответствий голосовых команд действиям в веб-приложении */
-        items: AssistantViewItem[];
+        items: AssistantViewItemBase<T>[];
     };
 }
 
+export type AssistantAppState = AssistantAppStateBase<AssistantAction>;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface AssistantViewItem {
+export interface AssistantViewItemBase<T> {
     /* Порядковый номер элемента, назначается смартаппом, уникален в рамках items */
     number?: number;
     /* Уникальный id элемента */
@@ -67,11 +69,13 @@ export interface AssistantViewItem {
     aliases?: string[];
     /* Сервер экшен, проксирует action обратно на бекэнд. */
     server_action?: AssistantServerAction;
-    /* Экшен, выполяет действие от имени пользователя */
-    action?: AssistantAction | { type: string };
+    /* Экшен, который вернется в AssistantSmartAppData */
+    action?: T;
     /* Дополнительные данные для бэкенда */
     [key: string]: any;
 }
+
+export type AssistantViewItem = AssistantViewItemBase<AssistantAction>;
 
 export type AssistantAction = AssistantDeepLinkAction | AssistantTextAction;
 
