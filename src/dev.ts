@@ -287,16 +287,15 @@ export const initializeAssistantSDK = ({
     };
 
     const voiceListener = createVoiceListener();
-    const subscribeToListenerStatus = (cb: (event: 'listen' | 'stopped') => void): (() => void) =>
-        voiceListener.on('status', cb);
-    const subscribeToListenerHypotesis = (cb: (hypotesis: string, last: boolean) => void): (() => void) =>
-        voiceListener.on('hypotesis', cb);
-    voiceListener.on('status', (status: 'listen' | 'stopped') => {
-        if (status === 'listen') {
-            voicePlayer.active = false;
-        } else {
-            voicePlayer.active = true;
-        }
+    const subscribeToListenerListen = (cb: () => void): (() => void) => voiceListener.on('listen', cb);
+    const subscribeToListenerStopped = (cb: () => void): (() => void) => voiceListener.on('stopped', cb);
+    const subscribeToListenerHypothesis = (cb: (hypothesis: string, last: boolean) => void): (() => void) =>
+        voiceListener.on('hypothesis', cb);
+    voiceListener.on('listen', () => {
+        voicePlayer.active = false;
+    });
+    voiceListener.on('stopped', () => {
+        voicePlayer.active = true;
     });
     const handleListen = () => {
         if (voiceListener.status === 'listen') {
@@ -336,8 +335,9 @@ export const initializeAssistantSDK = ({
                 onListen: handleListen,
                 suggestions: suggestions || [],
                 bubbleText,
-                onSubscribeListenStatus: subscribeToListenerStatus,
-                onSubscribeHypotesis: subscribeToListenerHypotesis,
+                onSubscribeListen: subscribeToListenerListen,
+                onSubscribeStopped: subscribeToListenerStopped,
+                onSubscribeHypothesis: subscribeToListenerHypothesis,
             });
         }
     };

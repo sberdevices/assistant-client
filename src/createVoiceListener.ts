@@ -5,8 +5,9 @@ import { createNanoEvents } from './nanoevents';
 import { OriginalMessageType } from './typings';
 
 type voiceStreamEvents = {
-    status: (status: 'listen' | 'stopped') => void;
-    hypotesis: (text: string, last: boolean) => void;
+    listen: () => void;
+    stopped: () => void;
+    hypothesis: (text: string, last: boolean) => void;
 };
 
 export const createVoiceListener = (
@@ -23,7 +24,7 @@ export const createVoiceListener = (
         status = 'stopped';
         off();
         stopRecord();
-        emit('status', 'stopped');
+        emit('stopped');
     };
 
     const listen = ({
@@ -46,7 +47,7 @@ export const createVoiceListener = (
 
                     if (message.messageId === messageId && message.messageName === MESSAGE_NAMES.STT) {
                         if (message.text) {
-                            emit('hypotesis', message.text.data || '', message.last === 1);
+                            emit('hypothesis', message.text.data || '', message.last === 1);
                             if (message.last === 1) {
                                 stop();
                             }
@@ -57,7 +58,7 @@ export const createVoiceListener = (
 
                             if (decoderResultField && decoderResultField.hypothesis?.length) {
                                 emit(
-                                    'hypotesis',
+                                    'hypothesis',
                                     decoderResultField.hypothesis[0].normalizedText || '',
                                     !!decoderResultField.isFinal,
                                 );
@@ -70,7 +71,7 @@ export const createVoiceListener = (
                 });
             },
         );
-        emit('status', 'listen');
+        emit('listen');
     };
 
     return {

@@ -369,7 +369,7 @@ export const createVoicePlayer = ({
             cursor++;
         }
 
-        ctx?.close();
+        ctx && ctx.close();
         ctx = null;
     };
 

@@ -21,8 +21,9 @@ interface NativePanelProps extends NativePanelParams {
     suggestions: SuggestionButtonType[];
     bubbleText: string;
     onListen: () => void;
-    onSubscribeListenStatus: (cb: (type: 'listen' | 'stopped') => void) => () => void;
-    onSubscribeHypotesis: (cb: (hypotesis: string, last: boolean) => void) => () => void;
+    onSubscribeListen: (cb: () => void) => () => void;
+    onSubscribeStopped: (cb: () => void) => () => void;
+    onSubscribeHypothesis: (cb: (hypothesis: string, last: boolean) => void) => () => void;
 }
 
 export const NativePanel: React.FC<NativePanelProps> = ({
@@ -33,8 +34,9 @@ export const NativePanel: React.FC<NativePanelProps> = ({
     suggestions,
     bubbleText,
     onListen,
-    onSubscribeListenStatus,
-    onSubscribeHypotesis,
+    onSubscribeListen,
+    onSubscribeStopped,
+    onSubscribeHypothesis,
 }) => {
     const [value, setValue] = useState(defaultText);
     const [recording, setRecording] = useState(false);
@@ -60,19 +62,24 @@ export const NativePanel: React.FC<NativePanelProps> = ({
     };
 
     useEffect(() => {
-        const unsubscribeStatus = onSubscribeListenStatus((type: 'listen' | 'stopped') => {
-            setRecording(type === 'listen');
+        const unsubscribeListen = onSubscribeListen(() => {
+            setRecording(true);
         });
 
-        const unsubscribeHypotesis = onSubscribeHypotesis((hypotesis: string, last: boolean) => {
-            setValue(last ? '' : hypotesis);
+        const unsubscribeStopped = onSubscribeStopped(() => {
+            setRecording(false);
+        });
+
+        const unsubscribeHypothesis = onSubscribeHypothesis((hypothesis: string, last: boolean) => {
+            setValue(last ? '' : hypothesis);
         });
 
         return () => {
-            unsubscribeStatus();
-            unsubscribeHypotesis();
+            unsubscribeListen();
+            unsubscribeStopped();
+            unsubscribeHypothesis();
         };
-    }, [onSubscribeListenStatus, onSubscribeHypotesis]);
+    }, [onSubscribeListen, onSubscribeStopped, onSubscribeHypothesis]);
 
     return (
         <div className={className ? `nativePanel ${className}` : 'nativePanel'}>
