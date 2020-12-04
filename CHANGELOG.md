@@ -1,3 +1,15 @@
+# v2.3.0 (Fri Dec 04 2020)
+
+#### 🚀 Enhancement
+
+- feat: Утилиты для тестирования смартапов [#54](https://github.com/sberdevices/assistant-client/pull/54) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.2.2 (Fri Dec 04 2020)
 
 #### 🐛 Bug Fix
