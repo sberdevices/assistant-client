@@ -1,3 +1,15 @@
+# v2.2.2 (Fri Dec 04 2020)
+
+#### 🐛 Bug Fix
+
+- fix: дженерики для AppState action [#61](https://github.com/sberdevices/assistant-client/pull/61) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.2.1 (Wed Dec 02 2020)
 
 #### 🐛 Bug Fix
