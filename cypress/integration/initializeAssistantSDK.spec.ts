@@ -25,50 +25,6 @@ describe('Проверяем', () => {
         }
     });
 
-    it('Корректная инициализация ассистента по-умолчанию - ожидаем отправку OPEN_ASSISTANT, InitalSettings, initPhrase', (done) => {
-        let settingsReceived: boolean;
-        let openReceived: boolean;
-        let phraseReceived: boolean;
-        server.on('connection', (socket) => {
-            socket.binaryType = 'arraybuffer';
-            initProtocol(socket);
-
-            socket.on('message', (data: Uint8Array) => {
-                const message = Message.decode(data.slice(4));
-                if (message.messageName === 'OPEN_ASSISTANT' && message.systemMessage?.data === '{}') {
-                    openReceived = true;
-                }
-
-                if (message.initialSettings) {
-                    settingsReceived =
-                        message.initialSettings.userChannel === USER_CHANNEL &&
-                        message.initialSettings.device.surface === SURFACE &&
-                        message.initialSettings.device.platformType === 'WEBDBG';
-                }
-
-                if (message.text && message.text.data === INIT_PHRASE) {
-                    phraseReceived = true;
-                }
-
-                // eslint-disable-next-line eqeqeq
-                if (openReceived != undefined && settingsReceived != undefined && phraseReceived != undefined) {
-                    expect(openReceived, 'OPEN_ASSISTANT получен').to.be.true;
-                    expect(settingsReceived, 'initialSetting получен').to.be.true;
-                    expect(phraseReceived, 'initPhrase получен').to.be.true;
-                    done();
-                }
-            });
-        });
-
-        initializeAssistantSDK({
-            url: SOCKET_URL,
-            initPhrase: INIT_PHRASE,
-            userChannel: USER_CHANNEL,
-            surface: SURFACE,
-            nativePanel: null,
-        });
-    });
-
     it('Отправка текстового экшена и контекста к нему - ожидаем два мессаджа с одинаковым messageId', (done) => {
         const actionText = 'test action';
         const state: AssistantAppState = { type: 'test_state' };

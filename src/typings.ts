@@ -326,6 +326,13 @@ export type SystemMessageDataType = {
         id: AssistantCharacterType;
     };
     emotion?: AssistantEmotionResponse;
+    server_action?: AssistantServerAction;
+    meta?: {
+        current_app: {
+            app_info: AppInfoType;
+            state: AssistantAppState;
+        };
+    };
     sdk_meta?: SdkMeta;
 };
 
