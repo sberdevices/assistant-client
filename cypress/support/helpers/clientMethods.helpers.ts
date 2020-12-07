@@ -5,12 +5,20 @@ import { Message } from '../../../src/proto';
 import { legacyDevice, settings } from '../../../src/dev';
 import { EventsType } from '../../../src/typings';
 
-export const createAnswerBuffer = (messageId: number | Long, last?: number) => {
+export const createAnswerBuffer = ({
+    messageId = 1,
+    last = 1,
+    systemMessageData,
+}: {
+    messageId?: number | Long;
+    last?: number;
+    systemMessageData?: string;
+}) => {
     const encodedAsNodeBuffer = appendHeader(
         Message.encode({
             messageId,
             last: last ?? 1,
-            systemMessage: { data: messageId.toString() },
+            systemMessage: systemMessageData ? { data: systemMessageData } : { data: messageId.toString() },
             messageName: MESSAGE_NAMES.ANSWER_TO_USER,
         }).finish(),
     );
@@ -28,7 +36,7 @@ export const createServerPong = (server: Server) => {
             if (!message.initialSettings) {
                 const delay = Number(message.text.data);
                 setTimeout(() => {
-                    socket.send(createAnswerBuffer(message.messageId, message.last));
+                    socket.send(createAnswerBuffer({ messageId: message.messageId, last: message.last }));
                 }, delay);
             }
         });

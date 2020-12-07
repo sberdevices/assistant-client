@@ -76,7 +76,7 @@ describe('Тестирование файла client.ts на корректно�
                 if (!message.initialSettings) {
                     if (!messageId) {
                         messageId = Number(message.messageId);
-                        socket.send(createAnswerBuffer(Number(message.messageId), message.last));
+                        socket.send(createAnswerBuffer({ messageId: Number(message.messageId), last: message.last }));
                     } else {
                         expect(messageId).to.eq(Number(message.messageId));
                         done();
@@ -117,7 +117,7 @@ describe('Тестирование файла client.ts на корректно�
                     if (message.text?.data === 'not batch') {
                         sendMessageId = Number(message.messageId);
                     }
-                    socket.send(createAnswerBuffer(Number(message.messageId), message.last));
+                    socket.send(createAnswerBuffer({ messageId: Number(message.messageId), last: message.last }));
                 }
             });
         });
