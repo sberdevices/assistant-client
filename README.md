@@ -21,6 +21,8 @@ Assistant Client - это инструмент для локального те�
      * [AssistantServerAction](#AssistantServerAction)
      * [AssistantCharacterCommand](#AssistantCharacterCommand)
      * [AssistantNavigationCommand](#AssistantNavigationCommand)
+     * [AssistantInsetsCommand](#AssistantInsetsCommand)
+     * [AssistantSmartAppError](#AssistantSmartAppError)
      * [AssistantSmartAppCommand](#AssistantSmartAppCommand)
    * [Требования](#требования-к-устройствам)
    * [FAQ](#faq)
@@ -164,7 +166,7 @@ ____
 
 Осуществляет подписку на событие готовности ассистента к работе.
 
-#### on('data', cb: (data: [AssistantCharacterCommand](#AssistantCharacterCommand) | [AssistantNavigationCommand](#AssistantNavigationCommand) | [AssistantInsetsCommand](#AssistantInsetsCommand) | [AssistantSmartAppCommand](#AssistantSmartAppCommand)) => {}): void
+#### on('data', cb: (data: [AssistantCharacterCommand](#AssistantCharacterCommand) | [AssistantNavigationCommand](#AssistantNavigationCommand) | [AssistantInsetsCommand](#AssistantInsetsCommand) | [AssistantSmartAppError](#AssistantSmartAppError) | [AssistantSmartAppCommand](#AssistantSmartAppCommand)) => {}): void
 
 Осуществляет подписку на событие получения данных с бэкенд.
 
@@ -296,6 +298,20 @@ interface AssistantInsetsCommand {
     top: number;     //px
     right: number;   //px
     bottom: number;  //px
+  };
+}
+```
+
+### `AssistantSmartAppError`
+
+Объект `AssistantSmartAppError` - это уведомление об ошибке.
+
+```typescript
+interface AssistantSmartAppError {
+  type: 'smart_app_error';
+  smart_app_error: {
+    code: number;
+    description: string;
   };
 }
 ```

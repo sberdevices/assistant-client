@@ -161,6 +161,14 @@ export interface AssistantSmartAppData {
     sdkMeta?: SdkMeta;
 }
 
+export interface AssistantSmartAppError {
+    type: 'smart_app_error';
+    smart_app_error: {
+        code: number;
+        description: string;
+    };
+}
+
 export interface AssistantSmartAppCommand extends AssistantSmartAppData {
     smart_app_data: {
         command: string;
@@ -183,6 +191,7 @@ export type AssistantClientCustomizedCommand<T> =
     | AssistantCharacterCommand
     | AssistantNavigationCommand
     | AssistantInsetsCommand
+    | AssistantSmartAppError
     | T;
 
 export type AssistantClientCommand = AssistantClientCustomizedCommand<AssistantSmartAppCommand>;
