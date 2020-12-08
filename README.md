@@ -164,7 +164,7 @@ ____
 
 Осуществляет подписку на событие готовности ассистента к работе.
 
-#### on('data', cb: (data: [AssistantCharacterCommand](#AssistantCharacterCommand) | [AssistantNavigationCommand](#AssistantNavigationCommand) | [AssistantSmartAppCommand](#AssistantSmartAppCommand)) => {}): void
+#### on('data', cb: (data: [AssistantCharacterCommand](#AssistantCharacterCommand) | [AssistantNavigationCommand](#AssistantNavigationCommand) | [AssistantInsetsCommand](#AssistantInsetsCommand) | [AssistantSmartAppCommand](#AssistantSmartAppCommand)) => {}): void
 
 Осуществляет подписку на событие получения данных с бэкенд.
 
@@ -280,6 +280,22 @@ interface AssistantNavigationCommand {
   navigation: { command: "UP" | "DOWN" | "LEFT" | "RIGHT" | "FORWARD" | "BACK" };
   sdkMeta: {
     requestId: string;
+  };
+}
+```
+
+### `AssistantInsetsCommand`
+
+Объект `AssistantInsetsCommand` - команда, которая сообщает смартапу о том, что поверх него будет отображен нативный UI и его размеры.
+
+```typescript
+interface AssistantInsetsCommand {
+  type: 'insets';
+  insets: {
+    left: number;    //px
+    top: number;     //px
+    right: number;   //px
+    bottom: number;  //px
   };
 }
 ```

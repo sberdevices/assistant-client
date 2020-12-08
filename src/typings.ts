@@ -136,6 +136,16 @@ export interface AssistantCharacterCommand {
     };
 }
 
+export interface AssistantInsetsCommand {
+    type: 'insets';
+    insets: {
+        left: number; // px
+        top: number; // px
+        right: number; // px
+        bottom: number; // px
+    };
+}
+
 export interface AssistantCloseAppCommand {
     type: 'close_app';
 }
@@ -169,7 +179,11 @@ export interface AssistantSystemCommand {
     system: { command: string; [key: string]: unknown };
 }
 
-export type AssistantClientCustomizedCommand<T> = AssistantCharacterCommand | AssistantNavigationCommand | T;
+export type AssistantClientCustomizedCommand<T> =
+    | AssistantCharacterCommand
+    | AssistantNavigationCommand
+    | AssistantInsetsCommand
+    | T;
 
 export type AssistantClientCommand = AssistantClientCustomizedCommand<AssistantSmartAppCommand>;
 
