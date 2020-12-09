@@ -1,3 +1,22 @@
+# v2.4.0 (Wed Dec 09 2020)
+
+#### 🚀 Enhancement
+
+- feat: Поддержать recoveryState [#66](https://github.com/sberdevices/assistant-client/pull/66) ([@sasha-tlt](https://github.com/sasha-tlt))
+- feat: Добавлен тип AssistantSmartAppError [#66](https://github.com/sberdevices/assistant-client/pull/66) ([@sasha-tlt](https://github.com/sasha-tlt))
+- feat: Поддержка insets [#66](https://github.com/sberdevices/assistant-client/pull/66) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- docs: Обновлена документация todo-canvas-app [#65](https://github.com/sberdevices/assistant-client/pull/65) ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+#### Authors: 2
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+- Ivan Ushatsky ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+---
+
 # v2.3.0 (Fri Dec 04 2020)
 
 #### 🚀 Enhancement
