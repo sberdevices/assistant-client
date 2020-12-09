@@ -3,7 +3,7 @@
   "version": "0.2.1",
   "private": true,
   "dependencies": {
-    "@sberdevices/assistant-client": "^1.0.5",
+    "@sberdevices/assistant-client": "^2.3.0",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@types/node": "^12.19.2",
