@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistant script sample</title>
+    <style type="text/css">
+        html {
+            height: 100%;
+            background-color: darkolivegreen;
+        }
+
+        h1 {
+            color: #fff;
+        }
+
+        ul#root {
+            font-size: 2em;
+            color: #fff;
+        }
+    </style>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@sberdevices/assistant-client@2.4.0/umd/assistant.min.js"></script>
+</head>
+<body>
+    <h1>Мой список дел:</h1>
+    <ul id="root"></ul>
+    <script type="text/javascript">
+        var token = ''; // <- сюда вставляем токен из smartapp-studio
+        var initPhrase = ''; // <- сюда вставляем активизационную фразу
+        var state = { item_selector: { items: [] } };
+
+        function addNote(id, title, completed) {
+            var note = document.createElement('li');
+            note.id = 'note-'+id;
+            note.innerText = title;
+            
+            document.getElementById('root').append(note);
+        }
+
+        function deleteNote(id) {
+            var note = document.getElementById('note-'+id)
+            if (note != null) {
+                note.remove();
+            }
+        }
+
+        function doneNote(id) {
+            var note = document.getElementById('note-'+id)
+            if (note != null) {
+                note.style.textDecoration = 'line-through';
+            }
+        }
+
+        var assistant = assistant.createSmartappDebugger({ getState: () => state, token, initPhrase });
+        assistant.on('data', ({ action }) => {
+            if (!action) {
+                return;
+            }
+
+            switch(action.type) {
+                case 'add_note':
+                    var id = Math.random().toString(36).substring(7);
+                    state.item_selector.items.push({
+                        id,
+                        title: action.note,
+                        completed: false
+                    });
+                    addNote(id, action.note, false);
+
+                case 'delete_note':
+                    state.item_selector.items = state.item_selector.items.filter(({ id }) => id !== action.id);
+                    deleteNote(action.id);
+                    break;
+                case 'done_note':
+                    state.item_selector.items = state.item_selector.items.map((note) => (note.id === action.id ? { ...note, completed: true } : note));
+                    doneNote(action.id);
+                default:
+                    console.error('Unsupported action-type', action.type);
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
+
