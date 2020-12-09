@@ -22,6 +22,7 @@ import { createLogCallbackRecorder, RecorderCallback } from './record/callback-r
 import { createRecordDownloader } from './record/record-downloader';
 import { createVoiceListener } from './createVoiceListener';
 import { createVoicePlayer } from './createVoicePlayer';
+import { createRecoveryStateRepository } from './createRecoveryStateRepository';
 
 const SDK_VERSION = '20.09.1.3576';
 const APP_VERSION = '20.09.1.3576';
@@ -105,6 +106,7 @@ export const initializeAssistantSDK = ({
     };
 
     const voicePlayer = createVoicePlayer(voiceSettings);
+    const recoveryStateRepository = createRecoveryStateRepository();
     let clientLogger = recordParams?.logger ? recordParams.logger : createConsoleLogger();
     let loggerCb: RecorderCallback;
     const recorder = createLogCallbackRecorder(
@@ -137,7 +139,7 @@ export const initializeAssistantSDK = ({
         clientLogger,
     );
 
-    let appInfo: SystemMessageDataType['app_info'] | void;
+    let appInfo: SystemMessageDataType['app_info'] | undefined;
     const initialSmartAppData: Array<SystemMessageDataType['items'][0]['command']> = [];
     const requestIdMap: Record<string, string> = {};
     let clientReady = false; // флаг готовности клиента к приему onData
@@ -239,6 +241,10 @@ export const initializeAssistantSDK = ({
                 }
             }
 
+            if (appInfo && appInfo.applicationId) {
+                window.appRecoveryState = recoveryStateRepository.get(appInfo.applicationId);
+            }
+
             if (clientReady && window.AssistantClient?.onData) {
                 window.AssistantClient?.onStart && window.AssistantClient?.onStart();
                 for (const smartAppData of initialSmartAppData) {
@@ -253,13 +259,20 @@ export const initializeAssistantSDK = ({
     const promise = fn();
 
     window.appInitialData = initialSmartAppData;
+    window.appRecoveryState = null;
     window.AssistantHost = {
         close() {
+            if (appInfo && appInfo.applicationId) {
+                recoveryStateRepository.remove(appInfo.applicationId);
+                if (window.AssistantClient?.onRequestRecoveryState) {
+                    recoveryStateRepository.set(appInfo.applicationId, window.AssistantClient.onRequestRecoveryState());
+                }
+            }
+
             appInfo = undefined;
             initialSmartAppData.splice(0, initialSmartAppData.length);
             state = null;
-
-            sendText('Хватит'); // нужно слать close_app
+            window.appRecoveryState = null;
         },
         ready() {
             if (assistantReady && window.AssistantClient?.onData) {
@@ -359,6 +372,15 @@ export const initializeAssistantSDK = ({
             }
 
             if (item.command) {
+                if (
+                    item.command.type.toLowerCase() === 'close_app' &&
+                    appInfo &&
+                    appInfo.applicationId === message.app_info?.applicationId
+                ) {
+                    window.AssistantHost?.close();
+                    return;
+                }
+
                 emitOnData({
                     ...item.command,
                     sdkMeta: { mid: original.messageId, requestId: requestIdMap[original.messageId.toString()] },
