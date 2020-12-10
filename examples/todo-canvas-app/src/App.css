@@ -10,6 +10,7 @@ body {
 
 .add-note,
 .note {
+  position: relative;
   background-color: rgba(255, 255, 255, 0.24);
   padding: 16px 32px;
   font-weight: 500;
@@ -37,6 +38,7 @@ body {
   margin: 36px 0 144px;
   padding: 0;
   list-style: none;
+  margin-right: 50px;
 }
 
 .note {
@@ -51,4 +53,12 @@ body {
   flex-shrink: 0;
   width: 24px;
   height: 24px;
+}
+
+.remove-note {
+  position: absolute;
+  right: -50px;
+  text-align: center;
+  width: 50px;
+  cursor: pointer;
 }
