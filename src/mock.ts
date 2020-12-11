@@ -1,5 +1,12 @@
 import { createRecordOfflinePlayer } from './record/offline-player';
-import { AssistantRecord, AssistantAppState, AssistantServerAction, AssistantClientCommand } from './typings';
+import {
+    AssistantRecord,
+    AssistantAppState,
+    AssistantServerAction,
+    AssistantClientCommand,
+    AssistantClientCustomizedCommand,
+    AssistantSmartAppCommand,
+} from './typings';
 
 export interface AssistantActionResult {
     action: AssistantServerAction;
@@ -14,7 +21,7 @@ export interface CommandParams {
 }
 
 // сначала создаем mock, затем вызываем createAssistant
-export const createAssistantHostMock = ({ context = window }: { context?: Window }) => {
+export const createAssistantHostMock = ({ context = window }: { context?: Window } = {}) => {
     /* eslint-disable-next-line no-spaced-func, func-call-spacing, @typescript-eslint/no-explicit-any */
     const handlers = new Map<string, (action: any) => void>();
 
@@ -85,12 +92,12 @@ export const createAssistantHostMock = ({ context = window }: { context?: Window
     };
 
     /** Вызвать обработчик команды бека */
-    const receiveCommand = (command: AssistantClientCommand) => {
+    const receiveCommand = <T = AssistantSmartAppCommand>(command: AssistantClientCustomizedCommand<T>) => {
         if (!context.AssistantClient || !context.AssistantClient.onData) {
             throw new Error('Assistant not initialized');
         }
 
-        context.AssistantClient.onData(command);
+        context.AssistantClient.onData(command as AssistantClientCommand);
         return new Promise((resolve) => setTimeout(resolve));
     };
 
