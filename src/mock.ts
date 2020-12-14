@@ -14,7 +14,7 @@ export interface CommandParams {
 }
 
 // сначала создаем mock, затем вызываем createAssistant
-export const createAssistantHostMock = ({ context = window }: { context?: Window }) => {
+export const createAssistantHostMock = ({ context = window }: { context?: Window } = {}) => {
     /* eslint-disable-next-line no-spaced-func, func-call-spacing, @typescript-eslint/no-explicit-any */
     const handlers = new Map<string, (action: any) => void>();
 
