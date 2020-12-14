@@ -121,7 +121,7 @@ export const createAssistantHostMockWithRecord = ({
     record: AssistantRecord;
 }) => {
     const mock = createAssistantHostMock({ context });
-    const player = createRecordOfflinePlayer(record, context);
+    const player = createRecordOfflinePlayer(record, { context });
     let hasNext = true;
 
     const next = ({ onRequest, waitRequest = false }: CommandParams = {}) => {

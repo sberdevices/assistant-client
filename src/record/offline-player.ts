@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { AssistantRecord, SystemMessageDataType, AssistantClientCommand } from '../typings';
+import { AssistantRecord, SystemMessageDataType, AssistantClientCommand, OutcomingMessage } from '../typings';
 
 import { CURRENT_VERSION } from './index';
 
-export const createRecordOfflinePlayer = (record?: AssistantRecord, context = window) => {
+export const createRecordOfflinePlayer = (
+    record?: AssistantRecord,
+    { context = window }: { context?: Window } = {},
+) => {
     let currentRecord = record;
     let entryCursor = 0;
 
@@ -78,7 +81,7 @@ export const createRecordOfflinePlayer = (record?: AssistantRecord, context = wi
         }
 
         return {
-            action: { action_id: 'test' },
+            action: (entry as OutcomingMessage).message?.data.server_action,
             name: entry.message?.name,
             requestId: entry.message?.data.sdk_meta?.requestId,
         };
