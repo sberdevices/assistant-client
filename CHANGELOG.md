@@ -1,3 +1,16 @@
+# v2.4.1 (Tue Dec 15 2020)
+
+#### 🐛 Bug Fix
+
+- fix: Добавлены дженерики в мок [#68](https://github.com/sberdevices/assistant-client/pull/68) ([@sasha-tlt](https://github.com/sasha-tlt))
+- docs: Пример интеграции через script [#67](https://github.com/sberdevices/assistant-client/pull/67) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.4.0 (Wed Dec 09 2020)
 
 #### 🚀 Enhancement
