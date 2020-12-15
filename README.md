@@ -24,6 +24,7 @@ Assistant Client - это инструмент для локального те�
      * [AssistantInsetsCommand](#AssistantInsetsCommand)
      * [AssistantSmartAppError](#AssistantSmartAppError)
      * [AssistantSmartAppCommand](#AssistantSmartAppCommand)
+   * [Утилиты для тестирования](#утилиты-для-тестирования)
    * [Требования](#требования-к-устройствам)
    * [FAQ](#faq)
 
@@ -331,6 +332,156 @@ interface AssistantSmartAppCommand {
   };
 }
 ```
+
+____
+
+
+## Утилиты для тестирования
+
+### Имитация команд ассистента
+
+Для имитации команд от ассистента реализована утилита `createAssistantHostMock`. Ниже приведен пример использования, полный пример можно посмотреть [здесь](https://github.com/sberdevices/assistant-client/tree/main/examples/todo-canvas-app).
+
+```typescript
+import { createAssistantHostMock } from '@sberdevices/assistant-client';
+
+const ITEMS = [
+  {
+    id: 1,
+    title: 'Купить молоко',
+    number: 1,
+  },
+  {
+    id: 2,
+    title: 'Купить хлеб',
+    number: 2,
+  },
+];
+
+describe('Мой список дел', () => {
+  it('По клику на чекбокс - ожидаем экшен "done" c заголовком выбранного элемента', (done) => {
+    cy.visit('/')
+      .window()
+      .then((window) => {
+        const mock = createAssistantHostMock({ context: window });
+        const selected = ITEMS[1];
+        mock.onReady(() => {
+          // эмулируем инициализационную команду от бэкенда со списком задач
+          mock.receiveCommand({
+            type: 'smart_app_data',
+            action: {
+              type: 'init',
+              notes: [...ITEMS],
+            },
+          })
+          .then(() =>
+            // ожидаем вызов assistantClient.sendData
+            mock.waitAction(() =>
+                // эмулируем отметку выполнения пользователем, который должен вызвать sendData({ action: { action_id: 'done } })
+                window.document.getElementById(`checkbox-note-${selected.id}`).click(),
+            ),
+          )
+          .then(({ action, state }) => {
+            expect(action.action_id).to.equal('done'); // ожидаем экшен data_note
+            expect(action.parameters?.title).to.equal(selected.title); // ожидаем в параметрах title экшена
+            expect(state?.item_selector.items).to.deep.equal(ITEMS); // ожидаем отправку списка в стейте
+            done();
+          });
+        });
+      });
+  });
+});
+```
+
+Вызывать `createAssistantHostMock` только при использовании [`createAssistant`](#createAssistant). Например, при использовании cypress, функция инициализации ассистента может выглядеть следующим образом:
+
+```typescript
+import { createAssistant, createSmartappDebugger } from '@sberdevices/assistant-client';
+
+const initializeAssistant = (getState: AssistantAppState) => {
+    if (process.env.NODE_ENV === 'development' && window.Cypress == null) {
+        return createSmartappDebugger({
+            token: process.env.REACT_APP_TOKEN ?? '',
+            initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
+            getState,
+        });
+    }
+
+    return createAssistant({ getState });
+};
+```
+
+#### addActionHandler(actionType: string, handler: (action: AssistantServerAction) => void): void
+
+Подписаться на экшены фронтенда с определенным action_id, переданным первым параметром.
+
+#### removeActionHandler(actionType: string): void
+
+Отписаться от экшенов фронтенда.
+
+#### receiveCommand(command: AssistantClientCommand): Promise<void>
+
+Эмулирует команду, полученную от бэкенда. Команда придет подписчикам `AssistantClient.onData`.
+
+#### waitAction(onAction?: () => void): Promise<{ state: AssistantAppState; action: AssistantServerAction; name?: string; requestId?: string; }>
+
+Возвращает `promise`, который будет разрезолвлен при следующем вызове `AssistantClient.sendData`
+
+#### onReady(cb: () => void): void
+
+Подписаться на события готовности утилиты, cb будет вызван по готовности к работе.
+
+
+### Запись лога сообщений между ассистентом и фронтендом
+
+В режиме разработки есть возможность записать и скачать лог сообщений.
+Управление записью осуществляется кнопками start и stop, кнопка save сохранит файл с логом в загрузки браузера. Пример активации панели управления записью лога:
+
+```typescript
+import { createSmartappDebugger } from '@sberdevices/assistant-client';
+
+const assistant = createSmartappDebugger({
+    token: process.env.REACT_APP_TOKEN ?? '',
+    initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
+    getState,
+    enableRecord: true, // активируем функцию записи лога
+    recordParams: {
+      defaultActive: true, // включать запись при старте приложения (по-умолчанию = true)
+    }
+  });
+```
+
+### Воспроизведение лога сообщений между ассистентом и фронтендом
+
+Пример пошагового воспроизведения лога сообщений, входящие сообщения, от ассистента, будут последовательно переданы подписчикам AssistantClient.on('data').
+
+```typescript
+import { createRecordPlayer } from '@sberdevices/assistant-client';
+import assistantLog from './assistant-log.json';
+
+const player = createRecordPlayer(assistantLog);
+let end = false;
+
+while(!end) {
+  end = !player.continue();
+}
+```
+
+#### continue(): boolean
+
+Передает следующее сообщение от ассистента в AssistantClient (может содержать несколько команд), возвращает флаг наличия в логе следующих сообщений от ассистента.
+
+#### play(): void
+
+Последовательно передает все сообщения лога от ассистента в AssistantClient.
+
+#### getNextAction: { action: AssistantServerAction; name?: string; requestId?: string; }
+
+Возвращает следующее сообщение от AssistantClient (вызов sendData) в ассистент. Можно использовать для сравнения эталонного сообщения (из лога) и текущего в тесте.
+
+#### setRecord(record: AssistantRecord): void
+
+Загрузить указанную запись в плеер.
 
 ____
 
