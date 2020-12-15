@@ -10,6 +10,10 @@ type State = {
 
 type Action =
     | {
+          type: 'init';
+          notes: Array<Note>;
+      }
+    | {
           type: 'add_note';
           note: string;
       }
@@ -24,6 +28,12 @@ type Action =
 
 export const reducer = (state: State, action: Action) => {
     switch (action.type) {
+        case 'init':
+            return {
+                ...state,
+                notes: [...action.notes],
+            };
+
         case 'add_note':
             return {
                 ...state,
