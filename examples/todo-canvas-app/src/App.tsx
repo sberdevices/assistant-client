@@ -5,7 +5,7 @@ import './App.css';
 import { reducer } from './store';
 
 const initializeAssistant = (getState: any) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && window.Cypress == null) {
         return createSmartappDebugger({
             token: process.env.REACT_APP_TOKEN ?? '',
             initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
@@ -85,6 +85,7 @@ export const App: FC = memo(() => {
                             </span>
                         </span>
                         <input
+                            id={`checkbox-note-${note.id}`}
                             className="done-note"
                             type="checkbox"
                             checked={note.completed}
