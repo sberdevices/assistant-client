@@ -29,7 +29,18 @@ export const App: FC = memo(() => {
     useEffect(() => {
         assistantRef.current = initializeAssistant(() => assistantStateRef.current);
 
-        assistantRef.current.on('data', ({ action }: any) => {
+        assistantRef.current.on('data', ({ navigation, action }: any) => {
+            if (navigation) {
+                switch (navigation.command) {
+                    case 'UP':
+                        window.scrollTo(0, window.scrollY - 500);
+                        break;
+                    case 'DOWN':
+                        window.scrollTo(0, window.scrollY + 500);
+                        break;
+                }
+            }
+
             if (action) {
                 dispatch(action);
             }
