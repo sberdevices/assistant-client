@@ -1,3 +1,23 @@
+# v2.5.0 (Fri Dec 18 2020)
+
+#### 🚀 Enhancement
+
+- feat: Изменились параметры createOfflinePlayer [#69](https://github.com/sberdevices/assistant-client/pull/69) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- fix: Воспроизведение пустой озвучки [#72](https://github.com/sberdevices/assistant-client/pull/72) ([@sasha-tlt](https://github.com/sasha-tlt))
+- docs: Добавление голосовой навигации в todo-canvas-app [#71](https://github.com/sberdevices/assistant-client/pull/71) ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+- docs: Документация для тестовых утилит [#69](https://github.com/sberdevices/assistant-client/pull/69) ([@sasha-tlt](https://github.com/sasha-tlt))
+- docs: Интеграционный тест todo-canvas-app [#69](https://github.com/sberdevices/assistant-client/pull/69) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 2
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+- Ivan Ushatsky ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+---
+
 # v2.4.1 (Tue Dec 15 2020)
 
 #### 🐛 Bug Fix
