@@ -191,6 +191,10 @@ const createTrackStream = (
 
         firstChunk = false;
 
+        if (slicePoint >= data.length) {
+            return;
+        }
+
         getExtraBytes(data, bytesArraysSizes);
 
         const dataBuffer = new ArrayBuffer(bytesArraysSizes.incomingMessageVoiceDataLength);
