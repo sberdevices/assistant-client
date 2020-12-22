@@ -107,6 +107,7 @@ export const initializeAssistantSDK = ({
 
     const voicePlayer = createVoicePlayer(voiceSettings);
     const recoveryStateRepository = createRecoveryStateRepository();
+    let autolistenMesId: string | null = null;
     let clientLogger = recordParams?.logger ? recordParams.logger : createConsoleLogger();
     let loggerCb: RecorderCallback;
     const recorder = createLogCallbackRecorder(
@@ -313,7 +314,9 @@ export const initializeAssistantSDK = ({
             voicePlayer.active = true;
         }
     });
+
     const handleListen = () => {
+        autolistenMesId = null;
         if (voiceListener.status === 'listen') {
             voiceListener.stop();
             return;
@@ -363,8 +366,18 @@ export const initializeAssistantSDK = ({
         }
     };
 
+    voicePlayer.on('end', (messageId) => {
+        if (autolistenMesId === messageId) {
+            handleListen();
+        }
+    });
+
     vpsClient.on('systemMessage', (message, original) => {
         let bubbleText = '';
+
+        if (message.auto_listening) {
+            autolistenMesId = original.messageId.toString();
+        }
 
         for (const item of message.items) {
             if (item.bubble) {

@@ -318,6 +318,7 @@ type AssistantEmotionResponse = {
 
 export type SystemMessageDataType = {
     app_info: AppInfoType;
+    auto_listening: boolean;
     items: Array<itemType>;
     suggestions?: {
         buttons: Array<SuggestionButtonType>;
