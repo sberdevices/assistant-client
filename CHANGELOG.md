@@ -1,3 +1,15 @@
+# v2.6.0 (Wed Dec 23 2020)
+
+#### 🚀 Enhancement
+
+- feat: Поддержка флага auto_listening [#73](https://github.com/sberdevices/assistant-client/pull/73) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.5.0 (Fri Dec 18 2020)
 
 #### 🚀 Enhancement
