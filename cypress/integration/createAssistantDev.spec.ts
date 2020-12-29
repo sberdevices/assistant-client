@@ -27,6 +27,7 @@ describe('Проверяем createAssistantDev', () => {
     beforeEach(() => {
         cy.stub(window, 'WebSocket').callsFake((url) => new WebSocket(url));
         server = new Server(SOCKET_URL);
+        window.appInitialData = [{ type: 'character', character: { id: 'sber' } }];
     });
 
     afterEach(() => {
@@ -98,24 +99,22 @@ describe('Проверяем createAssistantDev', () => {
             initPhrase: INIT_PHRASE,
         });
 
+        const status = { character: false, data: false, insets: false };
         assistant.on('start', () => {
-            let character = false;
-            let insets = false;
-            let data = false;
             const items = assistant.getInitialData();
             for (let i = 0; i < items.length; i++) {
                 const command = items[i];
                 switch (command.type) {
                     case 'character':
-                        character = true;
+                        status.character = true;
                         expect(command.character.id).to.equal(CHARACTER);
                         break;
                     case 'insets':
-                        insets = true;
+                        status.insets = true;
                         expect(command.insets).to.deep.equal(INSETS);
                         break;
                     case 'smart_app_data':
-                        data = true;
+                        status.data = true;
                         expect(command.smart_app_data).to.deep.equal(COMMAND.smart_app_data);
                         break;
                     default:
@@ -123,11 +122,9 @@ describe('Проверяем createAssistantDev', () => {
                 }
             }
 
-            if (!character || !insets || !data) {
-                throw new Error('Commands not found');
+            if ((status.character && status.insets) || status.data) {
+                done();
             }
-
-            done();
         });
     });
 
@@ -224,14 +221,6 @@ describe('Проверяем createAssistantDev', () => {
 
         assistant.on('data', (command: AssistantClientCustomizedCommand<AssistantSmartAppCommand>) => {
             switch (command.type) {
-                case 'character':
-                    received.character = true;
-                    expect(command.character.id).to.equal(CHARACTER);
-                    break;
-                case 'insets':
-                    received.insets = true;
-                    expect(command.insets).to.deep.equal(INSETS);
-                    break;
                 case 'smart_app_data':
                     received.data = true;
                     expect(command.smart_app_data).to.deep.equal(data.smart_app_data);
@@ -245,7 +234,7 @@ describe('Проверяем createAssistantDev', () => {
                     break;
             }
 
-            if (received.character && received.data && received.navigation && received.insets) {
+            if (received.data && received.navigation) {
                 done();
             }
         });
@@ -253,8 +242,6 @@ describe('Проверяем createAssistantDev', () => {
 
     it('Проверяем оповещение при смене персонажа - ожидаем первым сообщением "sber", вторым -  "joy"', (done) => {
         const characterId = 'joy';
-        let firstReceived = false;
-        let secondReceived = false;
 
         server.on('connection', (socket) => {
             socket.binaryType = 'arraybuffer';
@@ -282,27 +269,7 @@ describe('Проверяем createAssistantDev', () => {
         });
 
         assistant.on('data', (command: AssistantClientCustomizedCommand<AssistantSmartAppCommand>) => {
-            if (command.type !== 'character') {
-                return;
-            }
-
-            if (command.character.id === CHARACTER) {
-                if (firstReceived || secondReceived) {
-                    throw new Error('Unexpected character');
-                }
-
-                firstReceived = true;
-            }
-
-            if (command.character.id === characterId) {
-                if (!firstReceived || secondReceived) {
-                    throw new Error('Unexpected character');
-                }
-
-                secondReceived = true;
-            }
-
-            if (firstReceived && secondReceived) {
+            if (command.type === 'character' && command.character.id === characterId) {
                 done();
             }
         });

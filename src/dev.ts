@@ -226,14 +226,18 @@ export const initializeAssistantSDK = ({
         await vpsClient.sendSystemMessage({ data: {}, messageName: 'OPEN_ASSISTANT' });
 
         if (initPhrase) {
-            initialSmartAppData.push({ type: 'insets', insets: { left: 0, top: 0, right: 0, bottom: 144 } });
+            initialSmartAppData.push({
+                type: 'insets',
+                insets: { left: 0, top: 0, right: 0, bottom: 144 },
+                sdkMeta: { mid: -1 },
+            });
 
             const messageId = vpsClient.currentMessageId;
             const res = await vpsClient.sendText(initPhrase);
             appInfo = res?.app_info;
             if (res?.character) {
                 character = res?.character.id;
-                initialSmartAppData.push({ type: 'character', character: res.character });
+                initialSmartAppData.push({ type: 'character', character: res.character, sdk_meta: { mid: -1 } });
             }
 
             for (const item of res?.items || []) {
@@ -242,15 +246,14 @@ export const initializeAssistantSDK = ({
                 }
             }
 
+            window.appInitialData = initialSmartAppData;
+
             if (appInfo && appInfo.applicationId) {
                 window.appRecoveryState = recoveryStateRepository.get(appInfo.applicationId);
             }
 
             if (clientReady && window.AssistantClient?.onData) {
                 window.AssistantClient?.onStart && window.AssistantClient?.onStart();
-                for (const smartAppData of initialSmartAppData) {
-                    window.AssistantClient.onData(smartAppData);
-                }
             }
 
             assistantReady = true;
@@ -259,7 +262,7 @@ export const initializeAssistantSDK = ({
 
     const promise = fn();
 
-    window.appInitialData = initialSmartAppData;
+    window.appInitialData = [];
     window.appRecoveryState = null;
     window.AssistantHost = {
         close() {
@@ -278,9 +281,6 @@ export const initializeAssistantSDK = ({
         ready() {
             if (assistantReady && window.AssistantClient?.onData) {
                 window.AssistantClient?.onStart && window.AssistantClient?.onStart();
-                for (const smartAppData of initialSmartAppData) {
-                    window.AssistantClient.onData(smartAppData);
-                }
             }
 
             clientReady = true;
@@ -403,7 +403,7 @@ export const initializeAssistantSDK = ({
 
         if (message.character && message.character.id !== character) {
             character = message.character.id;
-            emitOnData({ type: 'character', character: message.character });
+            emitOnData({ type: 'character', character: message.character, sdkMeta: { mid: -1 } });
         }
 
         updateDevUI(message.suggestions?.buttons ?? [], bubbleText);
