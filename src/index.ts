@@ -6,6 +6,7 @@ import {
     AssistantSettings,
     AssistantClientCustomizedCommand,
     AssistantSmartAppData,
+    AssistantClientCommand,
 } from './typings';
 import { createNanoEvents } from './nanoevents';
 import { initializeAssistantSDK } from './dev';
@@ -26,9 +27,32 @@ export const createAssistant = <A extends AssistantSmartAppData>({
     let currentGetState = getState;
     let currentGetRecoveryState = getRecoveryState;
     const { on, emit } = createNanoEvents<AssistantEvents<A>>();
+    const initialData: AssistantClientCommand[] = [...window.appInitialData];
 
     window.AssistantClient = {
-        onData: (command: unknown) => emit('data', command as A),
+        onData: (command: any) => {
+            if (initialData.length) {
+                let index = -1;
+                if (command.type === 'character') {
+                    index = initialData.findIndex(
+                        (c) => c.type === 'character' && c.character.id === command.character.id,
+                    );
+                } else if (command.type === 'insets') {
+                    index = initialData.findIndex((c) => c.type === 'insets');
+                } else if (command.type === 'app_context') {
+                    index = initialData.findIndex((c) => c.type === 'app_context');
+                } else if (command.sdkMeta && command.sdkMeta?.mid !== '-1') {
+                    index = initialData.findIndex((c) => c.sdkMeta?.mid === command.sdkMeta.mid);
+                }
+
+                if (index >= 0) {
+                    initialData.splice(index, 1);
+                    return;
+                }
+            }
+
+            return emit('data', command as A);
+        },
         onRequestState: () => {
             return currentGetState();
         },

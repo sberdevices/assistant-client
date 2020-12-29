@@ -5,7 +5,7 @@ import { createAssistant } from '../../src/index';
 
 describe('Проверяем createAssistant', () => {
     beforeEach(() => {
-        window.appInitialData = [];
+        window.appInitialData = [{ type: 'character', character: { id: 'sber' } }];
         window.AssistantHost = {
             close: cy.stub(),
             ready: cy.stub(),

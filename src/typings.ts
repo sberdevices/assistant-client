@@ -134,6 +134,7 @@ export interface AssistantCharacterCommand {
     character: {
         id: AssistantCharacterType;
     };
+    sdkMeta: SdkMeta;
 }
 
 export interface AssistantInsetsCommand {
@@ -144,6 +145,7 @@ export interface AssistantInsetsCommand {
         right: number; // px
         bottom: number; // px
     };
+    sdkMeta: SdkMeta;
 }
 
 export interface AssistantCloseAppCommand {
@@ -167,6 +169,7 @@ export interface AssistantSmartAppError {
         code: number;
         description: string;
     };
+    sdkMeta?: SdkMeta;
 }
 
 export interface AssistantSmartAppCommand extends AssistantSmartAppData {
@@ -175,6 +178,12 @@ export interface AssistantSmartAppCommand extends AssistantSmartAppData {
         [key: string]: unknown;
     };
     [key: string]: unknown;
+    sdkMeta?: SdkMeta;
+}
+
+export interface AssistantAppContext {
+    type: 'app_context';
+    sdkMeta?: SdkMeta;
 }
 
 export interface AssistantPlayerCommand {
@@ -188,6 +197,7 @@ export interface AssistantSystemCommand {
 }
 
 export type AssistantClientCustomizedCommand<T> =
+    | AssistantAppContext
     | AssistantCharacterCommand
     | AssistantNavigationCommand
     | AssistantInsetsCommand
@@ -214,8 +224,7 @@ export interface AssistantHost {
 export interface AssistantWindow {
     AssistantHost?: AssistantHost;
     AssistantClient?: AssistantClient;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    appInitialData: Array<any>;
+    appInitialData: Array<AssistantClientCommand>;
     appRecoveryState: any;
 
     __dangerouslySendDataMessage?: (data: {}, name: string) => void;
