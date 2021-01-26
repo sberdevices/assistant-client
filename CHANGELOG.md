@@ -1,3 +1,19 @@
+# v2.7.0 (Tue Jan 26 2021)
+
+#### 🚀 Enhancement
+
+- feat: фильтровать дубли сообщений appInitialData [#74](https://github.com/sberdevices/assistant-client/pull/74) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- test: Покрытие api тестами [#70](https://github.com/sberdevices/assistant-client/pull/70) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.6.0 (Wed Dec 23 2020)
 
 #### 🚀 Enhancement
