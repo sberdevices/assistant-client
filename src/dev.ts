@@ -25,7 +25,7 @@ import { createVoicePlayer } from './createVoicePlayer';
 import { createRecoveryStateRepository } from './createRecoveryStateRepository';
 
 const SDK_VERSION = '20.09.1.3576';
-const APP_VERSION = '20.09.1.3576';
+const APP_VERSION = 'process.env.APP_VERSION';
 
 const CAPABILITIES = JSON.stringify({
     screen: { available: true, width: window.innerWidth, height: window.innerHeight },
