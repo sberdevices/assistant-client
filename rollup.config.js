@@ -1,41 +1,65 @@
-import typescript from '@rollup/plugin-typescript';
-import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import replace from 'rollup-plugin-replace';
+import json from '@rollup/plugin-json';
+import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
 
 import pkg from './package.json';
 
-export default {
+const common = {
     input: 'src/index.ts',
-    output: [{
-        file: pkg.unpkg,
-        name: 'assistant',
-        format: 'umd',
+    output: {
         globals: {
-            'react': 'React',
-            'react-dom': 'ReactDOM'
+            react: 'React',
+            'react-dom': 'ReactDOM',
         },
-        plugins: [terser()]
-    },{ 
-        file: pkg['jsnext:main'],
-        globals: {
-            'react': 'React',
-            'react-dom': 'ReactDOM'
-        },
-        format: 'esm'
-    }],
+    },
     external: ['react', 'react-dom'],
     plugins: [
-        nodeResolve({
-            browser: true,
-            preferBuiltins: true
+        commonjs({
+            extensions: ['.js', '.jsx', '.ts', '.tsx'],
         }),
-        typescript({
-            tsconfig: 'tsconfig.json',
-            declaration: false,
-            declarationMap: false,
-            composite: false,
+        replace({
+            'process.env.APP_VERSION': pkg.version,
         }),
-        commonjs()
-    ]
+        json(),
+    ],
 };
+
+export default [
+    {
+        ...common,
+        output: {
+            ...common.output,
+            dir: 'dist',
+            format: 'esm',
+        },
+        plugins: [
+            nodeResolve({
+                browser: true,
+                preferBuiltins: true,
+            }),
+            typescript({ tsconfig: 'tsconfig.json', outDir: 'dist' }),
+            ...common.plugins,
+        ],
+    },
+    {
+        ...common,
+        output: {
+            ...common.output,
+            file: pkg.unpkg,
+            format: 'umd',
+            name: 'assistant',
+            plugins: [terser()],
+        },
+        plugins: [
+            nodeResolve({
+                browser: true,
+                preferBuiltins: true,
+            }),
+            typescript({ tsconfig: 'tsconfig.json', declaration: false, declarationMap: false }),
+            ...common.plugins,
+        ],
+    },
+];

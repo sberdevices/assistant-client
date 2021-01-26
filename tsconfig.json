@@ -6,7 +6,7 @@
         "lib": ["es2017", "esnext.asynciterable", "DOM"],
         "declaration": true,
         "declarationMap": true,
-        "composite": true,
+        "composite": false,
         "strict": true,
         "strictNullChecks": true,
         "noUnusedLocals": true,
