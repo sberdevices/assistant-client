@@ -262,12 +262,13 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         return waitForAnswerToUser(messageId);
     };
 
-    const sendVoice = (data: Uint8Array, last = true, messageId = getMessageId()) => {
+    const sendVoice = (data: Uint8Array, last = true, messageId = getMessageId(), messageName?: string) => {
         return send({
             payload: {
                 voice: Voice.create({
                     data: new Uint8Array(data),
                 }),
+                messageName,
                 last: last ? 1 : -1,
             },
             messageId,
@@ -378,7 +379,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         send: typeof send;
         sendText: typeof sendText;
         sendSystemMessage: typeof sendSystemMessage;
-        sendVoice: typeof sendVoice;
+        sendVoice: (data: Uint8Array, last: boolean, messageName?: string) => void;
         messageId: number;
     };
 
@@ -425,9 +426,13 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
             return sendSystemMessage(data, last, batchingMessageId);
         };
 
-        const upgradedSendVoice: typeof sendVoice = (data, last) => {
+        const upgradedSendVoice: (data: Uint8Array, last: boolean, messageName?: string) => void = (
+            data,
+            last,
+            messageName,
+        ) => {
             checkLastMessageStatus(last);
-            return sendVoice(data, last, batchingMessageId);
+            return sendVoice(data, last, batchingMessageId, messageName);
         };
 
         return cb({

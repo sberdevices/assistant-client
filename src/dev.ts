@@ -23,6 +23,8 @@ import { createRecordDownloader } from './record/record-downloader';
 import { createVoiceListener } from './createVoiceListener';
 import { createVoicePlayer } from './createVoicePlayer';
 import { createRecoveryStateRepository } from './createRecoveryStateRepository';
+import { createMusicRecognizer } from './createMusicRecognizer';
+import { createSpeechRecognizer } from './createSpeechRecognizer';
 
 const SDK_VERSION = '20.09.1.3576';
 const APP_VERSION = 'process.env.APP_VERSION';
@@ -303,10 +305,12 @@ export const initializeAssistantSDK = ({
     };
 
     const voiceListener = createVoiceListener();
+    const speechRecognizer = createSpeechRecognizer(voiceListener);
+    const musciRecognizer = createMusicRecognizer(voiceListener);
     const subscribeToListenerStatus = (cb: (event: 'listen' | 'stopped') => void): (() => void) =>
         voiceListener.on('status', cb);
     const subscribeToListenerHypotesis = (cb: (hypotesis: string, last: boolean) => void): (() => void) =>
-        voiceListener.on('hypotesis', cb);
+        speechRecognizer.on('hypotesis', cb);
     voiceListener.on('status', (status: 'listen' | 'stopped') => {
         if (status === 'listen') {
             voicePlayer.active = false;
@@ -317,8 +321,13 @@ export const initializeAssistantSDK = ({
 
     const handleListen = () => {
         autolistenMesId = null;
-        if (voiceListener.status === 'listen') {
-            voiceListener.stop();
+        if (speechRecognizer.status === 'active') {
+            speechRecognizer.stop();
+            return;
+        }
+
+        if (musciRecognizer.status === 'active') {
+            musciRecognizer.stop();
             return;
         }
 
@@ -336,7 +345,28 @@ export const initializeAssistantSDK = ({
                     false,
                 );
 
-            voiceListener.listen({
+            speechRecognizer.start({
+                sendVoice,
+                messageId,
+                onMessage: (cb: (message: OriginalMessageType) => void) => vpsClient.on('message', cb),
+            });
+        });
+    };
+
+    const handleMusicRecognize = () => {
+        autolistenMesId = null;
+        if (speechRecognizer.status === 'active') {
+            speechRecognizer.stop();
+            return;
+        }
+
+        if (musciRecognizer.status === 'active') {
+            musciRecognizer.stop();
+            return;
+        }
+
+        vpsClient.batch(({ sendVoice, messageId }) => {
+            musciRecognizer.start({
                 sendVoice,
                 messageId,
                 onMessage: (cb: (message: OriginalMessageType) => void) => vpsClient.on('message', cb),
@@ -391,6 +421,11 @@ export const initializeAssistantSDK = ({
                     appInfo.applicationId === message.app_info?.applicationId
                 ) {
                     window.AssistantHost?.close();
+                    return;
+                }
+
+                if (item.command.type.toLowerCase() === 'start_music_recognition') {
+                    handleMusicRecognize();
                     return;
                 }
 

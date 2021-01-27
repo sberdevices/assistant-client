@@ -1,0 +1,24 @@
+syntax = "proto3";
+ 
+// -- документация MTT: https://sbtatlas.sigma.sbrf.ru/wiki/pages/viewpage.action?pageId=3734996987
+
+option go_package = ".;protocol";
+option optimize_for = SPEED;
+  
+message DecoderResult {                             // Результат работы MTT. Должен быть упакован в PacketWrapperFromServer.decoder_result_field
+    string result = 1;                              // Результат поиска трека в виде json для дальнейшей передачи as-is из VPS в DP
+    bool is_music_found = 2;                        // Обнаружена ли музыка в рамках трека
+    bool is_final = 3;                              // Признак того, что это финальный результат
+}
+  
+message ErrorResponse {
+    string error_message = 1;
+    int32 error_code = 2;
+}
+  
+message MttResponse {                   // Все сообщения от сервера должны быть упакованы в этот тип сообщений
+    oneof MessageType {
+        DecoderResult decoder_result_field = 1;
+        ErrorResponse error_response = 2;
+    }
+}
