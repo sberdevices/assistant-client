@@ -1,9 +1,9 @@
 import { Server } from 'mock-socket';
 
-import { appendHeader, createClient, MESSAGE_NAMES } from '../../../src/client';
+import { appendHeader, createClient } from '../../../src/client';
 import { Message } from '../../../src/proto';
 import { legacyDevice, settings } from '../../../src/dev';
-import { EventsType } from '../../../src/typings';
+import { EventsType, MessageNames } from '../../../src/typings';
 
 export const createAnswerBuffer = ({
     messageId = 1,
@@ -19,7 +19,7 @@ export const createAnswerBuffer = ({
             messageId,
             last: last ?? 1,
             systemMessage: systemMessageData ? { data: systemMessageData } : { data: messageId.toString() },
-            messageName: MESSAGE_NAMES.ANSWER_TO_USER,
+            messageName: MessageNames.ANSWER_TO_USER,
         }).finish(),
     );
     const newBuffer = new ArrayBuffer(encodedAsNodeBuffer.byteLength);

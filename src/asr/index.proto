@@ -5,102 +5,8 @@ syntax = "proto3";
 
 option optimize_for = LITE_RUNTIME;
 
-message Data {                                      // Сообщение с аудио данными от клиента. Должно быть упаковано в PacketWrapperToServer.data_field
-    string stream_name = 1;
-    bytes data = 2;                                 // Обязательное поле. Содержит непосредственно аудио данные.
-                                                    // Размер одного сообщения типа Data не должен превышать
-                                                    // 3200 байт (100 мc WAV PCM 16bit 16kHz)
-                                                    // В случае, если шлется WAV, длина поля data в каждом пакете
-                                                    // должна быть четной.
-                                                    // Может иметь нулевую длину.
-}
-
 message Variables {
     map<string,string> variables = 1;
-}
-
-message Info {                                      // Сообщение для логирования от клиента. Должно быть упаковано в PacketWrapperToServer.set_options_field.info.
-    string info = 1;                                // Опциональное поле. Запишется в лог, можно использовать для отладки.
-    string message_id = 2;                          // Обязательное поле. Message_id от VPS.
-    string channel_name = 3;                        // Обязательнео поле. Channel_name от VPS.
-    string session_id = 4;                          // Обязательнео поле. Session_id от VPS.
-    string user_id = 5;                             // Обязательнео поле. User_id от VPS.
-}
-
-message Finalized {                                 // Сообщение об окончании аудио потока от клиента. Должно быть упаковано в PacketWrapperToServer.finalized_field.
-
-}
-
-message SetOptions {                                // Сообщение с настройками распознавания от клиента. Должно быть упаковано в PacketWrapperToServer.set_options_field.
-    message NonFinalHypothesisOptions {
-        bool enable_non_final_hypothesis_report = 1;                // Возвращать ли промежуточные результаты распознавания.
-        float non_final_hypothesis_report_interval_seconds = 2;     // Как часто возвращать промежуточные результаты распознавания.
-    }
-
-    message ShortPhraseModelOptions {
-        bool enable_short_phrase_model = 1;
-        float short_phrase_model_cutoff = 2;
-    }
-
-    message SampleRateOptions {
-        int32 sample_rate = 1;                      // Частота дискретизации для PCM аудио, гарантируется только работа на 16 kHz.
-    }
-
-    enum AudioEncoding {
-        PCM_S16LE = 0;                              // Тип аудио потока WAV PCM 16 bit Little Endian, без заголовка.
-        OPUS = 1;                                   // Тип аудио потока Opus в контейнере ogg.
-    }
-
-    message AudioEncodingOptions {
-        AudioEncoding encoding = 1;
-    }
-
-    message LanguageOptions {
-        string language_code = 1;
-    }
-
-    message ProfanityFilterOptions {
-        bool enable = 1;
-    }
-
-    message NormalizationOptions {
-        bool enable = 1;                            // Делать ли нормализацию
-    }
-
-    message NBestOptions {
-        int32 count = 1;                            // Сколько возвращать гипотез. По умолчанию - 1.
-    }
-
-    message ModelOptions {
-        message Context {                           // Сообщение контекста.
-            enum ContextType {                      // Тип контекста
-                GENERAL = 0;                        // Общий тип. Ищем только элементы контекста в той форме, в которой их подали.
-                ADDRESSBOOK = 1;                    // Тип для адресной книги. Будем искать в т.ч. в других формах элементов контекста.
-                                                    // Например для элемента "Иван Петров", найдем в т.ч. "Ивану Петрову" или "Ивана Петрова".
-            }
-            string id = 1;                          // Уникальный идентификатор контекста.
-            ContextType context_type = 2;
-            repeated string prefixes = 3;           // Список префиксов. Начнем искать в контексте, только если будет
-                                                    // произнесено одно из этих слов.
-            repeated string values = 4;             // Элементы контекста. Не может быть больше 1000 значений суммарно во всех
-                                                    // контекстах. Количество влияет на производительность. Контексты,
-                                                    // содержащие любые символы, кроме русских букв и пробелов - игнорируются.
-        }
-
-        string model_name = 1;                      // Имя модели распознавания.
-        repeated Context contexts = 2;
-    }
-
-    NonFinalHypothesisOptions non_final_hypothesis_options = 1;
-    ShortPhraseModelOptions short_phrase_model_options = 2;
-    SampleRateOptions sample_rate_options = 3;
-    AudioEncodingOptions audio_encoding_options = 4;
-    LanguageOptions language_options = 5;
-    ProfanityFilterOptions profanity_filter_options = 6;
-    NormalizationOptions normalization_options = 7;
-    NBestOptions n_best_options = 8;
-    ModelOptions model_options = 9;
-    Info info = 10;
 }
 
 message UndecodedSeconds {
@@ -151,15 +57,6 @@ message DecoderResult {                             // Результат раб
 
 message ErrorResponse {
     string error_message = 1;
-}
-
-message PacketWrapperToServer {                     // Все сообщения от клиента должны быть упакованы в этот тип сообщений
-    oneof MessageType {
-        Data data_field = 1;
-        Info info_field = 3;
-        Finalized finalized_field = 5;
-        SetOptions set_options_field = 7;
-    }
 }
 
 message PacketWrapperFromServer {                   // Все сообщения от сервера должны быть упакованы в этот тип сообщений

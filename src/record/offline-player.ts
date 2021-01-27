@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { AssistantRecord, SystemMessageDataType, AssistantClientCommand, OutcomingMessage } from '../typings';
+import {
+    AssistantRecord,
+    SystemMessageDataType,
+    AssistantClientCommand,
+    OutcomingMessage,
+    MessageNames,
+} from '../typings';
 
 import { CURRENT_VERSION } from './index';
 
@@ -29,7 +35,7 @@ export const createRecordOfflinePlayer = (
         while (
             (entry.type !== 'incoming' ||
                 entry.message?.data == null ||
-                entry.message.name !== 'ANSWER_TO_USER' ||
+                entry.message.name !== MessageNames.ANSWER_TO_USER ||
                 !entry.message.data.items.some(({ command }) => command != null)) &&
             entryCursor < currentRecord.entries.length
         ) {
@@ -44,7 +50,7 @@ export const createRecordOfflinePlayer = (
                 i >= entryCursor &&
                 e.type === 'incoming' &&
                 e.message?.data != null &&
-                e.message.name === 'ANSWER_TO_USER' &&
+                e.message.name === MessageNames.ANSWER_TO_USER &&
                 e.message.data.items.some(({ command }) => command != null),
         );
     };
