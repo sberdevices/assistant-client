@@ -1,3 +1,15 @@
+# v2.8.0 (Wed Jan 27 2021)
+
+#### 🚀 Enhancement
+
+- feat: Отправка версии клиента в "surface_version" [#76](https://github.com/sberdevices/assistant-client/pull/76) ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+#### Authors: 1
+
+- Ivan Ushatsky ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+---
+
 # v2.7.0 (Tue Jan 26 2021)
 
 #### 🚀 Enhancement
