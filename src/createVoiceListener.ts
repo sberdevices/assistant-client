@@ -1,8 +1,7 @@
 import { PacketWrapperFromServer } from './asr';
-import { MESSAGE_NAMES } from './client';
 import { createNavigatorAudioProvider } from './createNavigatorAudioProvider';
 import { createNanoEvents } from './nanoevents';
-import { OriginalMessageType } from './typings';
+import { MessageNames, OriginalMessageType } from './typings';
 
 type voiceStreamEvents = {
     status: (status: 'listen' | 'stopped') => void;
@@ -44,7 +43,7 @@ export const createVoiceListener = (
                         stop();
                     }
 
-                    if (message.messageId === messageId && message.messageName === MESSAGE_NAMES.STT) {
+                    if (message.messageId === messageId && message.messageName === MessageNames.STT) {
                         if (message.text) {
                             emit('hypotesis', message.text.data || '', message.last === 1);
                             if (message.last === 1) {

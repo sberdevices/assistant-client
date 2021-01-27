@@ -5,6 +5,7 @@ import {
     AssistantNavigationCommand,
     AssistantSmartAppCommand,
     SystemMessageDataType,
+    MessageNames,
 } from '../../../src/typings';
 
 export const APP_INFO = {
@@ -21,7 +22,7 @@ export const sendMessage = (
     { systemMessageData, textData }: { systemMessageData?: SystemMessageDataType; textData?: string },
 ) => {
     const message = Message.create({
-        messageName: 'ANSWER_TO_USER',
+        messageName: MessageNames.ANSWER_TO_USER,
         messageId,
         text: textData ? { data: textData } : undefined,
         systemMessage: systemMessageData != null ? { data: JSON.stringify(systemMessageData) } : undefined,

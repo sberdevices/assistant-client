@@ -12,13 +12,15 @@ import {
     InitialSettings,
     IInitialSettings,
 } from './proto';
-import { EventsType, SystemMessageDataType, VpsVersion, CreateClientDataType, ClientLogger } from './typings';
+import {
+    EventsType,
+    SystemMessageDataType,
+    VpsVersion,
+    CreateClientDataType,
+    ClientLogger,
+    MessageNames,
+} from './typings';
 import { createNanoEvents } from './nanoevents';
-
-export const MESSAGE_NAMES = {
-    ANSWER_TO_USER: 'ANSWER_TO_USER',
-    STT: 'STT',
-};
 
 export const appendHeader = (buffer: Uint8Array) => {
     // Добавляем 4 байта в начало с длинной сообщения
@@ -107,7 +109,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
             const off = on('systemMessage', (systemMessageData, originalMessage) => {
                 if (
                     originalMessage.messageId === messageId &&
-                    originalMessage.messageName === MESSAGE_NAMES.ANSWER_TO_USER
+                    originalMessage.messageName === MessageNames.ANSWER_TO_USER
                 ) {
                     off();
                     resolve(systemMessageData);

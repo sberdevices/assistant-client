@@ -8,6 +8,12 @@ export enum VpsVersion {
     '5.0' = 5,
 }
 
+export const MessageNames = {
+    ANSWER_TO_USER: 'ANSWER_TO_USER',
+    STT: 'STT',
+    MUSIC_RECOGNITION: 'MUSIC_RECOGNITION',
+};
+
 export interface DPMessage {
     messageName: 'SERVER_ACTION' | 'MESSAGE_TO_SKILL' | string;
     messageId: string;
