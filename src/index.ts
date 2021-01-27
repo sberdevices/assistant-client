@@ -11,6 +11,7 @@ import {
 import { createNanoEvents } from './nanoevents';
 import { initializeAssistantSDK } from './dev';
 import { NativePanelParams } from './NativePanel/NativePanel';
+import { createSpeechRecognizer } from './createSpeechRecognizer';
 
 export interface AssistantEvents<A extends AssistantSmartAppData> {
     start: () => void;
@@ -90,6 +91,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                 window.AssistantHost?.sendData(JSON.stringify(action), name || null);
             }
         },
+        sendDataAsync: async () => {},
         setGetState: (nextGetState: () => {}) => {
             currentGetState = nextGetState;
         },
@@ -227,6 +229,8 @@ export { NativePanelParams } from './NativePanel/NativePanel';
 export * from './typings';
 export * from './dev';
 export { createClient } from './client';
+export { createMusicRecognizer } from './createMusicRecognizer';
+export { createSpeechRecognizer } from './createSpeechRecognizer';
 export { createVoiceListener } from './createVoiceListener';
 export { createVoicePlayer } from './createVoicePlayer';
 export { initializeDebugging } from './debug';
