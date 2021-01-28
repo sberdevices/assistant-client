@@ -1,3 +1,19 @@
+# v2.9.0 (Thu Jan 28 2021)
+
+#### 🚀 Enhancement
+
+- feat: поддержка команды start_music_recognition [#77](https://github.com/sberdevices/assistant-client/pull/77) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- refactor: proto и messageNames [#77](https://github.com/sberdevices/assistant-client/pull/77) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.8.0 (Wed Jan 27 2021)
 
 #### 🚀 Enhancement
