@@ -1,297 +1,301 @@
 import * as $protobuf from "protobufjs";
-/** Properties of a DecoderResult. */
-export interface IDecoderResult {
+/** Namespace Music2TrackProtocol. */
+export namespace Music2TrackProtocol {
 
-    /** DecoderResult result */
-    result?: (string|null);
+    /** Properties of a DecoderResult. */
+    interface IDecoderResult {
 
-    /** DecoderResult isMusicFound */
-    isMusicFound?: (boolean|null);
+        /** DecoderResult result */
+        result?: (string|null);
 
-    /** DecoderResult isFinal */
-    isFinal?: (boolean|null);
-}
+        /** DecoderResult isMusicFound */
+        isMusicFound?: (boolean|null);
 
-/** Represents a DecoderResult. */
-export class DecoderResult implements IDecoderResult {
+        /** DecoderResult isFinal */
+        isFinal?: (boolean|null);
+    }
 
-    /**
-     * Constructs a new DecoderResult.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: IDecoderResult);
+    /** Represents a DecoderResult. */
+    class DecoderResult implements IDecoderResult {
 
-    /** DecoderResult result. */
-    public result: string;
+        /**
+         * Constructs a new DecoderResult.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: Music2TrackProtocol.IDecoderResult);
 
-    /** DecoderResult isMusicFound. */
-    public isMusicFound: boolean;
+        /** DecoderResult result. */
+        public result: string;
 
-    /** DecoderResult isFinal. */
-    public isFinal: boolean;
+        /** DecoderResult isMusicFound. */
+        public isMusicFound: boolean;
 
-    /**
-     * Creates a new DecoderResult instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns DecoderResult instance
-     */
-    public static create(properties?: IDecoderResult): DecoderResult;
+        /** DecoderResult isFinal. */
+        public isFinal: boolean;
 
-    /**
-     * Encodes the specified DecoderResult message. Does not implicitly {@link DecoderResult.verify|verify} messages.
-     * @param message DecoderResult message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: IDecoderResult, writer?: $protobuf.Writer): $protobuf.Writer;
+        /**
+         * Creates a new DecoderResult instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns DecoderResult instance
+         */
+        public static create(properties?: Music2TrackProtocol.IDecoderResult): Music2TrackProtocol.DecoderResult;
 
-    /**
-     * Encodes the specified DecoderResult message, length delimited. Does not implicitly {@link DecoderResult.verify|verify} messages.
-     * @param message DecoderResult message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: IDecoderResult, writer?: $protobuf.Writer): $protobuf.Writer;
+        /**
+         * Encodes the specified DecoderResult message. Does not implicitly {@link Music2TrackProtocol.DecoderResult.verify|verify} messages.
+         * @param message DecoderResult message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: Music2TrackProtocol.IDecoderResult, writer?: $protobuf.Writer): $protobuf.Writer;
 
-    /**
-     * Decodes a DecoderResult message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns DecoderResult
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): DecoderResult;
+        /**
+         * Encodes the specified DecoderResult message, length delimited. Does not implicitly {@link Music2TrackProtocol.DecoderResult.verify|verify} messages.
+         * @param message DecoderResult message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: Music2TrackProtocol.IDecoderResult, writer?: $protobuf.Writer): $protobuf.Writer;
 
-    /**
-     * Decodes a DecoderResult message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns DecoderResult
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): DecoderResult;
+        /**
+         * Decodes a DecoderResult message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns DecoderResult
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Music2TrackProtocol.DecoderResult;
 
-    /**
-     * Verifies a DecoderResult message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): (string|null);
+        /**
+         * Decodes a DecoderResult message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns DecoderResult
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Music2TrackProtocol.DecoderResult;
 
-    /**
-     * Creates a DecoderResult message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns DecoderResult
-     */
-    public static fromObject(object: { [k: string]: any }): DecoderResult;
+        /**
+         * Verifies a DecoderResult message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
 
-    /**
-     * Creates a plain object from a DecoderResult message. Also converts values to other types if specified.
-     * @param message DecoderResult
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: DecoderResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        /**
+         * Creates a DecoderResult message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns DecoderResult
+         */
+        public static fromObject(object: { [k: string]: any }): Music2TrackProtocol.DecoderResult;
 
-    /**
-     * Converts this DecoderResult to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-}
+        /**
+         * Creates a plain object from a DecoderResult message. Also converts values to other types if specified.
+         * @param message DecoderResult
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: Music2TrackProtocol.DecoderResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
-/** Properties of an ErrorResponse. */
-export interface IErrorResponse {
+        /**
+         * Converts this DecoderResult to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
 
-    /** ErrorResponse errorMessage */
-    errorMessage?: (string|null);
+    /** Properties of an ErrorResponse. */
+    interface IErrorResponse {
 
-    /** ErrorResponse errorCode */
-    errorCode?: (number|null);
-}
+        /** ErrorResponse errorMessage */
+        errorMessage?: (string|null);
 
-/** Represents an ErrorResponse. */
-export class ErrorResponse implements IErrorResponse {
+        /** ErrorResponse errorCode */
+        errorCode?: (number|null);
+    }
 
-    /**
-     * Constructs a new ErrorResponse.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: IErrorResponse);
+    /** Represents an ErrorResponse. */
+    class ErrorResponse implements IErrorResponse {
 
-    /** ErrorResponse errorMessage. */
-    public errorMessage: string;
+        /**
+         * Constructs a new ErrorResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: Music2TrackProtocol.IErrorResponse);
 
-    /** ErrorResponse errorCode. */
-    public errorCode: number;
+        /** ErrorResponse errorMessage. */
+        public errorMessage: string;
 
-    /**
-     * Creates a new ErrorResponse instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns ErrorResponse instance
-     */
-    public static create(properties?: IErrorResponse): ErrorResponse;
+        /** ErrorResponse errorCode. */
+        public errorCode: number;
 
-    /**
-     * Encodes the specified ErrorResponse message. Does not implicitly {@link ErrorResponse.verify|verify} messages.
-     * @param message ErrorResponse message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: IErrorResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+        /**
+         * Creates a new ErrorResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns ErrorResponse instance
+         */
+        public static create(properties?: Music2TrackProtocol.IErrorResponse): Music2TrackProtocol.ErrorResponse;
 
-    /**
-     * Encodes the specified ErrorResponse message, length delimited. Does not implicitly {@link ErrorResponse.verify|verify} messages.
-     * @param message ErrorResponse message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: IErrorResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+        /**
+         * Encodes the specified ErrorResponse message. Does not implicitly {@link Music2TrackProtocol.ErrorResponse.verify|verify} messages.
+         * @param message ErrorResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: Music2TrackProtocol.IErrorResponse, writer?: $protobuf.Writer): $protobuf.Writer;
 
-    /**
-     * Decodes an ErrorResponse message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns ErrorResponse
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): ErrorResponse;
+        /**
+         * Encodes the specified ErrorResponse message, length delimited. Does not implicitly {@link Music2TrackProtocol.ErrorResponse.verify|verify} messages.
+         * @param message ErrorResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: Music2TrackProtocol.IErrorResponse, writer?: $protobuf.Writer): $protobuf.Writer;
 
-    /**
-     * Decodes an ErrorResponse message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns ErrorResponse
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): ErrorResponse;
+        /**
+         * Decodes an ErrorResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ErrorResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Music2TrackProtocol.ErrorResponse;
 
-    /**
-     * Verifies an ErrorResponse message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): (string|null);
+        /**
+         * Decodes an ErrorResponse message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns ErrorResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Music2TrackProtocol.ErrorResponse;
 
-    /**
-     * Creates an ErrorResponse message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns ErrorResponse
-     */
-    public static fromObject(object: { [k: string]: any }): ErrorResponse;
+        /**
+         * Verifies an ErrorResponse message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
 
-    /**
-     * Creates a plain object from an ErrorResponse message. Also converts values to other types if specified.
-     * @param message ErrorResponse
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: ErrorResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        /**
+         * Creates an ErrorResponse message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns ErrorResponse
+         */
+        public static fromObject(object: { [k: string]: any }): Music2TrackProtocol.ErrorResponse;
 
-    /**
-     * Converts this ErrorResponse to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-}
+        /**
+         * Creates a plain object from an ErrorResponse message. Also converts values to other types if specified.
+         * @param message ErrorResponse
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: Music2TrackProtocol.ErrorResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
-/** Properties of a MttResponse. */
-export interface IMttResponse {
+        /**
+         * Converts this ErrorResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
 
-    /** MttResponse decoderResultField */
-    decoderResultField?: (IDecoderResult|null);
+    /** Properties of a MttResponse. */
+    interface IMttResponse {
 
-    /** MttResponse errorResponse */
-    errorResponse?: (IErrorResponse|null);
-}
+        /** MttResponse decoderResultField */
+        decoderResultField?: (Music2TrackProtocol.IDecoderResult|null);
 
-/** Represents a MttResponse. */
-export class MttResponse implements IMttResponse {
+        /** MttResponse errorResponse */
+        errorResponse?: (Music2TrackProtocol.IErrorResponse|null);
+    }
 
-    /**
-     * Constructs a new MttResponse.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: IMttResponse);
+    /** Represents a MttResponse. */
+    class MttResponse implements IMttResponse {
 
-    /** MttResponse decoderResultField. */
-    public decoderResultField?: (IDecoderResult|null);
+        /**
+         * Constructs a new MttResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: Music2TrackProtocol.IMttResponse);
 
-    /** MttResponse errorResponse. */
-    public errorResponse?: (IErrorResponse|null);
+        /** MttResponse decoderResultField. */
+        public decoderResultField?: (Music2TrackProtocol.IDecoderResult|null);
 
-    /** MttResponse MessageType. */
-    public MessageType?: ("decoderResultField"|"errorResponse");
+        /** MttResponse errorResponse. */
+        public errorResponse?: (Music2TrackProtocol.IErrorResponse|null);
 
-    /**
-     * Creates a new MttResponse instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns MttResponse instance
-     */
-    public static create(properties?: IMttResponse): MttResponse;
+        /** MttResponse MessageType. */
+        public MessageType?: ("decoderResultField"|"errorResponse");
 
-    /**
-     * Encodes the specified MttResponse message. Does not implicitly {@link MttResponse.verify|verify} messages.
-     * @param message MttResponse message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: IMttResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+        /**
+         * Creates a new MttResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MttResponse instance
+         */
+        public static create(properties?: Music2TrackProtocol.IMttResponse): Music2TrackProtocol.MttResponse;
 
-    /**
-     * Encodes the specified MttResponse message, length delimited. Does not implicitly {@link MttResponse.verify|verify} messages.
-     * @param message MttResponse message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: IMttResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+        /**
+         * Encodes the specified MttResponse message. Does not implicitly {@link Music2TrackProtocol.MttResponse.verify|verify} messages.
+         * @param message MttResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: Music2TrackProtocol.IMttResponse, writer?: $protobuf.Writer): $protobuf.Writer;
 
-    /**
-     * Decodes a MttResponse message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns MttResponse
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): MttResponse;
+        /**
+         * Encodes the specified MttResponse message, length delimited. Does not implicitly {@link Music2TrackProtocol.MttResponse.verify|verify} messages.
+         * @param message MttResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: Music2TrackProtocol.IMttResponse, writer?: $protobuf.Writer): $protobuf.Writer;
 
-    /**
-     * Decodes a MttResponse message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns MttResponse
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): MttResponse;
+        /**
+         * Decodes a MttResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns MttResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Music2TrackProtocol.MttResponse;
 
-    /**
-     * Verifies a MttResponse message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): (string|null);
+        /**
+         * Decodes a MttResponse message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns MttResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Music2TrackProtocol.MttResponse;
 
-    /**
-     * Creates a MttResponse message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns MttResponse
-     */
-    public static fromObject(object: { [k: string]: any }): MttResponse;
+        /**
+         * Verifies a MttResponse message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
 
-    /**
-     * Creates a plain object from a MttResponse message. Also converts values to other types if specified.
-     * @param message MttResponse
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: MttResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        /**
+         * Creates a MttResponse message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns MttResponse
+         */
+        public static fromObject(object: { [k: string]: any }): Music2TrackProtocol.MttResponse;
 
-    /**
-     * Converts this MttResponse to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
+        /**
+         * Creates a plain object from a MttResponse message. Also converts values to other types if specified.
+         * @param message MttResponse
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: Music2TrackProtocol.MttResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this MttResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
 }

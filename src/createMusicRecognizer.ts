@@ -1,5 +1,5 @@
 import { OriginalMessageType, MessageNames } from './typings';
-import { MttResponse } from './mtt';
+import { Music2TrackProtocol } from './mtt';
 import { createVoiceListener } from './createVoiceListener';
 
 export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoiceListener>) => {
@@ -40,7 +40,9 @@ export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoi
                     return;
                 }
 
-                const { decoderResultField, errorResponse } = MttResponse.decode(message.bytes.data);
+                const { decoderResultField, errorResponse } = Music2TrackProtocol.MttResponse.decode(
+                    message.bytes.data,
+                );
                 if (decoderResultField?.isFinal || errorResponse) {
                     stop();
                 }
