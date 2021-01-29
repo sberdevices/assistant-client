@@ -1,3 +1,5 @@
+import { v4 } from 'uuid';
+
 import {
     AssistantAppState,
     AssistantServerAction,
@@ -11,10 +13,17 @@ import {
 import { createNanoEvents } from './nanoevents';
 import { initializeAssistantSDK } from './dev';
 import { NativePanelParams } from './NativePanel/NativePanel';
+import { createNanoObservable, ObserverFunc } from './nanoobservable';
 
 export interface AssistantEvents<A extends AssistantSmartAppData> {
     start: () => void;
     data: (command: AssistantClientCustomizedCommand<A>) => void;
+}
+
+export interface SendDataParams {
+    action: AssistantServerAction;
+    name?: string;
+    requestId?: string;
 }
 
 export const createAssistant = <A extends AssistantSmartAppData>({
@@ -28,7 +37,8 @@ export const createAssistant = <A extends AssistantSmartAppData>({
     let currentGetRecoveryState = getRecoveryState;
     const { on, emit } = createNanoEvents<AssistantEvents<A>>();
     const startedAppInitialData: AssistantClientCommand[] = [...(window.appInitialData || [])];
-    const initialData: AssistantClientCommand[] = [...startedAppInitialData];
+    const initialData: AssistantClientCommand[] = [...window.appInitialData];
+    const observables = new Map<string, { next: ObserverFunc<A>; requestId?: string }>();
 
     window.AssistantClient = {
         onData: (command: any) => {
@@ -42,7 +52,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                     index = initialData.findIndex((c) => c.type === 'insets');
                 } else if (command.type === 'app_context') {
                     index = initialData.findIndex((c) => c.type === 'app_context');
-                } else if (command.sdkMeta && command.sdkMeta?.mid !== '-1') {
+                } else if (command.sdkMeta && command.sdkMeta?.mid && command.sdkMeta?.mid !== '-1') {
                     index = initialData.findIndex((c) => c.sdkMeta?.mid === command.sdkMeta.mid);
                 }
 
@@ -50,6 +60,26 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                     initialData.splice(index, 1);
                     return;
                 }
+            }
+
+            if (
+                command.type === 'smart_app_data' &&
+                command.sdkMeta?.requestId &&
+                observables.has(command.sdkMeta.requestId)
+            ) {
+                const { sdkMeta, ...other } = command;
+                const { requestId: realReqId, ...meta } = sdkMeta;
+                const result = other;
+                const { requestId, next } = observables.get(command.sdkMeta.requestId);
+
+                if (Object.keys(meta).length > 0 || requestId) {
+                    result.sdkMeta = { ...meta };
+                    if (requestId) {
+                        result.sdkMeta = { requestId };
+                    }
+                }
+                next(result as A);
+                return;
             }
 
             return emit('data', command as A);
@@ -73,25 +103,42 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         getInitialData: () => startedAppInitialData,
         getRecoveryState: () => window.appRecoveryState,
         on,
-        sendData: ({
-            action,
-            name,
-            requestId,
-        }: {
-            action: AssistantServerAction;
-            name?: string;
-            requestId?: string;
-        }) => {
+        sendData: ({ action, name, requestId }: SendDataParams, onData?: ObserverFunc<A>): (() => void) => {
             if (window.AssistantHost?.sendDataContainer) {
-                window.AssistantHost?.sendDataContainer(
-                    /* eslint-disable-next-line @typescript-eslint/camelcase */
-                    JSON.stringify({ data: action, message_name: name || '', requestId }),
-                );
-            } else {
-                window.AssistantHost?.sendData(JSON.stringify(action), name || null);
+                if (onData == null) {
+                    window.AssistantHost?.sendDataContainer(
+                        /* eslint-disable-next-line @typescript-eslint/camelcase */
+                        JSON.stringify({ data: action, message_name: name || '', requestId }),
+                    );
+                    return () => {};
+                }
+
+                if (requestId && observables.has(requestId)) {
+                    throw new Error('requestId должен быть уникальным');
+                }
+
+                const { subscribe } = createNanoObservable<A>(({ next }) => {
+                    const realRequestId = requestId || v4();
+
+                    window.AssistantHost?.sendDataContainer(
+                        /* eslint-disable-next-line @typescript-eslint/camelcase */
+                        JSON.stringify({ data: action, message_name: name || '', requestId: realRequestId }),
+                    );
+
+                    observables.set(realRequestId, { next, requestId });
+                });
+
+                return subscribe({ next: onData }).unsubscribe;
             }
+
+            if (onData != null) {
+                throw new Error('Не поддерживается в данной версии клиента');
+            }
+
+            window.AssistantHost?.sendData(JSON.stringify(action), name || null);
+
+            return () => {};
         },
-        sendDataAsync: async () => {},
         setGetState: (nextGetState: () => {}) => {
             currentGetState = nextGetState;
         },
