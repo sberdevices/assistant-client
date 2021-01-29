@@ -171,9 +171,25 @@ ____
 
 Осуществляет подписку на событие получения данных с бэкенд.
 
-#### sendData({ action: [AssistantServerAction](#AssistantServerAction) }): void
+#### sendData({ action: [AssistantServerAction](#AssistantServerAction), requestId?: string }, onData?: data: [AssistantCharacterCommand](#AssistantCharacterCommand) | [AssistantNavigationCommand](#AssistantNavigationCommand) | [AssistantSmartAppError](#AssistantSmartAppError) | [AssistantSmartAppCommand](#AssistantSmartAppCommand)) => void): () => void
 
 Отправляет события с фронтенд на бэкенд через ассистента.
+Первым параметром (обязательным) - принимает данные для отправки.
+Вторым параметром (опциональным) - принимает обработчик ответа (на переданные первым параметром данные); в этом случае - в on('data') ответ не придет.
+Возвращает функцию - вызов которой отменяет обработчик ответа.
+
+Пример с обработкой ответа:
+```ts
+...
+
+const unsubscribe = assistant.sendData({ action: { action_id: 'some_action_name' } }, (data: command) => {
+  if (data.type === 'smart_app_data' && data.smart_app_data.action === 'target_action') {
+    unsubsribe();
+    ... // обработка команды
+  }
+});
+
+```
 
 #### setGetState(nextGetState: () => [AssistantAppState](#AssistantAppState)): void
 

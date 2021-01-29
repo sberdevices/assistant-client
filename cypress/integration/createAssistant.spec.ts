@@ -112,6 +112,41 @@ describe('Проверяем createAssistant', () => {
             .then(done);
     });
 
+    it('Проверяем sendData c подпиской на ответ', (done) => {
+        const status = { first: false, second: false };
+        const requestId = '654321';
+        const action = { action_id: 'test_action' };
+        const command = { type: 'smart_app_data', smart_app_data: { command: 'test_cmd' } };
+        const assistant = initAssistant();
+
+        // ожидаем исключение, если sendDataContainer не определен
+        window.AssistantHost.sendDataContainer = undefined;
+        expect(() => assistant.sendDataWithAnswer({ action })).to.throw();
+
+        // не передаем requestId, ожидаем ответ
+        window.AssistantHost.sendDataContainer = (data) => {
+            const { requestId } = JSON.parse(data);
+            setTimeout(() => window.AssistantClient.onData({ ...command, sdkMeta: { requestId } }));
+        };
+        assistant.sendData({ action }, (cmd) => {
+            expect(cmd).to.deep.equal(command);
+            status.first = true;
+            if (status.second) {
+                done();
+            }
+        });
+
+        // передаем requestId, ожидаем ответ
+        assistant.sendData({ action, requestId }, ({ sdkMeta, ...cmd }) => {
+            expect(cmd).to.deep.equal(command);
+            expect(sdkMeta?.requestId).to.equal(requestId);
+            status.second = true;
+            if (status.first) {
+                done();
+            }
+        });
+    });
+
     it('Проверяем подписку на события ассистента', () => {
         const onStart = cy.stub();
         const onData = cy.stub();
