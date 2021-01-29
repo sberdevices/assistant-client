@@ -1,3 +1,15 @@
+# v2.9.1 (Fri Jan 29 2021)
+
+#### 🐛 Bug Fix
+
+- fix: декодинг мтт [#78](https://github.com/sberdevices/assistant-client/pull/78) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.9.0 (Thu Jan 28 2021)
 
 #### 🚀 Enhancement
