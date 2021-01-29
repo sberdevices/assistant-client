@@ -1,6 +1,6 @@
 syntax = "proto3";
- 
-// -- документация MTT: https://sbtatlas.sigma.sbrf.ru/wiki/pages/viewpage.action?pageId=3734996987
+package Music2TrackProtocol;
+
 
 option go_package = ".;protocol";
 option optimize_for = SPEED;
