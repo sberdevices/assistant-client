@@ -406,6 +406,10 @@ const initializeAssistant = (getState: AssistantAppState) => {
             getState,
         });
     }
+    
+    if (window.cypress) {
+      window.appInitialData = [];
+    }
 
     return createAssistant({ getState });
 };
