@@ -29,7 +29,7 @@
     "author": "SberDevices Frontend Team <sberdevices.frontend@gmail.com>",
     "license": "Sber Public License at-nc-sa v.2",
     "dependencies": {
-        "axios": "0.19.2",
+        "axios": "0.21.1",
         "nanoevents": "5.1.7",
         "protobufjs": "6.9.0",
         "uuid": "8.0.0"
