@@ -81,7 +81,7 @@ describe('Проверяем createAssistantDev', () => {
         });
     });
 
-    it('Проверяем заполнение appInitialData - ожидаем insets, и все что пришло в ответ на initPhrase', (done) => {
+    it('Проверяем заполнение appInitialData - после onStart ожидаем insets, и все что пришло в ответ на initPhrase', (done) => {
         const COMMAND: AssistantSmartAppCommand = {
             type: 'smart_app_data',
             smart_app_data: { command: 'test_command' },
@@ -101,7 +101,7 @@ describe('Проверяем createAssistantDev', () => {
 
         const status = { character: false, data: false, insets: false };
         assistant.on('start', () => {
-            const items = assistant.getInitialData();
+            const items = window.appInitialData;
             for (let i = 0; i < items.length; i++) {
                 const command = items[i];
                 switch (command.type) {
@@ -122,7 +122,51 @@ describe('Проверяем createAssistantDev', () => {
                 }
             }
 
-            if ((status.character && status.insets) || status.data) {
+            if (status.character && status.insets && status.data) {
+                done();
+            }
+        });
+    });
+
+    it('Проверяем appInitialData - должно приходить в onData в dev-режиме', (done) => {
+        const COMMAND: AssistantSmartAppCommand = {
+            type: 'smart_app_data',
+            smart_app_data: { command: 'test_command' },
+        };
+        server.on('connection', (socket) => {
+            socket.binaryType = 'arraybuffer';
+            initProtocol(socket, { initPhrase: INIT_PHRASE, items: [{ command: COMMAND }] });
+        });
+
+        const assistant = createAssistantDev<AssistantSmartAppCommand>({
+            getState: () => ({}),
+            url: SOCKET_URL,
+            userChannel: USER_CHANNEL,
+            surface: SURFACE,
+            initPhrase: INIT_PHRASE,
+        });
+
+        const status = { character: false, data: false, insets: false };
+        assistant.on('data', (command) => {
+            switch (command.type) {
+                case 'character':
+                    status.character = true;
+                    expect(command.character.id).to.equal(CHARACTER);
+                    break;
+                case 'insets':
+                    status.insets = true;
+                    expect(command.insets).to.deep.equal(INSETS);
+                    break;
+                case 'smart_app_data':
+                    status.data = true;
+                    expect(command.smart_app_data).to.deep.equal(COMMAND.smart_app_data);
+                    break;
+                default:
+                    throw new Error('Unexpected command');
+            }
+
+            if (status.character && status.insets && status.data) {
+                expect(assistant.getInitialData()).to.deep.equal([]);
                 done();
             }
         });

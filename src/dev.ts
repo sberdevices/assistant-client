@@ -220,6 +220,12 @@ export const initializeAssistantSDK = ({
         });
     };
 
+    const emitOnData = (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) => {
+        if (clientReady && assistantReady && window.AssistantClient?.onData) {
+            window.AssistantClient.onData(command);
+        }
+    };
+
     const fn = async () => {
         await new Promise((resolve) => {
             vpsClient.on('ready', resolve);
@@ -259,6 +265,10 @@ export const initializeAssistantSDK = ({
             }
 
             assistantReady = true;
+
+            for (const smartAppData of initialSmartAppData) {
+                emitOnData(smartAppData);
+            }
         }
     };
 
@@ -387,12 +397,6 @@ export const initializeAssistantSDK = ({
                 onSubscribeListenStatus: subscribeToListenerStatus,
                 onSubscribeHypotesis: subscribeToListenerHypotesis,
             });
-        }
-    };
-
-    const emitOnData = (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) => {
-        if (clientReady && assistantReady && window.AssistantClient?.onData) {
-            window.AssistantClient.onData(command);
         }
     };
 

@@ -95,8 +95,9 @@ describe('Проверяем createAssistant', () => {
     });
 
     it('Проверяем getInitialData', () => {
+        const appInitialData = [...(window.appInitialData || [])];
         const assistant = initAssistant();
-        expect(assistant.getInitialData()).to.equal(window.appInitialData);
+        expect(assistant.getInitialData()).to.deep.equal(window.appInitialData);
     });
 
     it('Проверяем sendData', (done) => {

@@ -11,7 +11,6 @@ import {
 import { createNanoEvents } from './nanoevents';
 import { initializeAssistantSDK } from './dev';
 import { NativePanelParams } from './NativePanel/NativePanel';
-import { createSpeechRecognizer } from './createSpeechRecognizer';
 
 export interface AssistantEvents<A extends AssistantSmartAppData> {
     start: () => void;
@@ -28,7 +27,8 @@ export const createAssistant = <A extends AssistantSmartAppData>({
     let currentGetState = getState;
     let currentGetRecoveryState = getRecoveryState;
     const { on, emit } = createNanoEvents<AssistantEvents<A>>();
-    const initialData: AssistantClientCommand[] = [...window.appInitialData];
+    const startedAppInitialData: AssistantClientCommand[] = [...(window.appInitialData || [])];
+    const initialData: AssistantClientCommand[] = [...startedAppInitialData];
 
     window.AssistantClient = {
         onData: (command: any) => {
@@ -70,7 +70,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
 
     return {
         close: () => window.AssistantHost?.close(),
-        getInitialData: () => window.appInitialData, // messages от бека для инициализации аппа
+        getInitialData: () => startedAppInitialData,
         getRecoveryState: () => window.appRecoveryState,
         on,
         sendData: ({
