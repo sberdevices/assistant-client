@@ -1,3 +1,19 @@
+# v2.9.2 (Mon Feb 15 2021)
+
+#### 🐛 Bug Fix
+
+- fix: не падать, если appInitialData нет [#83](https://github.com/sberdevices/assistant-client/pull/83) ([@Turanchoks](https://github.com/Turanchoks))
+- chore: update axios@0.21.1 [#82](https://github.com/sberdevices/assistant-client/pull/82) (AASivashov@sberbank.ru)
+- docs: Поправил пример теста [#80](https://github.com/sberdevices/assistant-client/pull/80) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 3
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+- Alexander Sivashev (AASivashov@sberbank.ru)
+- Pavel Remizov ([@Turanchoks](https://github.com/Turanchoks))
+
+---
+
 # v2.9.1 (Fri Jan 29 2021)
 
 #### 🐛 Bug Fix
