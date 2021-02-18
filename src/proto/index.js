@@ -40,6 +40,8 @@
          * @property {IDevice|null} [device] Message device
          * @property {IBytes|null} [bytes] Message bytes
          * @property {IInitialSettings|null} [initialSettings] Message initialSettings
+         * @property {number|Long|null} [timestamp] Message timestamp
+         * @property {Object.<string,string>|null} [meta] Message meta
          */
     
         /**
@@ -52,6 +54,7 @@
          */
         function Message(properties) {
             this.devContext = [];
+            this.meta = {};
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -202,6 +205,22 @@
          */
         Message.prototype.initialSettings = null;
     
+        /**
+         * Message timestamp.
+         * @member {number|Long} timestamp
+         * @memberof Message
+         * @instance
+         */
+        Message.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+        /**
+         * Message meta.
+         * @member {Object.<string,string>} meta
+         * @memberof Message
+         * @instance
+         */
+        Message.prototype.meta = $util.emptyObject;
+    
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
     
@@ -277,6 +296,11 @@
                 $root.Bytes.encode(message.bytes, writer.uint32(/* id 17, wireType 2 =*/138).fork()).ldelim();
             if (message.initialSettings != null && Object.hasOwnProperty.call(message, "initialSettings"))
                 $root.InitialSettings.encode(message.initialSettings, writer.uint32(/* id 18, wireType 2 =*/146).fork()).ldelim();
+            if (message.timestamp != null && Object.hasOwnProperty.call(message, "timestamp"))
+                writer.uint32(/* id 19, wireType 0 =*/152).int64(message.timestamp);
+            if (message.meta != null && Object.hasOwnProperty.call(message, "meta"))
+                for (var keys = Object.keys(message.meta), i = 0; i < keys.length; ++i)
+                    writer.uint32(/* id 20, wireType 2 =*/162).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]).uint32(/* id 2, wireType 2 =*/18).string(message.meta[keys[i]]).ldelim();
             return writer;
         };
     
@@ -307,7 +331,7 @@
         Message.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.Message();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.Message(), key;
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -366,6 +390,17 @@
                     break;
                 case 18:
                     message.initialSettings = $root.InitialSettings.decode(reader, reader.uint32());
+                    break;
+                case 19:
+                    message.timestamp = reader.int64();
+                    break;
+                case 20:
+                    reader.skip().pos++;
+                    if (message.meta === $util.emptyObject)
+                        message.meta = {};
+                    key = reader.string();
+                    reader.pos++;
+                    message.meta[key] = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -524,6 +559,17 @@
                         return "initialSettings." + error;
                 }
             }
+            if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
+                    return "timestamp: integer|Long expected";
+            if (message.meta != null && message.hasOwnProperty("meta")) {
+                if (!$util.isObject(message.meta))
+                    return "meta: object expected";
+                var key = Object.keys(message.meta);
+                for (var i = 0; i < key.length; ++i)
+                    if (!$util.isString(message.meta[key[i]]))
+                        return "meta: string{k:string} expected";
+            }
             return null;
         };
     
@@ -617,6 +663,22 @@
                     throw TypeError(".Message.initialSettings: object expected");
                 message.initialSettings = $root.InitialSettings.fromObject(object.initialSettings);
             }
+            if (object.timestamp != null)
+                if ($util.Long)
+                    (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
+                else if (typeof object.timestamp === "string")
+                    message.timestamp = parseInt(object.timestamp, 10);
+                else if (typeof object.timestamp === "number")
+                    message.timestamp = object.timestamp;
+                else if (typeof object.timestamp === "object")
+                    message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
+            if (object.meta) {
+                if (typeof object.meta !== "object")
+                    throw TypeError(".Message.meta: object expected");
+                message.meta = {};
+                for (var keys = Object.keys(object.meta), i = 0; i < keys.length; ++i)
+                    message.meta[keys[i]] = String(object.meta[keys[i]]);
+            }
             return message;
         };
     
@@ -635,6 +697,8 @@
             var object = {};
             if (options.arrays || options.defaults)
                 object.devContext = [];
+            if (options.objects || options.defaults)
+                object.meta = {};
             if (options.defaults) {
                 object.userId = "";
                 if ($util.Long) {
@@ -648,6 +712,11 @@
                 object.vpsToken = "";
                 object.messageName = "";
                 object.version = 0;
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.timestamp = options.longs === String ? "0" : 0;
             }
             if (message.userId != null && message.hasOwnProperty("userId"))
                 object.userId = message.userId;
@@ -717,6 +786,17 @@
                 object.initialSettings = $root.InitialSettings.toObject(message.initialSettings, options);
                 if (options.oneofs)
                     object.content = "initialSettings";
+            }
+            if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                if (typeof message.timestamp === "number")
+                    object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
+                else
+                    object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
+            var keys2;
+            if (message.meta && (keys2 = Object.keys(message.meta)).length) {
+                object.meta = {};
+                for (var j = 0; j < keys2.length; ++j)
+                    object.meta[keys2[j]] = message.meta[keys2[j]];
             }
             return object;
         };

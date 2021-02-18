@@ -387,6 +387,8 @@ export interface OriginalMessageType {
     systemMessage?: {
         data?: string | null;
     } | null;
+    timestamp?: number | Long | null;
+    meta?: { [k: string]: string } | null;
 }
 
 export type CreateClientDataType = {

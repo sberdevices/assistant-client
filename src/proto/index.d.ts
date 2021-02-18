@@ -55,6 +55,12 @@ export interface IMessage {
 
     /** Message initialSettings */
     initialSettings?: (IInitialSettings|null);
+
+    /** Message timestamp */
+    timestamp?: (number|Long|null);
+
+    /** Message meta */
+    meta?: ({ [k: string]: string }|null);
 }
 
 /** Represents a Message. */
@@ -119,6 +125,12 @@ export class Message implements IMessage {
 
     /** Message initialSettings. */
     public initialSettings?: (IInitialSettings|null);
+
+    /** Message timestamp. */
+    public timestamp: (number|Long);
+
+    /** Message meta. */
+    public meta: { [k: string]: string };
 
     /** Message content. */
     public content?: ("voice"|"text"|"systemMessage"|"legacyDevice"|"settings"|"status"|"device"|"bytes"|"initialSettings");

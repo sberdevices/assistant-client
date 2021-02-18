@@ -134,6 +134,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         ) & {
             last: 1 | -1;
             messageName?: string;
+            meta?: { [k: string]: string };
         };
         messageId: number;
     }) => {
@@ -226,6 +227,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
             token?: string;
             userChannel?: string;
             version?: VpsVersion;
+            meta?: { [k: string]: string };
         } = {},
         type = '',
         messageId = getMessageId(),
@@ -247,6 +249,9 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         { data, messageName = '' }: { data: Record<string, any>; messageName?: string },
         last = true,
         messageId = getMessageId(),
+        params: {
+            meta?: { [k: string]: string };
+        } = {},
     ) => {
         send({
             payload: {
@@ -255,6 +260,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
                 }),
                 messageName,
                 last: last ? 1 : -1,
+                ...params,
             },
             messageId,
         });
@@ -262,7 +268,15 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         return waitForAnswerToUser(messageId);
     };
 
-    const sendVoice = (data: Uint8Array, last = true, messageId = getMessageId(), messageName?: string) => {
+    const sendVoice = (
+        data: Uint8Array,
+        last = true,
+        messageId = getMessageId(),
+        messageName?: string,
+        params: {
+            meta?: { [k: string]: string };
+        } = {},
+    ) => {
         return send({
             payload: {
                 voice: Voice.create({
@@ -270,6 +284,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
                 }),
                 messageName,
                 last: last ? 1 : -1,
+                ...params,
             },
             messageId,
         });
@@ -378,8 +393,21 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         sendInitialSettings: typeof sendInitialSettings;
         send: typeof send;
         sendText: typeof sendText;
-        sendSystemMessage: typeof sendSystemMessage;
-        sendVoice: (data: Uint8Array, last: boolean, messageName?: string) => void;
+        sendSystemMessage: (
+            data: { data: Record<string, any>; messageName?: string },
+            last: boolean,
+            params?: {
+                meta?: { [k: string]: string };
+            },
+        ) => void;
+        sendVoice: (
+            data: Uint8Array,
+            last: boolean,
+            messageName?: string,
+            params?: {
+                meta?: { [k: string]: string };
+            },
+        ) => void;
         messageId: number;
     };
 
@@ -421,18 +449,27 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
             return sendText(data, params, type, batchingMessageId);
         };
 
-        const upgradedSendSystemMessage: typeof sendSystemMessage = (data, last) => {
+        const upgradedSendSystemMessage: (
+            data: { data: Record<string, any>; messageName?: string },
+            last: boolean,
+            params?: {
+                meta?: { [k: string]: string };
+            },
+        ) => void = (data, last, params) => {
             checkLastMessageStatus(last);
-            return sendSystemMessage(data, last, batchingMessageId);
+            return sendSystemMessage(data, last, batchingMessageId, params);
         };
 
-        const upgradedSendVoice: (data: Uint8Array, last: boolean, messageName?: string) => void = (
-            data,
-            last,
-            messageName,
-        ) => {
+        const upgradedSendVoice: (
+            data: Uint8Array,
+            last: boolean,
+            messageName?: string,
+            params?: {
+                meta?: { [k: string]: string };
+            },
+        ) => void = (data, last, messageName, params) => {
             checkLastMessageStatus(last);
-            return sendVoice(data, last, batchingMessageId, messageName);
+            return sendVoice(data, last, batchingMessageId, messageName, params);
         };
 
         return cb({
