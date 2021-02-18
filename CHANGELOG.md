@@ -1,3 +1,15 @@
+# v2.9.3 (Thu Feb 18 2021)
+
+#### 🐛 Bug Fix
+
+- fix: обновление контракта [#85](https://github.com/sberdevices/assistant-client/pull/85) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.9.2 (Mon Feb 15 2021)
 
 #### 🐛 Bug Fix
