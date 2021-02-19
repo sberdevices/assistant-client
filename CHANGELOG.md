@@ -1,3 +1,15 @@
+# v2.9.4 (Fri Feb 19 2021)
+
+#### 🐛 Bug Fix
+
+- fix: мета в intialSettings [#86](https://github.com/sberdevices/assistant-client/pull/86) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.9.3 (Thu Feb 18 2021)
 
 #### 🐛 Bug Fix
