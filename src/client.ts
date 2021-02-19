@@ -80,6 +80,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         version,
         messageName,
         vpsToken,
+        meta,
     } = clientParams;
     const basePayload = compileBasePayload({ userId, token, messageName, vpsToken, userChannel, version });
 
@@ -173,7 +174,12 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         });
     };
 
-    const sendInitialSettings = (data: IInitialSettings, last = true, messageId = getMessageId()) => {
+    const sendInitialSettings = (
+        data: IInitialSettings,
+        last = true,
+        messageId = getMessageId(),
+        params: { meta?: { [k: string]: string } } = {},
+    ) => {
         if (data.device && data.settings) {
             currentSettings = {
                 ...currentSettings,
@@ -187,6 +193,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
             payload: {
                 initialSettings: InitialSettings.create(data),
                 last: last ? 1 : -1,
+                ...params,
             },
             messageId,
         });
@@ -323,13 +330,18 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
                     }
                     sendSettings(currentSettings.settings);
                 } else {
-                    sendInitialSettings({
-                        userId,
-                        userChannel,
-                        device: currentSettings.device,
-                        settings: currentSettings.settings,
-                        locale: version > 3 ? currentSettings.locale : undefined,
-                    });
+                    sendInitialSettings(
+                        {
+                            userId,
+                            userChannel,
+                            device: currentSettings.device,
+                            settings: currentSettings.settings,
+                            locale: version > 3 ? currentSettings.locale : undefined,
+                        },
+                        true,
+                        undefined,
+                        { meta },
+                    );
                 }
 
                 logger?.logInit({ ...clientParams, ...currentSettings });

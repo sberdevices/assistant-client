@@ -403,6 +403,7 @@ export type CreateClientDataType = {
     version: VpsVersion;
     messageName?: string;
     vpsToken?: string;
+    meta?: { [k: string]: string };
 };
 
 export interface IncomingMessage {
