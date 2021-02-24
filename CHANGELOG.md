@@ -1,3 +1,24 @@
+# v2.10.0 (Wed Feb 24 2021)
+
+#### 🚀 Enhancement
+
+- feat: Возвращать observable при отправке команд [#79](https://github.com/sberdevices/assistant-client/pull/79) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- fix: nanoevents [#79](https://github.com/sberdevices/assistant-client/pull/79) ([@sasha-tlt](https://github.com/sasha-tlt))
+- docs: пример обработки клавиш пульта [#84](https://github.com/sberdevices/assistant-client/pull/84) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### ⚠️ Pushed to `main`
+
+- docs: Опечатка в readme.md ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.9.4 (Fri Feb 19 2021)
 
 #### 🐛 Bug Fix
