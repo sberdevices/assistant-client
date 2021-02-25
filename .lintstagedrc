@@ -1,0 +1,6 @@
+{
+    "src/*.{js,jsx,ts,tsx}": [
+        "eslint --fix",
+        "pretty-quick --staged"
+    ],
+}
