@@ -108,8 +108,22 @@ assistant.on('data', (command) => {
 const handleOnClick = () => {
     // Отправка сообщения ассистенту с фронтенд.
     // Структура может меняться на усмотрение разработчика, в зависимости от бэкенд
-    assistant.sendData({ action: { action_id: 'some_action_name' } });
+    assistant.sendData({ action: { type: 'some_action_name', payload: { param: 'some' } } });
 };
+
+const handleOnRefreshClick = () => {
+    // Отправка сообщения бэкенду, с возможностью подписки на ответ.
+    // В обработчик assistant.on('data'), сообщение передано не будет
+    const unsubscribe = assistant.sendAction(
+        { type: 'some_action_name', payload: { param: 'some' } },
+        (data: { type: string; payload: Record<string, unknown> }) => {
+            // здесь обработка данных, переданных от бэкенд
+            unsubscribe();
+        },
+        (error: { code: number; description: string }) => {
+            // обработка ошибки, переданной от бэкенд
+        });
+}
 ```
 
 ____
@@ -173,6 +187,31 @@ ____
 
 Осуществляет подписку на событие получения данных с бэкенд.
 
+#### sendAction({ type: string; payload: Record<string, unknown> }, params?: { name?: string; requestId?: string }) => void
+
+Отправляет команду бэкенду, позволяет передать обработчики ответа бэкенда и ошибки, полученной от бэкенд. Возвращает функцию для отписки.
+`sendAction` - дженерик, позволяет типизировать сообщения data и error. Вызов `clear()` выполняет отписку от сообщений бэкенда.
+Обработчик assistant.on('data') не получит эти сообщения бэкенда.
+
+
+Пример:
+```ts
+import { AssistantSmartAppCommand } from '@sberdevices/assistant-client';
+
+interface SomeBackendMessage extends AssistantSmartAppCommand['smart_app_data'] {
+  type: 'target_action',
+  payload: {
+    data: ['some_data'],
+  },
+}
+
+const unsubscribe = assistant.sendAction<SomeBackendMessage>({ type: 'some_action_name', payload: { someParam: 'some_value' } },
+  ({ payload }) => {
+    // обработка payload.data
+    unsubscribe();
+  }, (error) => {});
+```
+
 #### sendData({ action: [AssistantServerAction](#AssistantServerAction), requestId?: string }, onData?: data: [AssistantCharacterCommand](#AssistantCharacterCommand) | [AssistantNavigationCommand](#AssistantNavigationCommand) | [AssistantSmartAppError](#AssistantSmartAppError) | [AssistantSmartAppCommand](#AssistantSmartAppCommand)) => void): () => void
 
 Отправляет события с фронтенд на бэкенд через ассистента.
@@ -184,8 +223,8 @@ ____
 ```ts
 ...
 
-const unsubscribe = assistant.sendData({ action: { action_id: 'some_action_name' } }, (data: command) => {
-  if (data.type === 'smart_app_data' && data.smart_app_data.action === 'target_action') {
+const unsubscribe = assistant.sendData({ action: { type: 'some_action_name' } }, (data: command) => {
+  if (data.type === 'smart_app_data' && data.smart_app_data.type === 'target_action') {
     unsubsribe();
     ... // обработка команды
   }
@@ -267,9 +306,9 @@ interface AssistantViewItem {
 ```typescript
 interface AssistantServerAction {
   // Тип Server Action
-  action_id: string;
+  type: string;
   // Любые параметры
-  parameters?: Record<string, any>;
+  payload?: Record<string, unknown>;
 }
 ```
 
@@ -343,8 +382,11 @@ interface AssistantSmartAppError {
 interface AssistantSmartAppCommand {
   // Тип команды
   type: "smart_app_data";
-  // Любые данные, которые нужны смартапу
-  smart_app_data: Record<string, any>;
+  smart_app_data: {
+    type: string;
+    // Любые данные, которые нужны смартапу
+    payload: Record<string, unknown>;
+  };
   sdkMeta: {
     requestId: string;
   };
@@ -444,13 +486,13 @@ describe('Мой список дел', () => {
           .then(() =>
             // ожидаем вызов assistantClient.sendData
             mock.waitAction(() =>
-                // эмулируем отметку выполнения пользователем, который должен вызвать sendData({ action: { action_id: 'done } })
+                // эмулируем отметку выполнения пользователем, который должен вызвать sendData({ action: { type: 'done } })
                 window.document.getElementById(`checkbox-note-${selected.id}`).click(),
             ),
           )
           .then(({ action, state }) => {
-            expect(action.action_id).to.equal('done'); // ожидаем экшен data_note
-            expect(action.parameters?.title).to.equal(selected.title); // ожидаем в параметрах title экшена
+            expect(action.type).to.equal('done'); // ожидаем экшен data_note
+            expect(action.payload?.title).to.equal(selected.title); // ожидаем в параметрах title экшена
             expect(state?.item_selector.items).to.deep.equal(ITEMS); // ожидаем отправку списка в стейте
             done();
           });
@@ -484,7 +526,7 @@ const initializeAssistant = (getState: AssistantAppState) => {
 
 #### addActionHandler(actionType: string, handler: (action: AssistantServerAction) => void): void
 
-Подписаться на экшены фронтенда с определенным action_id, переданным первым параметром.
+Подписаться на экшены фронтенда с определенным type, переданным первым параметром.
 
 #### removeActionHandler(actionType: string): void
 
