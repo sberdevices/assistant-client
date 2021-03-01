@@ -72,6 +72,12 @@ describe('Проверяем createAssistant', () => {
             assistant.sendData({ action: expectedAction, name: expectedName, requestId: expectedRequestId });
         });
 
+    it('Не падать без appInitialData', (done) => {
+        window.appInitialData = undefined;
+        initAssistant();
+        done();
+    });
+
     it('Проверяем вызов AssistantHost.ready', () => {
         initAssistant();
         setTimeout(() => expect(window.AssistantHost.ready).to.be.calledOnce);
