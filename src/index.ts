@@ -36,8 +36,9 @@ export const createAssistant = <A extends AssistantSmartAppData>({
     let currentGetState = getState;
     let currentGetRecoveryState = getRecoveryState;
     const { on, emit } = createNanoEvents<AssistantEvents<A>>();
-    const startedAppInitialData: AssistantClientCommand[] = [...(window.appInitialData || [])];
-    const initialData: AssistantClientCommand[] = [...window.appInitialData];
+    const appInitialData = window.appInitialData || [];
+    const startedAppInitialData: AssistantClientCommand[] = [...appInitialData];
+    const initialData: AssistantClientCommand[] = [...appInitialData];
     const observables = new Map<string, { next: ObserverFunc<A>; requestId?: string }>();
 
     window.AssistantClient = {
