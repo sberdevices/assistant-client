@@ -331,7 +331,7 @@
         Message.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.Message(), key;
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.Message(), key, value;
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -395,12 +395,26 @@
                     message.timestamp = reader.int64();
                     break;
                 case 20:
-                    reader.skip().pos++;
                     if (message.meta === $util.emptyObject)
                         message.meta = {};
-                    key = reader.string();
-                    reader.pos++;
-                    message.meta[key] = reader.string();
+                    var end2 = reader.uint32() + reader.pos;
+                    key = "";
+                    value = "";
+                    while (reader.pos < end2) {
+                        var tag2 = reader.uint32();
+                        switch (tag2 >>> 3) {
+                        case 1:
+                            key = reader.string();
+                            break;
+                        case 2:
+                            value = reader.string();
+                            break;
+                        default:
+                            reader.skipType(tag2 & 7);
+                            break;
+                        }
+                    }
+                    message.meta[key] = value;
                     break;
                 default:
                     reader.skipType(tag & 7);
