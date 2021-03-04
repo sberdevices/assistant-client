@@ -1,3 +1,16 @@
+# v2.10.1 (Thu Mar 04 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Дев-токена слишком длинный на ie [#91](https://github.com/sberdevices/assistant-client/pull/91) ([@sasha-tlt](https://github.com/sasha-tlt))
+- fix: Обновление protobufjs [#91](https://github.com/sberdevices/assistant-client/pull/91) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.10.0 (Wed Feb 24 2021)
 
 #### 🚀 Enhancement
