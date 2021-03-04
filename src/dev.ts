@@ -52,10 +52,10 @@ export const initializeAssistantSDK = ({
     userChannel,
     surface,
     userId = `webdbg_userid_${
-        Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+        Math.random().toString(36).substring(2, 13) + Math.random().toString(36).substring(2, 13)
     }`,
     token = `webdbg_eribtoken_${
-        Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+        Math.random().toString(36).substring(2, 13) + Math.random().toString(36).substring(2, 13)
     }`,
     surfaceVersion,
     deviceId,
