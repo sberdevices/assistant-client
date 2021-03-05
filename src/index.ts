@@ -38,7 +38,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
     const { on, emit } = createNanoEvents<AssistantEvents<A>>();
     const startedAppInitialData: AssistantClientCommand[] = [...(window.appInitialData || [])];
     const initialData: AssistantClientCommand[] = [...window.appInitialData];
-    const observables = new Map<string, { next: ObserverFunc<A>; requestId?: string }>();
+    const observables = new Map<string, { next: ObserverFunc<A>; requestId?: string; stopPropagation?: boolean }>();
 
     window.AssistantClient = {
         onData: (command: any) => {
@@ -70,7 +70,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                 const { sdkMeta, ...other } = command;
                 const { requestId: realReqId, ...meta } = sdkMeta;
                 const result = other;
-                const { requestId, next } = observables.get(command.sdkMeta.requestId);
+                const { requestId, next, stopPropagation } = observables.get(command.sdkMeta.requestId)!;
 
                 if (Object.keys(meta).length > 0 || requestId) {
                     result.sdkMeta = { ...meta };
@@ -79,6 +79,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                     }
                 }
                 next(result as A);
+                !stopPropagation && emit('data', command as A);
                 return;
             }
 
@@ -103,7 +104,11 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         getInitialData: () => startedAppInitialData,
         getRecoveryState: () => window.appRecoveryState,
         on,
-        sendData: ({ action, name, requestId }: SendDataParams, onData?: ObserverFunc<A>): (() => void) => {
+        sendData: (
+            { action, name, requestId }: SendDataParams,
+            onData?: ObserverFunc<A>,
+            stopPropagation = true,
+        ): (() => void) => {
             if (window.AssistantHost?.sendDataContainer) {
                 if (onData == null) {
                     window.AssistantHost?.sendDataContainer(
@@ -125,7 +130,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                         JSON.stringify({ data: action, message_name: name || '', requestId: realRequestId }),
                     );
 
-                    observables.set(realRequestId, { next, requestId });
+                    observables.set(realRequestId, { next, requestId, stopPropagation });
                 });
 
                 return subscribe({ next: onData }).unsubscribe;
