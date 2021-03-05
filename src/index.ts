@@ -63,7 +63,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
             }
 
             if (
-                command.type === 'smart_app_data' &&
+                (command.type === 'smart_app_data' || command.type === 'smart_app_error') &&
                 command.sdkMeta?.requestId &&
                 observables.has(command.sdkMeta.requestId)
             ) {

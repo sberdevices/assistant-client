@@ -112,11 +112,14 @@ describe('Проверяем createAssistant', () => {
             .then(done);
     });
 
-    it('Проверяем sendData c подпиской на ответ', (done) => {
-        const status = { first: false, second: false };
+    it.only('Проверяем sendData c подпиской на ответ', (done) => {
+        const status = { first: false, second: false, third: false };
         const requestId = '654321';
         const action = { action_id: 'test_action' };
+        const erroredRequestId = '98765';
+        const erroredAction = { action_id: 'errored_action' };
         const command = { type: 'smart_app_data', smart_app_data: { command: 'test_cmd' } };
+        const error = { type: 'smart_app_error', smart_app_error: { code: 404, description: 'not_foind' } };
         const assistant = initAssistant();
 
         // ожидаем исключение, если sendDataContainer не определен
@@ -125,13 +128,19 @@ describe('Проверяем createAssistant', () => {
 
         // не передаем requestId, ожидаем ответ
         window.AssistantHost.sendDataContainer = (data) => {
-            const { requestId } = JSON.parse(data);
+            const { requestId, data: action } = JSON.parse(data);
+
+            if (action.action_id === 'errored_action') {
+                setTimeout(() => window.AssistantClient.onData({ ...error, sdkMeta: { requestId } }));
+                return;
+            }
+
             setTimeout(() => window.AssistantClient.onData({ ...command, sdkMeta: { requestId } }));
         };
         assistant.sendData({ action }, (cmd) => {
             expect(cmd).to.deep.equal(command);
             status.first = true;
-            if (status.second) {
+            if (status.second && status.third) {
                 done();
             }
         });
@@ -141,7 +150,17 @@ describe('Проверяем createAssistant', () => {
             expect(cmd).to.deep.equal(command);
             expect(sdkMeta?.requestId).to.equal(requestId);
             status.second = true;
-            if (status.first) {
+            if (status.first && status.third) {
+                done();
+            }
+        });
+
+        // передаём requestId, ожидаем ошибку
+        assistant.sendData({ action: erroredAction, requestId: erroredRequestId }, ({ sdkMeta, ...cmd }) => {
+            expect(cmd).to.deep.equal(error);
+            expect(sdkMeta?.requestId).to.equal(erroredRequestId);
+            status.third = true;
+            if (status.first && status.second) {
                 done();
             }
         });
