@@ -21,15 +21,15 @@ export const createVoiceListener = (
         emit('status', 'stopped');
     };
 
-    const listen = (handleVoice: (data: Uint8Array, last: boolean) => void) => {
-        status = 'listen';
-        createAudioProvider((data: ArrayBuffer, last: boolean) => handleVoice(new Uint8Array(data), last)).then(
-            (recStop) => {
+    const listen = (handleVoice: (data: Uint8Array, last: boolean) => void): Promise<void> =>
+        createAudioProvider((data: ArrayBuffer, last: boolean) => handleVoice(new Uint8Array(data), last))
+            .then((recStop) => {
                 stopRecord = recStop;
-            },
-        );
-        emit('status', 'listen');
-    };
+            })
+            .then(() => {
+                status = 'listen';
+                emit('status', 'listen');
+            });
 
     return {
         listen,
