@@ -13,9 +13,10 @@ export const createSpeechRecognizer = (voiceListener: ReturnType<typeof createVo
     let status: 'active' | 'inactive' = 'inactive';
 
     const stop = () => {
-        status = 'inactive';
-        off();
-        voiceListener.stop();
+        if (voiceListener.status !== 'stopped') {
+            status = 'inactive';
+            voiceListener.stop();
+        }
     };
 
     const start = ({
@@ -31,6 +32,7 @@ export const createSpeechRecognizer = (voiceListener: ReturnType<typeof createVo
             status = 'active';
             off = onMessage((message: OriginalMessageType) => {
                 if (message.status && message.status.code != null && message.status.code < 0) {
+                    off();
                     stop();
                 }
 
@@ -38,6 +40,7 @@ export const createSpeechRecognizer = (voiceListener: ReturnType<typeof createVo
                     if (message.text) {
                         emit('hypotesis', message.text.data || '', message.last === 1);
                         if (message.last === 1) {
+                            off();
                             stop();
                         }
                     }
@@ -52,6 +55,7 @@ export const createSpeechRecognizer = (voiceListener: ReturnType<typeof createVo
                                 !!decoderResultField.isFinal,
                             );
                             if (decoderResultField.isFinal) {
+                                off();
                                 stop();
                             }
                         }
