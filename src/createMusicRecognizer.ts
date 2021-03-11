@@ -7,9 +7,10 @@ export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoi
     let status: 'active' | 'inactive' = 'inactive';
 
     const stop = () => {
-        status = 'inactive';
-        off();
-        voiceListener.stop();
+        if (voiceListener.status !== 'stopped') {
+            status = 'inactive';
+            voiceListener.stop();
+        }
     };
 
     const start = ({
@@ -30,6 +31,7 @@ export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoi
                 status = 'active';
                 off = onMessage((message: OriginalMessageType) => {
                     if (message.status && message.status.code != null && message.status.code < 0) {
+                        off();
                         stop();
                     }
 
@@ -45,6 +47,7 @@ export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoi
                             message.bytes.data,
                         );
                         if (decoderResultField?.isFinal || errorResponse) {
+                            off();
                             stop();
                         }
                     }
