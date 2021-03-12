@@ -1,3 +1,15 @@
+# v2.10.2 (Fri Mar 12 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Не показывать анимацию при запрете доступа к микрофону [#94](https://github.com/sberdevices/assistant-client/pull/94) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.10.1 (Thu Mar 04 2021)
 
 #### 🐛 Bug Fix
