@@ -1,3 +1,16 @@
+# v2.10.3 (Fri Mar 12 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Отправлять конечную гипотезу до отписки от события createMusicRecognizer [#95](https://github.com/sberdevices/assistant-client/pull/95) (maprimberdiev@sberbank.ru)
+- fix: Отправлять конечную гипотезу до отписки от события createSpeechRecognizer [#95](https://github.com/sberdevices/assistant-client/pull/95) (maprimberdiev@sberbank.ru)
+
+#### Authors: 1
+
+- Maken Primberdiev (maprimberdiev@sberbank.ru)
+
+---
+
 # v2.10.2 (Fri Mar 12 2021)
 
 #### 🐛 Bug Fix
