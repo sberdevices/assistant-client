@@ -1,3 +1,20 @@
+# v2.11.0 (Mon Mar 15 2021)
+
+#### 🚀 Enhancement
+
+- feat: Поддержка smartAppData и smartAppError [#89](https://github.com/sberdevices/assistant-client/pull/89) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- fix: Не падать без appInitialData [#89](https://github.com/sberdevices/assistant-client/pull/89) ([@sasha-tlt](https://github.com/sasha-tlt))
+- chore: lint-staged [#89](https://github.com/sberdevices/assistant-client/pull/89) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.10.3 (Fri Mar 12 2021)
 
 #### 🐛 Bug Fix
