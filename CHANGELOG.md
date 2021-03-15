@@ -1,3 +1,15 @@
+# v2.11.1 (Mon Mar 15 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Не бросать ошибку при запрете доступа к микрофону [#96](https://github.com/sberdevices/assistant-client/pull/96) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.11.0 (Mon Mar 15 2021)
 
 #### 🚀 Enhancement
