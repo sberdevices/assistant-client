@@ -28,41 +28,44 @@ export const createSpeechRecognizer = (voiceListener: ReturnType<typeof createVo
         messageId: number;
         onMessage: (cb: (message: OriginalMessageType) => void) => () => void;
     }) => {
-        voiceListener.listen(sendVoice).then(() => {
-            status = 'active';
-            off = onMessage((message: OriginalMessageType) => {
-                if (message.status && message.status.code != null && message.status.code < 0) {
-                    off();
-                    stop();
-                }
-
-                if (message.messageId === messageId && message.messageName === MessageNames.STT) {
-                    if (message.text) {
-                        emit('hypotesis', message.text.data || '', message.last === 1);
-                        if (message.last === 1) {
-                            off();
-                            stop();
-                        }
+        voiceListener
+            .listen(sendVoice)
+            .then(() => {
+                status = 'active';
+                off = onMessage((message: OriginalMessageType) => {
+                    if (message.status && message.status.code != null && message.status.code < 0) {
+                        off();
+                        stop();
                     }
 
-                    if (message.bytes?.data) {
-                        const { decoderResultField } = PacketWrapperFromServer.decode(message.bytes.data);
-
-                        if (decoderResultField && decoderResultField.hypothesis?.length) {
-                            emit(
-                                'hypotesis',
-                                decoderResultField.hypothesis[0].normalizedText || '',
-                                !!decoderResultField.isFinal,
-                            );
-                            if (decoderResultField.isFinal) {
+                    if (message.messageId === messageId && message.messageName === MessageNames.STT) {
+                        if (message.text) {
+                            emit('hypotesis', message.text.data || '', message.last === 1);
+                            if (message.last === 1) {
                                 off();
                                 stop();
                             }
                         }
+
+                        if (message.bytes?.data) {
+                            const { decoderResultField } = PacketWrapperFromServer.decode(message.bytes.data);
+
+                            if (decoderResultField && decoderResultField.hypothesis?.length) {
+                                emit(
+                                    'hypotesis',
+                                    decoderResultField.hypothesis[0].normalizedText || '',
+                                    !!decoderResultField.isFinal,
+                                );
+                                if (decoderResultField.isFinal) {
+                                    off();
+                                    stop();
+                                }
+                            }
+                        }
                     }
-                }
-            });
-        });
+                });
+            })
+            .catch(() => {});
     };
 
     return {

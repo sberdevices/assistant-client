@@ -52,7 +52,8 @@ export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoi
                         }
                     }
                 });
-            });
+            })
+            .catch(() => {});
     };
 
     return {
