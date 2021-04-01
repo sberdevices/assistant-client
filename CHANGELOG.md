@@ -1,3 +1,15 @@
+# v2.11.2 (Thu Apr 01 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Добавить метод остановки воспроизведения текущей очереди озвучки [#97](https://github.com/sberdevices/assistant-client/pull/97) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.11.1 (Mon Mar 15 2021)
 
 #### 🐛 Bug Fix
