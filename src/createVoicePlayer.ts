@@ -391,5 +391,6 @@ export const createVoicePlayer = ({
             }
         },
         on,
+        stop,
     };
 };
