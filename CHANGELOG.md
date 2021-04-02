@@ -1,3 +1,15 @@
+# v2.11.3 (Fri Apr 02 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Проигрывание озвучки после остановки [#98](https://github.com/sberdevices/assistant-client/pull/98) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.11.2 (Thu Apr 01 2021)
 
 #### 🐛 Bug Fix
