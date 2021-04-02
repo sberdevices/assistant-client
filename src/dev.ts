@@ -9,7 +9,7 @@ import {
     ClientLogger,
     VoicePlayerSettings,
     AssistantSettings,
-    AssistantCharacterType,
+    AssistantCharacter,
     AssistantCharacterCommand,
     AssistantNavigationCommand,
     AssistantSmartAppCommand,
@@ -149,7 +149,7 @@ export const initializeAssistantSDK = ({
     let assistantReady = false; // флаг готовности контекста ассистента
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let state: any = null;
-    let character: AssistantCharacterType;
+    let character: AssistantCharacter;
 
     const createSystemMessageBase = () => {
         return {

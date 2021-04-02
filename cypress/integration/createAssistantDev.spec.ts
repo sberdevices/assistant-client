@@ -2,7 +2,7 @@
 import { Server, WebSocket } from 'mock-socket';
 
 import { APP_INFO, initProtocol } from '../support/helpers/socket.helpers';
-import { createAssistantDev } from '../../src/index';
+import { AssistantCharacter, createAssistantDev } from '../../src/index';
 import { Message } from '../../src/proto';
 import {
     AssistantClientCustomizedCommand,
@@ -15,7 +15,7 @@ import { createAnswerBuffer } from '../support/helpers/clientMethods.helpers';
 /* eslint-disable @typescript-eslint/camelcase */
 
 const INSETS = { left: 0, top: 0, right: 0, bottom: 144 };
-const CHARACTER = 'sber';
+const CHARACTER = AssistantCharacter.SBER;
 
 describe('Проверяем createAssistantDev', () => {
     const SOCKET_URL = 'ws://test.com';
@@ -27,7 +27,7 @@ describe('Проверяем createAssistantDev', () => {
     beforeEach(() => {
         cy.stub(window, 'WebSocket').callsFake((url) => new WebSocket(url));
         server = new Server(SOCKET_URL);
-        window.appInitialData = [{ type: 'character', character: { id: 'sber' } }];
+        window.appInitialData = [{ type: 'character', character: { id: AssistantCharacter.SBER } }];
     });
 
     afterEach(() => {

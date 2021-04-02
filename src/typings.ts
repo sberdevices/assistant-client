@@ -124,7 +124,11 @@ export interface AssistantActionCommand {
     action: { type: 'deep_link'; deep_link: string };
 }
 
-export type AssistantCharacterType = 'sber' | 'eva' | 'joy';
+export enum AssistantCharacter {
+    SBER = 'sber',
+    EVA = 'eva',
+    JOY = 'joy',
+}
 
 export interface SdkMeta {
     mid?: number;
@@ -134,7 +138,7 @@ export interface SdkMeta {
 export interface AssistantCharacterCommand {
     type: 'character';
     character: {
-        id: AssistantCharacterType;
+        id: AssistantCharacter;
     };
     sdkMeta: SdkMeta;
 }
@@ -351,7 +355,7 @@ export type SystemMessageDataType = {
         buttons: Array<SuggestionButtonType>;
     };
     character?: {
-        id: AssistantCharacterType;
+        id: AssistantCharacter;
     };
     emotion?: AssistantEmotionResponse;
     server_action?: AssistantServerAction;

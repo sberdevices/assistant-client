@@ -1,11 +1,11 @@
 /// <reference types="cypress" />
-import { createAssistant } from '../../src/index';
+import { createAssistant, AssistantCharacter } from '../../src/index';
 
 /* eslint-disable @typescript-eslint/camelcase */
 
 describe('Проверяем createAssistant', () => {
     beforeEach(() => {
-        window.appInitialData = [{ type: 'character', character: { id: 'sber' } }];
+        window.appInitialData = [{ type: 'character', character: { id: AssistantCharacter.SBER } }];
         window.AssistantHost = {
             close: cy.stub(),
             ready: cy.stub(),

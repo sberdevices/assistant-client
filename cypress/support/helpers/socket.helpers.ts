@@ -1,7 +1,7 @@
 import { Message } from '../../../src/proto';
 import { appendHeader } from '../../../src/client';
 import {
-    AssistantCharacterType,
+    AssistantCharacter,
     AssistantNavigationCommand,
     AssistantSmartAppCommand,
     SystemMessageDataType,
@@ -43,11 +43,11 @@ export const initProtocol = (
     socket: any,
     {
         initPhrase,
-        character = 'sber',
+        character = AssistantCharacter.SBER,
         items = [],
     }: {
         initPhrase?: string;
-        character?: AssistantCharacterType;
+        character?: AssistantCharacter;
         items?: Array<{ command: AssistantSmartAppCommand | AssistantNavigationCommand }>;
     } = {},
 ) => {

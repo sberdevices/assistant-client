@@ -317,10 +317,16 @@ interface AssistantServerAction {
 Объект `AssistantCharacterCommand` - информирует смартап о текущем персонаже (Сбер, Афина или Джой). Персонаж может быть изменен в любой момент по инициативе пользователя. Поэтому разработчик может дополнительно добавить обработку таких изменений.
 
 ```typescript
+enum AssistantCharacter {
+    SBER = 'sber',
+    EVA = 'eva',
+    JOY = 'joy',
+}
+
 interface AssistantCharacterCommand {
   type: "character";
   character: {
-    id: "sber" | "eva" | "joy";
+    id: AssistantCharacter
   };
   sdkMeta: {
     requestId: string;
@@ -515,7 +521,7 @@ const initializeAssistant = (getState: AssistantAppState) => {
             getState,
         });
     }
-    
+
     if (window.cypress) {
       window.appInitialData = [];
     }
