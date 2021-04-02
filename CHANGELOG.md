@@ -1,3 +1,15 @@
+# v2.11.4 (Fri Apr 02 2021)
+
+#### 🐛 Bug Fix
+
+- fix: расширил интерфейс AssistantAppContext [#100](https://github.com/sberdevices/assistant-client/pull/100) (avstarikovich@sberbank.ru)
+
+#### Authors: 1
+
+- Старикович Антон (avstarikovich@sberbank.ru)
+
+---
+
 # v2.11.3 (Fri Apr 02 2021)
 
 #### 🐛 Bug Fix
