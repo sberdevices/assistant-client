@@ -183,8 +183,24 @@ export interface AssistantSmartAppCommand extends AssistantSmartAppData {
     sdkMeta?: SdkMeta;
 }
 
+export interface AppInfo {
+    app_info: {
+        projectId: string;
+        applicationId: string;
+        appversionId: string;
+        systemName: string;
+        frontendEndpoint: string;
+        frontendType: string;
+        frontendStateId: string;
+    };
+    device_id: string;
+    platform: string;
+    sdk_version: string;
+}
+
 export interface AssistantAppContext {
     type: 'app_context';
+    app_context: AppInfo;
     sdkMeta?: SdkMeta;
 }
 
