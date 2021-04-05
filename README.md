@@ -322,7 +322,7 @@ interface AssistantCharacterCommand {
   character: {
     id: "sber" | "eva" | "joy";
   };
-  sdkMeta: {
+  sdk_meta: {
     requestId: string;
   };
 }
@@ -338,7 +338,7 @@ interface AssistantNavigationCommand {
   type: "navigation";
   // Навигационная команда (направление навигации)
   navigation: { command: "UP" | "DOWN" | "LEFT" | "RIGHT" | "FORWARD" | "BACK" };
-  sdkMeta: {
+  sdk_meta: {
     requestId: string;
   };
 }
@@ -387,7 +387,7 @@ interface AssistantSmartAppCommand {
     // Любые данные, которые нужны смартапу
     payload: Record<string, unknown>;
   };
-  sdkMeta: {
+  sdk_meta: {
     requestId: string;
   };
 }

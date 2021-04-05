@@ -66,7 +66,7 @@ describe('Проверяем sendAction', () => {
         window.AssistantHost.sendDataContainer = (data) => {
             const { requestId } = JSON.parse(data);
             setTimeout(() =>
-                commands.map((command) => window.AssistantClient.onData({ ...command, sdkMeta: { requestId } })),
+                commands.map((command) => window.AssistantClient.onData({ ...command, sdk_meta: { requestId } })),
             );
         };
 
@@ -99,7 +99,7 @@ describe('Проверяем sendAction', () => {
             const { requestId } = JSON.parse(data);
             setTimeout(() =>
                 commands.map((command, i) =>
-                    setTimeout(() => window.AssistantClient.onData({ ...command, sdkMeta: { requestId } }), i),
+                    setTimeout(() => window.AssistantClient.onData({ ...command, sdk_meta: { requestId } }), i),
                 ),
             );
         };

@@ -237,7 +237,7 @@ export const initializeAssistantSDK = ({
             initialSmartAppData.push({
                 type: 'insets',
                 insets: { left: 0, top: 0, right: 0, bottom: 144 },
-                sdkMeta: { mid: -1 },
+                sdk_meta: { mid: -1 },
             });
 
             const messageId = vpsClient.currentMessageId;
@@ -250,7 +250,7 @@ export const initializeAssistantSDK = ({
 
             for (const item of res?.items || []) {
                 if (item.command != null) {
-                    initialSmartAppData.push({ ...item.command, sdkMeta: { mid: messageId } });
+                    initialSmartAppData.push({ ...item.command, sdk_meta: { mid: messageId } });
                 }
             }
 
@@ -435,14 +435,14 @@ export const initializeAssistantSDK = ({
 
                 emitOnData({
                     ...item.command,
-                    sdkMeta: { mid: original.messageId, requestId: requestIdMap[original.messageId.toString()] },
+                    sdk_meta: { mid: original.messageId, requestId: requestIdMap[original.messageId.toString()] },
                 });
             }
         }
 
         if (message.character && message.character.id !== character) {
             character = message.character.id;
-            emitOnData({ type: 'character', character: message.character, sdkMeta: { mid: -1 } });
+            emitOnData({ type: 'character', character: message.character, sdk_meta: { mid: -1 } });
         }
 
         updateDevUI(message.suggestions?.buttons ?? [], bubbleText);

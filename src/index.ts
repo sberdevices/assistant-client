@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/camelcase */
+
 import { v4 } from 'uuid';
 
 import {
@@ -60,8 +62,8 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                     index = initialData.findIndex((c) => c.type === 'insets');
                 } else if (command.type === 'app_context') {
                     index = initialData.findIndex((c) => c.type === 'app_context');
-                } else if (command.sdkMeta && command.sdkMeta?.mid && command.sdkMeta?.mid !== '-1') {
-                    index = initialData.findIndex((c) => c.sdkMeta?.mid === command.sdkMeta.mid);
+                } else if (command.sdk_meta && command.sdk_meta?.mid && command.sdk_meta?.mid !== '-1') {
+                    index = initialData.findIndex((c) => c.sdk_meta?.mid === command.sdk_meta.mid);
                 }
 
                 if (index >= 0) {
@@ -72,18 +74,18 @@ export const createAssistant = <A extends AssistantSmartAppData>({
 
             if (
                 (command.type === 'smart_app_data' || command.type === 'smart_app_error') &&
-                command.sdkMeta?.requestId &&
-                observables.has(command.sdkMeta.requestId)
+                command.sdk_meta?.requestId &&
+                observables.has(command.sdk_meta.requestId)
             ) {
-                const { sdkMeta, ...other } = command;
-                const { requestId: realReqId, ...meta } = sdkMeta;
+                const { sdk_meta, ...other } = command;
+                const { requestId: realReqId, ...meta } = sdk_meta;
                 const result = other;
-                const { requestId, next } = observables.get(command.sdkMeta.requestId);
+                const { requestId, next } = observables.get(command.sdk_meta.requestId);
 
                 if (Object.keys(meta).length > 0 || requestId) {
-                    result.sdkMeta = { ...meta };
+                    result.sdk_meta = { ...meta };
                     if (requestId) {
-                        result.sdkMeta = { requestId };
+                        result.sdk_meta = { requestId };
                     }
                 }
                 next(result);
