@@ -136,7 +136,7 @@ export interface AssistantCharacterCommand {
     character: {
         id: AssistantCharacterType;
     };
-    sdkMeta: SdkMeta;
+    sdk_meta: SdkMeta;
 }
 
 export interface AssistantInsetsCommand {
@@ -147,7 +147,7 @@ export interface AssistantInsetsCommand {
         right: number; // px
         bottom: number; // px
     };
-    sdkMeta: SdkMeta;
+    sdk_meta: SdkMeta;
 }
 
 export interface AssistantCloseAppCommand {
@@ -157,13 +157,13 @@ export interface AssistantCloseAppCommand {
 export interface AssistantNavigationCommand {
     type: 'navigation';
     navigation: { command: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'BACK' | 'FORWARD' };
-    sdkMeta?: SdkMeta;
+    sdk_meta?: SdkMeta;
 }
 
 export interface AssistantSmartAppData {
     type: 'smart_app_data';
     smart_app_data?: Record<string, unknown>;
-    sdkMeta?: SdkMeta;
+    sdk_meta?: SdkMeta;
 }
 
 export interface AssistantSmartAppError {
@@ -172,7 +172,7 @@ export interface AssistantSmartAppError {
         code: number;
         description: string;
     };
-    sdkMeta?: SdkMeta;
+    sdk_meta?: SdkMeta;
 }
 
 export interface AssistantSmartAppCommand extends AssistantSmartAppData {
@@ -180,7 +180,7 @@ export interface AssistantSmartAppCommand extends AssistantSmartAppData {
         type: string;
         payload: Record<string, unknown>;
     };
-    sdkMeta?: SdkMeta;
+    sdk_meta?: SdkMeta;
 }
 
 export interface AppInfo {
@@ -201,7 +201,7 @@ export interface AppInfo {
 export interface AssistantAppContext {
     type: 'app_context';
     app_context: AppInfo;
-    sdkMeta?: SdkMeta;
+    sdk_meta?: SdkMeta;
 }
 
 export interface AssistantPlayerCommand {

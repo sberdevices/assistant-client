@@ -132,7 +132,7 @@ describe('Проверяем createAssistant', () => {
         // не передаем requestId, ожидаем ответ
         window.AssistantHost.sendDataContainer = (data) => {
             const { requestId } = JSON.parse(data);
-            setTimeout(() => window.AssistantClient.onData({ ...command, sdkMeta: { requestId } }));
+            setTimeout(() => window.AssistantClient.onData({ ...command, sdk_meta: { requestId } }));
         };
         assistant.sendData({ action }, (cmd) => {
             expect(cmd).to.deep.equal(command);
@@ -143,9 +143,9 @@ describe('Проверяем createAssistant', () => {
         });
 
         // передаем requestId, ожидаем ответ
-        assistant.sendData({ action, requestId }, ({ sdkMeta, ...cmd }) => {
+        assistant.sendData({ action, requestId }, ({ sdk_meta, ...cmd }) => {
             expect(cmd).to.deep.equal(command);
-            expect(sdkMeta?.requestId).to.equal(requestId);
+            expect(sdk_meta?.requestId).to.equal(requestId);
             status.second = true;
             if (status.first) {
                 done();
