@@ -1,3 +1,15 @@
+# v2.11.5 (Mon Apr 05 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Дублирование сообщений из appInitialData [#104](https://github.com/sberdevices/assistant-client/pull/104) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.11.4 (Fri Apr 02 2021)
 
 #### 🐛 Bug Fix
