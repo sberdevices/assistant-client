@@ -1,3 +1,15 @@
+# v2.11.6 (Wed Apr 07 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Команда 'back' не приходит [#105](https://github.com/sberdevices/assistant-client/pull/105) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.11.5 (Mon Apr 05 2021)
 
 #### 🐛 Bug Fix
