@@ -180,4 +180,17 @@ describe('Проверяем createAssistant', () => {
         assistant.setSuggest(suggest);
         expect(window.AssistantHost.setSuggest).to.calledWith(suggest);
     });
+
+    it("Проверяем фильтрацию system.command = 'back' - не должна попадать в onData", (done) => {
+        const onData = cy.stub();
+        const assistant = initAssistant();
+
+        assistant.on('data', onData);
+        window.AssistantClient.onStart();
+        window.AssistantClient.onData({ type: 'system', system: { command: 'BACK' } });
+        setTimeout(() => {
+            expect(onData).to.not.called;
+            done();
+        });
+    });
 });

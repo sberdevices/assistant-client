@@ -433,6 +433,11 @@ export const initializeAssistantSDK = ({
                     return;
                 }
 
+                if (item.command.type === 'system' && item.command.system?.command?.toUpperCase() === 'BACK') {
+                    window.history.back();
+                    return;
+                }
+
                 emitOnData({
                     ...item.command,
                     sdk_meta: { mid: original.messageId, requestId: requestIdMap[original.messageId.toString()] },

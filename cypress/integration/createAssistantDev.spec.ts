@@ -354,4 +354,40 @@ describe('Проверяем createAssistantDev', () => {
             });
         }, 100);
     });
+
+    it("Проверяем реакцию на system.command = 'back' - не должна попадать в onData, должна вызывать window.history.back()", (done) => {
+        const onData = cy.stub();
+        const historyBack = cy.stub();
+
+        cy.stub(window.history, 'back', historyBack);
+
+        server.on('connection', (socket) => {
+            socket.binaryType = 'arraybuffer';
+            setTimeout(() =>
+                socket.send(
+                    createAnswerBuffer({
+                        systemMessageData: JSON.stringify({
+                            items: [{ command: { type: 'system', system: { command: 'BACK' } } }],
+                        }),
+                    }),
+                ),
+            );
+        });
+
+        const assistant = createAssistantDev<AssistantSmartAppCommand>({
+            getState: () => ({}),
+            getRecoveryState: () => ({}),
+            url: SOCKET_URL,
+            userChannel: USER_CHANNEL,
+            surface: SURFACE,
+            initPhrase: INIT_PHRASE,
+        });
+
+        assistant.on('data', onData);
+        setTimeout(() => {
+            expect(historyBack).to.calledOnce;
+            expect(onData).to.not.called;
+            done();
+        }, 100);
+    });
 });
