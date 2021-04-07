@@ -72,6 +72,11 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                 }
             }
 
+            // фильтр команды 'назад'
+            if (command.type === 'system' && command.system?.command?.toUpperCase() === 'BACK') {
+                return;
+            }
+
             if (
                 (command.type === 'smart_app_data' || command.type === 'smart_app_error') &&
                 command.sdk_meta?.requestId &&

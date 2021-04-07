@@ -156,7 +156,7 @@ export interface AssistantCloseAppCommand {
 
 export interface AssistantNavigationCommand {
     type: 'navigation';
-    navigation: { command: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'BACK' | 'FORWARD' };
+    navigation: { command: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'FORWARD' };
     sdk_meta?: SdkMeta;
 }
 

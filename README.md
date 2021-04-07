@@ -337,7 +337,7 @@ interface AssistantNavigationCommand {
   // Тип команды
   type: "navigation";
   // Навигационная команда (направление навигации)
-  navigation: { command: "UP" | "DOWN" | "LEFT" | "RIGHT" | "FORWARD" | "BACK" };
+  navigation: { command: "UP" | "DOWN" | "LEFT" | "RIGHT" | "FORWARD" };
   sdk_meta: {
     requestId: string;
   };
