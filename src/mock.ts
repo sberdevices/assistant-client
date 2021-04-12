@@ -5,7 +5,7 @@ import {
     AssistantServerAction,
     AssistantClientCommand,
     AssistantClientCustomizedCommand,
-    AssistantSmartAppCommand,
+    AssistantSmartAppData,
 } from './typings';
 
 export interface AssistantActionResult {
@@ -45,10 +45,12 @@ export const createAssistantHostMock = ({ context = window }: { context?: Window
             return;
         }
 
-        const actionType = action.action_id.toLowerCase();
-        const handler = handlers.has(actionType) ? handlers.get(actionType) : undefined;
-        if (handler != null) {
-            handler(action);
+        if ('action_id' in action) {
+            const actionType = action.action_id.toLowerCase();
+            const handler = handlers.has(actionType) ? handlers.get(actionType) : undefined;
+            if (handler != null) {
+                handler(action);
+            }
         }
     };
 
@@ -92,7 +94,7 @@ export const createAssistantHostMock = ({ context = window }: { context?: Window
     };
 
     /** Вызвать обработчик команды бека */
-    const receiveCommand = <T = AssistantSmartAppCommand>(command: AssistantClientCustomizedCommand<T>) => {
+    const receiveCommand = <T extends AssistantSmartAppData>(command: AssistantClientCustomizedCommand<T>) => {
         if (!context.AssistantClient || !context.AssistantClient.onData) {
             throw new Error('Assistant not initialized');
         }

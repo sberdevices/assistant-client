@@ -52,8 +52,7 @@ export interface DPMessage {
 
 export interface AssistantAppStateBase<T> {
     /* Любые данные, которые могут потребоваться Backend'у для принятия решений */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
+    [key: string]: unknown;
     item_selector?: {
         ignored_words?: string[];
         /* Список соответствий голосовых команд действиям в веб-приложении */
@@ -63,7 +62,6 @@ export interface AssistantAppStateBase<T> {
 
 export type AssistantAppState = AssistantAppStateBase<AssistantAction>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface AssistantViewItemBase<T> {
     /* Порядковый номер элемента, назначается смартаппом, уникален в рамках items */
     number?: number;
@@ -78,7 +76,7 @@ export interface AssistantViewItemBase<T> {
     /* Экшен, который вернется в AssistantSmartAppData */
     action?: T;
     /* Дополнительные данные для бэкенда */
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export type AssistantViewItem = AssistantViewItemBase<AssistantAction>;
@@ -226,8 +224,8 @@ export type AssistantClientCommand = AssistantClientCustomizedCommand<AssistantS
 
 export interface AssistantClient {
     onStart?: () => void;
-    onRequestState?: () => Record<string, any>;
-    onRequestRecoveryState?: () => any;
+    onRequestState?: () => Record<string, unknown>;
+    onRequestRecoveryState?: () => unknown;
     onData?: (command: AssistantClientCommand) => void;
 }
 
@@ -243,7 +241,7 @@ export interface AssistantWindow {
     AssistantHost?: AssistantHost;
     AssistantClient?: AssistantClient;
     appInitialData: Array<AssistantClientCommand>;
-    appRecoveryState: any;
+    appRecoveryState: unknown;
 
     __dangerouslySendDataMessage?: (data: {}, name: string) => void;
     __dangerouslySendVoiceMessage?: (message: string) => void;
