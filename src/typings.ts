@@ -127,7 +127,7 @@ export interface AssistantActionCommand {
 export type AssistantCharacterType = 'sber' | 'eva' | 'joy';
 
 export interface SdkMeta {
-    mid?: number;
+    mid?: string;
     requestId?: string;
 }
 
@@ -162,7 +162,7 @@ export interface AssistantNavigationCommand {
 
 export interface AssistantSmartAppData {
     type: 'smart_app_data';
-    smart_app_data?: Record<string, unknown>;
+    smart_app_data: Record<string, unknown>;
     sdk_meta?: SdkMeta;
 }
 
@@ -214,7 +214,7 @@ export interface AssistantSystemCommand {
     system: { command: string; [key: string]: unknown };
 }
 
-export type AssistantClientCustomizedCommand<T> =
+export type AssistantClientCustomizedCommand<T extends AssistantSmartAppData> =
     | AssistantAppContext
     | AssistantCharacterCommand
     | AssistantNavigationCommand

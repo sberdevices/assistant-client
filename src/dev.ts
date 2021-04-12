@@ -148,7 +148,7 @@ export const initializeAssistantSDK = ({
     let clientReady = false; // флаг готовности клиента к приему onData
     let assistantReady = false; // флаг готовности контекста ассистента
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let state: any = null;
+    let state: unknown = null;
     let character: AssistantCharacterType;
 
     const createSystemMessageBase = () => {
@@ -237,7 +237,7 @@ export const initializeAssistantSDK = ({
             initialSmartAppData.push({
                 type: 'insets',
                 insets: { left: 0, top: 0, right: 0, bottom: 144 },
-                sdk_meta: { mid: -1 },
+                sdk_meta: { mid: '-1' },
             });
 
             const messageId = vpsClient.currentMessageId;
@@ -245,12 +245,12 @@ export const initializeAssistantSDK = ({
             appInfo = res?.app_info;
             if (res?.character) {
                 character = res?.character.id;
-                initialSmartAppData.push({ type: 'character', character: res.character, sdk_meta: { mid: -1 } });
+                initialSmartAppData.push({ type: 'character', character: res.character, sdk_meta: { mid: '-1' } });
             }
 
             for (const item of res?.items || []) {
                 if (item.command != null) {
-                    initialSmartAppData.push({ ...item.command, sdk_meta: { mid: messageId } });
+                    initialSmartAppData.push({ ...item.command, sdk_meta: { mid: messageId.toString() } });
                 }
             }
 
@@ -440,14 +440,17 @@ export const initializeAssistantSDK = ({
 
                 emitOnData({
                     ...item.command,
-                    sdk_meta: { mid: original.messageId, requestId: requestIdMap[original.messageId.toString()] },
+                    sdk_meta: {
+                        mid: original.messageId.toString(),
+                        requestId: requestIdMap[original.messageId.toString()],
+                    },
                 });
             }
         }
 
         if (message.character && message.character.id !== character) {
             character = message.character.id;
-            emitOnData({ type: 'character', character: message.character, sdk_meta: { mid: -1 } });
+            emitOnData({ type: 'character', character: message.character, sdk_meta: { mid: '-1' } });
         }
 
         updateDevUI(message.suggestions?.buttons ?? [], bubbleText);

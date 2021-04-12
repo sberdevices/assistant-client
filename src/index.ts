@@ -41,17 +41,29 @@ export const createAssistant = <A extends AssistantSmartAppData>({
     getRecoveryState,
 }: {
     getState: () => AssistantAppState;
-    getRecoveryState?: () => any;
+    getRecoveryState?: () => unknown;
 }) => {
+    let initialDataConsumed = false;
     let currentGetState = getState;
     let currentGetRecoveryState = getRecoveryState;
     const { on, emit } = createNanoEvents<AssistantEvents<A>>();
     const startedAppInitialData: AssistantClientCommand[] = [...(window.appInitialData || [])];
     const initialData: AssistantClientCommand[] = [...(window.appInitialData || [])];
     const observables = new Map<string, { next: ObserverFunc<A | AssistantSmartAppError>; requestId?: string }>();
+    const emitCommand = (command: AssistantClientCustomizedCommand<A>) => {
+        if (command.type === 'smart_app_data') {
+            emit('command', command.smart_app_data as AssistantSmartAppCommand['smart_app_data']);
+        }
+
+        if (command.type === 'smart_app_error') {
+            emit('error', command.smart_app_error);
+        }
+
+        return emit('data', command as A);
+    };
 
     window.AssistantClient = {
-        onData: (command: any) => {
+        onData: (command: AssistantClientCommand) => {
             if (initialData.length) {
                 let index = -1;
                 if (command.type === 'character') {
@@ -63,7 +75,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                 } else if (command.type === 'app_context') {
                     index = initialData.findIndex((c) => c.type === 'app_context');
                 } else if (command.sdk_meta && command.sdk_meta?.mid && command.sdk_meta?.mid !== '-1') {
-                    index = initialData.findIndex((c) => c.sdk_meta?.mid === command.sdk_meta.mid);
+                    index = initialData.findIndex((c) => c.sdk_meta?.mid === command.sdk_meta?.mid);
                 }
 
                 if (index >= 0) {
@@ -72,7 +84,10 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                 }
             }
 
-            // фильтр команды 'назад'
+            /// фильтр команды 'назад'
+            /// может приходить type='system', но в типах это не отражаем
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             if (command.type === 'system' && command.system?.command?.toUpperCase() === 'BACK') {
                 return;
             }
@@ -97,15 +112,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                 return;
             }
 
-            if (command.type === 'smart_app_data') {
-                emit('command', command.smart_app_data);
-            }
-
-            if (command.type === 'smart_app_error') {
-                emit('error', command.smart_app_error);
-            }
-
-            return emit('data', command as A);
+            emitCommand(command as AssistantClientCustomizedCommand<A>);
         },
         onRequestState: () => {
             return currentGetState();
@@ -117,7 +124,14 @@ export const createAssistant = <A extends AssistantSmartAppData>({
 
             return undefined;
         },
-        onStart: () => emit('start'),
+        onStart: () => {
+            emit('start');
+
+            if (!initialDataConsumed && startedAppInitialData.length) {
+                // делаем рассылку из initialSmartAppData, если она не была считана в getInitialData()
+                startedAppInitialData.map((c) => emitCommand(c as AssistantClientCustomizedCommand<A>));
+            }
+        },
     };
     setTimeout(() => window.AssistantHost?.ready()); // таймаут для подписки на start
 
@@ -163,7 +177,10 @@ export const createAssistant = <A extends AssistantSmartAppData>({
 
     return {
         close: () => window.AssistantHost?.close(),
-        getInitialData: () => startedAppInitialData,
+        getInitialData: () => {
+            initialDataConsumed = true;
+            return startedAppInitialData;
+        },
         getRecoveryState: () => window.appRecoveryState,
         on,
         sendAction: <
@@ -190,7 +207,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         setGetState: (nextGetState: () => {}) => {
             currentGetState = nextGetState;
         },
-        setGetRecoveryState: (nextGetRecoveryState?: () => any) => {
+        setGetRecoveryState: (nextGetRecoveryState?: () => unknown) => {
             currentGetRecoveryState = nextGetRecoveryState;
         },
         setSuggest: (suggest: string) => window.AssistantHost?.setSuggest(suggest),
@@ -215,7 +232,7 @@ export const createAssistantDev = <A extends AssistantSmartAppData>({
     voiceSettings,
 }: {
     getState: () => AssistantAppState;
-    getRecoveryState?: () => Record<string, any> | undefined;
+    getRecoveryState?: () => Record<string, unknown> | undefined;
     url: string;
     userChannel: string; // канал (влияет на навыки)
     surface: string; // поверхность (влияет на навыки)
@@ -279,7 +296,7 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
     token: string;
     initPhrase: string;
     getState: () => AssistantAppState;
-    getRecoveryState?: () => Record<string, any> | undefined;
+    getRecoveryState?: () => Record<string, unknown> | undefined;
     settings?: Pick<AssistantSettings, 'dubbing'>;
     enableRecord?: boolean;
     recordParams?: {
