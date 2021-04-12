@@ -97,18 +97,19 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                 command.sdk_meta?.requestId &&
                 observables.has(command.sdk_meta.requestId)
             ) {
-                const { sdk_meta, ...other } = command;
-                const { requestId: realReqId, ...meta } = sdk_meta;
-                const result = other;
-                const { requestId, next } = observables.get(command.sdk_meta.requestId);
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { requestId: realReqId, ...meta } = command.sdk_meta;
+                const { requestId, next } = observables.get(command.sdk_meta.requestId) || {};
 
                 if (Object.keys(meta).length > 0 || requestId) {
-                    result.sdk_meta = { ...meta };
+                    command.sdk_meta = { ...meta };
                     if (requestId) {
-                        result.sdk_meta = { requestId };
+                        command.sdk_meta = { requestId };
                     }
                 }
-                next(result);
+                if (next) {
+                    next(command.type === 'smart_app_data' ? ((command as unknown) as A) : command);
+                }
                 return;
             }
 
@@ -152,7 +153,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                 throw new Error('requestId должен быть уникальным');
             }
 
-            const { subscribe } = createNanoObservable<A>(({ next }) => {
+            const { subscribe } = createNanoObservable<A | AssistantSmartAppError>(({ next }) => {
                 const realRequestId = requestId || v4();
 
                 window.AssistantHost?.sendDataContainer(
@@ -307,11 +308,13 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
     try {
         const { exp } = parseJwt(token);
         if (exp * 1000 <= Date.now()) {
+            // eslint-disable-next-line no-alert
             alert('Срок действия токена истек!');
             throw new Error('Token expired');
         }
     } catch (exc) {
         if (exc.message !== 'Token expired') {
+            // eslint-disable-next-line no-alert
             alert('Указан невалидный токен!');
             throw new Error('Wrong token');
         }

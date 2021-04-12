@@ -175,7 +175,7 @@ ____
 
 Возвращает данные, полученные при инициализации смартапа.
 
-#### getRecoveryState(): any
+#### getRecoveryState(): unknown
 
 Возвращает состояние, сохраненное при закрытии приложения. Устройство запоминает последнее состояние, которое возвращает функция getRecoveryState при инициализации Assistant Client.
 
@@ -236,7 +236,7 @@ const unsubscribe = assistant.sendData({ action: { type: 'some_action_name' } },
 
 Подменяет callback, который возвращает актуальное состояние приложения.
 
-#### setGetRecoveryState(nextGetRecoveryState: () => any)
+#### setGetRecoveryState(nextGetRecoveryState: () => unknown)
 
 Подменяет callback, который возвращает объект, доступный только при следующем запуске приложения. Данные приходят при вызове getRecoveryState.
 
@@ -255,8 +255,7 @@ ____
 ```typescript
 interface AssistantAppState {
   // Любые данные, которые могут потребоваться в бэкенд для принятия решений
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
+  [key: string]: unknown;
   item_selector?: {
     ignored_words?: string[];
     // Список соответствий между голосовыми командами и действиями в приложении
@@ -278,7 +277,7 @@ interface AssistantViewItem {
   // Выполнение действия от имени пользователя
   action?: AssistantAction | { type: string };
   // Дополнительные данные для бэкенд
-  [key: string]: any;
+  [key: string]: unknown;
 }
 ```
 
