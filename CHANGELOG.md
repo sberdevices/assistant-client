@@ -1,3 +1,15 @@
+# v2.11.8 (Wed Apr 14 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Добавление поля tenant в Device [#110](https://github.com/sberdevices/assistant-client/pull/110) ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+#### Authors: 1
+
+- Ivan Ushatsky ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+---
+
 # v2.11.7 (Wed Apr 14 2021)
 
 #### 🐛 Bug Fix
