@@ -1,3 +1,18 @@
+# v2.11.7 (Wed Apr 14 2021)
+
+#### 🐛 Bug Fix
+
+- fix: bump auto version [#109](https://github.com/sberdevices/assistant-client/pull/109) ([@Yeti-or](https://github.com/Yeti-or))
+- refactor: предупреждения редактора [#108](https://github.com/sberdevices/assistant-client/pull/108) ([@sasha-tlt](https://github.com/sasha-tlt))
+- fix: Эмитить initialData в onData, если не было вызова getInitialData [#108](https://github.com/sberdevices/assistant-client/pull/108) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 2
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+- Vasiliy ([@Yeti-or](https://github.com/Yeti-or))
+
+---
+
 # v2.11.6 (Wed Apr 07 2021)
 
 #### 🐛 Bug Fix
