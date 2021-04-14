@@ -1131,6 +1131,7 @@
          * @property {string|null} [deviceManufacturer] Device deviceManufacturer
          * @property {string|null} [deviceModel] Device deviceModel
          * @property {string|null} [additionalInfo] Device additionalInfo
+         * @property {string|null} [tenant] Device tenant
          */
     
         /**
@@ -1229,6 +1230,14 @@
         Device.prototype.additionalInfo = "";
     
         /**
+         * Device tenant.
+         * @member {string} tenant
+         * @memberof Device
+         * @instance
+         */
+        Device.prototype.tenant = "";
+    
+        /**
          * Creates a new Device instance using the specified properties.
          * @function create
          * @memberof Device
@@ -1272,6 +1281,8 @@
                 writer.uint32(/* id 9, wireType 2 =*/74).string(message.deviceModel);
             if (message.additionalInfo != null && Object.hasOwnProperty.call(message, "additionalInfo"))
                 writer.uint32(/* id 10, wireType 2 =*/82).string(message.additionalInfo);
+            if (message.tenant != null && Object.hasOwnProperty.call(message, "tenant"))
+                writer.uint32(/* id 11, wireType 2 =*/90).string(message.tenant);
             return writer;
         };
     
@@ -1335,6 +1346,9 @@
                     break;
                 case 10:
                     message.additionalInfo = reader.string();
+                    break;
+                case 11:
+                    message.tenant = reader.string();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1401,6 +1415,9 @@
             if (message.additionalInfo != null && message.hasOwnProperty("additionalInfo"))
                 if (!$util.isString(message.additionalInfo))
                     return "additionalInfo: string expected";
+            if (message.tenant != null && message.hasOwnProperty("tenant"))
+                if (!$util.isString(message.tenant))
+                    return "tenant: string expected";
             return null;
         };
     
@@ -1436,6 +1453,8 @@
                 message.deviceModel = String(object.deviceModel);
             if (object.additionalInfo != null)
                 message.additionalInfo = String(object.additionalInfo);
+            if (object.tenant != null)
+                message.tenant = String(object.tenant);
             return message;
         };
     
@@ -1463,6 +1482,7 @@
                 object.deviceManufacturer = "";
                 object.deviceModel = "";
                 object.additionalInfo = "";
+                object.tenant = "";
             }
             if (message.platformType != null && message.hasOwnProperty("platformType"))
                 object.platformType = message.platformType;
@@ -1484,6 +1504,8 @@
                 object.deviceModel = message.deviceModel;
             if (message.additionalInfo != null && message.hasOwnProperty("additionalInfo"))
                 object.additionalInfo = message.additionalInfo;
+            if (message.tenant != null && message.hasOwnProperty("tenant"))
+                object.tenant = message.tenant;
             return object;
         };
     

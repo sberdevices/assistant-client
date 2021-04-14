@@ -352,6 +352,9 @@ export interface IDevice {
 
     /** Device additionalInfo */
     additionalInfo?: (string|null);
+
+    /** Device tenant */
+    tenant?: (string|null);
 }
 
 /** Represents a Device. */
@@ -392,6 +395,9 @@ export class Device implements IDevice {
 
     /** Device additionalInfo. */
     public additionalInfo: string;
+
+    /** Device tenant. */
+    public tenant: string;
 
     /**
      * Creates a new Device instance using the specified properties.
