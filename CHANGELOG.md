@@ -1,3 +1,15 @@
+# v2.11.9 (Fri Apr 16 2021)
+
+#### 🐛 Bug Fix
+
+- fix: NativePanel mobile layout [#111](https://github.com/sberdevices/assistant-client/pull/111) ([@it-efrem](https://github.com/it-efrem))
+
+#### Authors: 1
+
+- Eugene ([@it-efrem](https://github.com/it-efrem))
+
+---
+
 # v2.11.8 (Wed Apr 14 2021)
 
 #### 🐛 Bug Fix
