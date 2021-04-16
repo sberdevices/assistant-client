@@ -40,6 +40,7 @@ export const NativePanel: React.FC<NativePanelProps> = ({
     const [recording, setRecording] = useState(false);
     const [bubble, setBubble] = useState(bubbleText);
     const [prevBubbleText, setPrevBubbleText] = useState(bubbleText);
+    const [isVisibleInputTouch, setIsVisibleInputTouch] = useState(false);
 
     if (bubbleText !== prevBubbleText) {
         setPrevBubbleText(bubbleText);
@@ -50,6 +51,10 @@ export const NativePanel: React.FC<NativePanelProps> = ({
         setValue('');
         onListen();
     }, [onListen]);
+
+    const handleClickKeyboard = () => {
+        setIsVisibleInputTouch(!isVisibleInputTouch);
+    };
 
     const createSuggestClickHandler = (suggest: SuggestionButtonType) => () => {
         const { action } = suggest;
@@ -75,7 +80,7 @@ export const NativePanel: React.FC<NativePanelProps> = ({
     }, [onSubscribeListenStatus, onSubscribeHypotesis]);
 
     return (
-        <div className={className ? `nativePanel ${className}` : 'nativePanel'}>
+        <div className={`nativePanel ${className ?? ''} ${isVisibleInputTouch ? ' keyboard-visible' : ''}`}>
             {bubble && (
                 <div className="bubble" onClick={() => setBubble('')}>
                     {bubble}
@@ -90,10 +95,9 @@ export const NativePanel: React.FC<NativePanelProps> = ({
                 }}
             />
 
-            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-            <label htmlFor="voice" className="label">
-                Попробуйте
-            </label>
+            <div className="keyboard-touch" onClick={handleClickKeyboard}>
+                &#9000;
+            </div>
 
             <input
                 id="voice"
@@ -145,7 +149,6 @@ const NativePanelStyles = `
 }
 
 .nativePanel {
-    background-color: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(5px);
     box-sizing: border-box;
     display: flex;
@@ -155,21 +158,20 @@ const NativePanelStyles = `
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 144px;
-    padding: 36px 128px;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
+    height: 9rem;
+    padding: 2rem 3rem;
+    background: linear-gradient(#ffffff00, #000000);
 }
 
 .bubble {
     cursor: pointer;
     position: absolute;
-    bottom: calc(100% - 36px);
-    max-width: 500px;
-    border-radius: 24px 24px 24px 6px;
+    bottom: calc(100% - 1.5rem);
+    left: 1rem;
+    max-width: 80%;
+    border-radius: 0.2rem;
     background-color: rgba(255, 255, 255, 0.08);
-    padding: 12px 24px;
-    font-size: 24px;
+    padding: 0.3rem;
     line-height: 24px;
     font-weight: 500;
     color: #fff;
@@ -178,11 +180,14 @@ const NativePanelStyles = `
 
 .sphere {
     background-size: contain;
-    width: 72px;
-    height: 72px;
-
+    background-repeat: no-repeat;
+    padding: 2.2rem;
     transition: transform 0.2s;
+    background-position: center;
+}
 
+.keyboard-touch {
+    display: none;
 }
 
 .sphere:hover {
@@ -200,26 +205,17 @@ const NativePanelStyles = `
     color: #fff;
     height: 42px;
     padding: 0;
-    margin: 0;
+    margin-left: 2rem;
     outline: none;
     border: 0;
     background: transparent;
-}
-
-.label {
-    font-size: 36px;
-    line-height: 42px;
-    font-weight: 500;
-    color: #fff;
-    opacity: 0.5;
-    padding-left: 40px;
-    padding-right: 10px;
+    width: 80%;
 }
 
 .suggestPanel {
     position: absolute;
-    top: 15px;
-    right: 25px;
+    bottom: calc(100% - 1.5rem);
+    right: 3rem;
     display: flex;
     flex-direction: row;
     height: 28px;
@@ -234,6 +230,39 @@ const NativePanelStyles = `
     color: #fff;
     cursor: pointer;
     font-size: 14px;
+}
+
+@media screen and (max-width: 900px) {
+    .input {
+        display: none;
+    }
+
+    .sphere {
+        margin: 0 auto;
+    }
+
+    .suggestPanel {
+        bottom: calc(100% - 3rem);
+    }
+
+    .keyboard-touch {
+        position: absolute;
+        display: block;
+        color: rgba(197, 197, 197, 0.8);
+        font-size: 1.5rem;
+        right: calc(3rem);
+    }
+
+    .keyboard-visible .sphere {
+        display: none;
+    }
+
+    .keyboard-visible .input {
+        display: block;
+        margin-left: 0rem;
+        background: rgb(144, 144, 144, 0.15);
+        border-radius: 1rem;
+    }
 }
 `;
 
