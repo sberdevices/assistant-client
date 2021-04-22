@@ -347,7 +347,7 @@ export { createClient } from './client';
 export { createMusicRecognizer } from './createMusicRecognizer';
 export { createSpeechRecognizer } from './createSpeechRecognizer';
 export { createVoiceListener } from './createVoiceListener';
-export { createVoicePlayer } from './createVoicePlayer';
+export { createVoicePlayer } from './voice-player';
 export { initializeDebugging } from './debug';
 export {
     createAssistantHostMock,

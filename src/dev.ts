@@ -21,10 +21,10 @@ import { createConsoleLogger } from './record/console-logger';
 import { createLogCallbackRecorder, RecorderCallback } from './record/callback-recorder';
 import { createRecordDownloader } from './record/record-downloader';
 import { createVoiceListener } from './createVoiceListener';
-import { createVoicePlayer } from './createVoicePlayer';
 import { createRecoveryStateRepository } from './createRecoveryStateRepository';
 import { createMusicRecognizer } from './createMusicRecognizer';
 import { createSpeechRecognizer } from './createSpeechRecognizer';
+import { createVoicePlayer } from './voice-player';
 
 const SDK_VERSION = '20.09.1.3576';
 const APP_VERSION = 'process.env.APP_VERSION';
