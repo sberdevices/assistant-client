@@ -7,7 +7,7 @@ import { generateSilence } from './silence-generator';
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 /** Создает коллекцию треков  */
-const createTrackCollection = <T extends unknown>() => {
+const createTrackQueue = <T extends unknown>() => {
     let trackIds: Array<string>;
     let trackMap: Map<string, T>;
 
@@ -16,7 +16,7 @@ const createTrackCollection = <T extends unknown>() => {
         trackMap = new Map<string, T>();
     };
 
-    const add = (id: string, track: T) => {
+    const push = (id: string, track: T) => {
         if (trackMap.has(id)) {
             throw new Error('Track already exists');
         }
@@ -58,7 +58,7 @@ const createTrackCollection = <T extends unknown>() => {
         has,
         get: getById,
         getByIndex,
-        add,
+        push,
         some,
         get length() {
             return trackIds.length;
@@ -78,7 +78,7 @@ export const createVoicePlayer = ({
 }: VoicePlayerSettings = {}) => {
     const actx: AudioContext | null = AudioContext ? new AudioContext() : null;
     const { on, emit } = createNanoEvents<EventsType>();
-    const tracks = createTrackCollection<ReturnType<typeof createTrackStream>>();
+    const tracks = createTrackQueue<ReturnType<typeof createTrackStream>>();
     // true - воспроизводим все треки в очереди (новые в том числе), false - скипаем всю очередь (новые в т.ч.)
     let active = true;
     let cursor = 0;
@@ -149,10 +149,10 @@ export const createVoicePlayer = ({
                 },
                 trackStatus: active ? 'stop' : 'end',
             });
-            tracks.add(trackId, current);
+            tracks.push(trackId, current);
         }
 
-        if (data.length) {
+        if (current.status !== 'end' && data.length) {
             current.write(data);
         }
 
@@ -168,9 +168,6 @@ export const createVoicePlayer = ({
             tracks.getByIndex(cursor).stop();
             cursor++;
         }
-
-        cursor = 0;
-        tracks.clear();
     };
 
     return {
