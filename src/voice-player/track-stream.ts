@@ -1,24 +1,4 @@
-import { createNanoEvents } from './nanoevents';
-import { VoicePlayerSettings } from './typings';
-
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-
-type BytesArraysSizes = {
-    incomingMessageVoiceDataLength: number;
-    sourceLen: number;
-    start: number;
-    prepend: number | null;
-};
-
-const from16BitToFloat32 = (incomingData: Int16Array) => {
-    const l = incomingData.length;
-    const outputData = new Float32Array(l);
-    for (let i = 0; i < l; i += 1) {
-        outputData[i] = incomingData[i] / 32768.0;
-    }
-    return outputData;
-};
-
+/** Создает структуру для хранения загружаемых и воспроизводимых частей трека */
 const createChunkQueue = <T extends AudioBufferSourceNode>() => {
     const buffer: Array<T> = []; // очередь на воспроизведение
     const chunks: Array<T> = []; // очередь воспроизведения
@@ -57,6 +37,9 @@ const createChunkQueue = <T extends AudioBufferSourceNode>() => {
         get bufferLen() {
             return buffer.length;
         },
+        get chunks() {
+            return chunks;
+        },
         allLoaded,
         toPlay,
         remove,
@@ -78,7 +61,24 @@ const createChunkQueue = <T extends AudioBufferSourceNode>() => {
     };
 };
 
-const createTrackStream = (
+type BytesArraysSizes = {
+    incomingMessageVoiceDataLength: number;
+    sourceLen: number;
+    start: number;
+    prepend: number | null;
+};
+
+const from16BitToFloat32 = (incomingData: Int16Array) => {
+    const l = incomingData.length;
+    const outputData = new Float32Array(l);
+    for (let i = 0; i < l; i += 1) {
+        outputData[i] = incomingData[i] / 32768.0;
+    }
+    return outputData;
+};
+
+/** Создает потоковый подгружаемый трек */
+export const createTrackStream = (
     ctx: AudioContext,
     {
         sampleRate = 24000,
@@ -105,6 +105,11 @@ const createTrackStream = (
     let firstChunk = true;
 
     const end = () => {
+        // останавливаем воспроизведение чанков из очереди воспроизведения
+        queue.chunks.forEach((chunk) => {
+            chunk.stop();
+        });
+
         status = 'end';
         onEnd && onEnd();
         startTime = 0;
@@ -232,167 +237,5 @@ const createTrackStream = (
         },
         play,
         stop: end,
-    };
-};
-
-const createTrackCollection = <T extends unknown>() => {
-    let trackIds: Array<string>;
-    let trackMap: Map<string, T>;
-
-    const clear = () => {
-        trackIds = new Array<string>();
-        trackMap = new Map<string, T>();
-    };
-
-    const add = (id: string, track: T) => {
-        if (trackMap.has(id)) {
-            throw new Error('Track already exists');
-        }
-
-        trackMap.set(id, track);
-        trackIds.push(id);
-    };
-
-    const has = (id: string) => trackMap.has(id);
-
-    const getById = (id: string): T => {
-        const track = trackMap.get(id);
-        if (track === undefined) {
-            throw new Error('Unknown track id');
-        }
-
-        return track;
-    };
-
-    const getByIndex = (index: number): T => {
-        if (index < 0 || index >= trackIds.length) {
-            throw new Error('Index out of bounds');
-        }
-
-        const track = trackMap.get(trackIds[index]);
-        if (track == null) {
-            throw new Error('Something wrong...');
-        }
-
-        return track;
-    };
-
-    const some = (predicate: (item: T) => boolean) => trackIds.some((id) => predicate(getById(id)));
-
-    clear();
-
-    return {
-        clear,
-        has,
-        get: getById,
-        getByIndex,
-        add,
-        some,
-        get length() {
-            return trackIds.length;
-        },
-    };
-};
-
-export type EventsType = {
-    play: (trackId: string) => void;
-    end: (trackId: string) => void;
-};
-
-export const createVoicePlayer = ({
-    startVoiceDelay = 0.2,
-    sampleRate,
-    numberOfChannels,
-}: VoicePlayerSettings = {}) => {
-    const { on, emit } = createNanoEvents<EventsType>();
-    const tracks = createTrackCollection<ReturnType<typeof createTrackStream>>();
-    // true - воспроизводим все треки в очереди (новые в том числе), false - скипаем всю очередь (новые в т.ч.)
-    let active = true;
-    let ctx: AudioContext | null = null;
-    let cursor = 0;
-
-    const play = () => {
-        if (cursor >= tracks.length) {
-            if (tracks.some((track) => !track.loaded)) {
-                return;
-            }
-
-            ctx && ctx.close();
-            ctx = null;
-            cursor = 0;
-            tracks.clear();
-            return;
-        }
-
-        const current = tracks.getByIndex(cursor);
-        if (current.status === 'end') {
-            if (cursor < tracks.length) {
-                cursor++;
-                play();
-            }
-        } else {
-            current.play();
-        }
-    };
-
-    const append = (data: Uint8Array, trackId: string, last = false) => {
-        let current = tracks.has(trackId) ? tracks.get(trackId) : undefined;
-        if (current == null) {
-            if (ctx == null) {
-                // шарим контекст между треками
-                ctx = new AudioContext();
-            }
-            current = createTrackStream(ctx, {
-                sampleRate,
-                numberOfChannels,
-                delay: startVoiceDelay,
-                onPlay: () => emit('play', trackId),
-                onEnd: () => {
-                    emit('end', trackId);
-                    play();
-                },
-                trackStatus: active ? 'stop' : 'end',
-            });
-            tracks.add(trackId, current);
-        }
-
-        if (data.length) {
-            current.write(data);
-        }
-
-        if (last) {
-            current.setLoaded();
-        }
-
-        play();
-    };
-
-    const stop = () => {
-        while (cursor < tracks.length) {
-            tracks.getByIndex(cursor).stop();
-            cursor++;
-        }
-
-        ctx?.close();
-        ctx = null;
-        cursor = 0;
-        tracks.clear();
-    };
-
-    return {
-        append,
-        get active() {
-            return active;
-        },
-        set active(value: boolean) {
-            active = value;
-            if (value) {
-                play();
-            } else {
-                stop();
-            }
-        },
-        on,
-        stop,
     };
 };
