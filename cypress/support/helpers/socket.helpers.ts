@@ -1,5 +1,5 @@
 import { Message } from '../../../src/proto';
-import { appendHeader } from '../../../src/client';
+import { appendHeader } from '../../../src/clientMethods';
 import {
     AssistantCharacterType,
     AssistantNavigationCommand,
