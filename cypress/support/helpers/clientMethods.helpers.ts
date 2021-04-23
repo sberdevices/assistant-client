@@ -1,6 +1,7 @@
 import { Server } from 'mock-socket';
 
-import { appendHeader, createClient } from '../../../src/client';
+import { createClient } from '../../../src/client';
+import { appendHeader } from '../../../src/clientMethods';
 import { Message } from '../../../src/proto';
 import { legacyDevice, settings } from '../../../src/dev';
 import { EventsType, MessageNames } from '../../../src/typings';
