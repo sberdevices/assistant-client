@@ -1,3 +1,23 @@
+# v2.12.0 (Mon Apr 26 2021)
+
+#### 🚀 Enhancement
+
+- feat: Без действий пользователя не рекконектиться к vps [#114](https://github.com/sberdevices/assistant-client/pull/114) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- refactor: клиент vps [#114](https://github.com/sberdevices/assistant-client/pull/114) ([@sasha-tlt](https://github.com/sasha-tlt))
+- fix: Остановка воспроизведения подгружающейся озвучки [#114](https://github.com/sberdevices/assistant-client/pull/114) ([@sasha-tlt](https://github.com/sasha-tlt))
+- fix: Воспроизведение озвучки в safari [#114](https://github.com/sberdevices/assistant-client/pull/114) ([@sasha-tlt](https://github.com/sasha-tlt))
+- docs: update Readme.md [#113](https://github.com/sberdevices/assistant-client/pull/113) ([@emochalova](https://github.com/emochalova))
+
+#### Authors: 2
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+- Ekaterina Mochalova ([@emochalova](https://github.com/emochalova))
+
+---
+
 # v2.11.9 (Fri Apr 16 2021)
 
 #### 🐛 Bug Fix
