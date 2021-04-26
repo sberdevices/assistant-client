@@ -30,11 +30,11 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
 
     let currentSettings = { device, legacyDevice, settings, locale };
     let currentMessageId = Date.now();
-    let retries = 0;
+    let retries = 0; // количество попыток коннекта при ошибке
     let destroyed = false;
     let ws: WebSocket;
     let timeOut: number | undefined;
-    let clearRetryTimer: number;
+    let clearRetryTimer: number; // ид таймера реконнекта при ошибке
 
     const getMessageId = () => {
         return currentMessageId++;
@@ -63,6 +63,10 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
             ws.send(buffer);
         } else {
             messageQueue.push(buffer);
+            if (status === 'closed' && !destroyed) {
+                // eslint-disable-next-line @typescript-eslint/no-use-before-define
+                startWebSocket();
+            }
         }
     };
 
@@ -130,6 +134,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         ws.binaryType = 'arraybuffer';
         ws.addEventListener('open', () => {
             status = 'ready';
+            // сбрасываем количество попыток реконнекта по таймауту
             clearRetryTimer = window.setTimeout(() => {
                 retries = 0;
             }, 500);
@@ -171,6 +176,15 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
 
         ws.addEventListener('close', () => {
             status = 'closed';
+            emit('close');
+        });
+
+        ws.addEventListener('error', (e) => {
+            if (status !== 'connecting') {
+                throw e;
+            }
+
+            // пробуем переподключаться, если возникла ошибка при коннекте
             clearTimeout(clearRetryTimer);
             if (!ws || (ws.readyState === 3 && !destroyed)) {
                 if (timeOut) {
@@ -181,8 +195,6 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
                     retries++;
                 }, 300 * retries);
             }
-
-            emit('close');
         });
 
         ws.addEventListener('message', (e) => {

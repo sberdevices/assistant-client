@@ -52,13 +52,13 @@ describe('Тестирование файла client.ts на корректно�
 
     it('задержка между попытками переподключиться должна увеличиваться с каждой неудачной попыткой', (done) => {
         let retries = 0;
+
+        server.stop();
         const client = getClient(socketUrl);
 
-        server.clients().forEach((c) => c.close());
         client.on('close', () => {
             retries++;
         });
-        server.stop();
 
         setTimeout(() => {
             expect(retries).to.eq(5); // изначальное закрытие + попытки на 0ms, 300ms, 900ms, 1800ms
