@@ -25,6 +25,7 @@ import { createRecoveryStateRepository } from './createRecoveryStateRepository';
 import { createMusicRecognizer } from './createMusicRecognizer';
 import { createSpeechRecognizer } from './createSpeechRecognizer';
 import { createVoicePlayer } from './voice-player';
+import { IDevice } from './proto';
 
 const SDK_VERSION = '20.09.1.3576';
 const APP_VERSION = 'process.env.APP_VERSION';
@@ -69,6 +70,7 @@ export const initializeAssistantSDK = ({
     recordParams,
     settings = {},
     voiceSettings,
+    device,
     vpsVersion = 3,
 }: {
     initPhrase: string;
@@ -91,8 +93,10 @@ export const initializeAssistantSDK = ({
     settings?: AssistantSettings;
     voiceSettings?: VoicePlayerSettings;
     vpsVersion?: number;
+    device?:IDevice;
 }) => {
-    const device = {
+
+    const deviceSettings = {
         platformType: 'WEBDBG',
         platformVersion: '1.0',
         sdkVersion,
@@ -105,6 +109,7 @@ export const initializeAssistantSDK = ({
             host_app_id: 'ru.sberbank.sdakit.demo',
             sdk_version: sdkVersion,
         }),
+        ...device
     };
 
     const voicePlayer = createVoicePlayer(voiceSettings);
@@ -130,7 +135,7 @@ export const initializeAssistantSDK = ({
             token,
             userChannel,
             locale,
-            device,
+            device:deviceSettings,
             legacyDevice,
             settings: {
                 ...settings,
