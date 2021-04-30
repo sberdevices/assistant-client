@@ -70,6 +70,8 @@ export const initializeAssistantSDK = ({
     settings = {},
     voiceSettings,
     vpsVersion = 3,
+    features,
+    capabilities,
 }: {
     initPhrase: string;
     url: string;
@@ -91,6 +93,8 @@ export const initializeAssistantSDK = ({
     settings?: AssistantSettings;
     voiceSettings?: VoicePlayerSettings;
     vpsVersion?: number;
+    features?: string;
+    capabilities?: string;
 }) => {
     const device = {
         platformType: 'WEBDBG',
@@ -98,8 +102,8 @@ export const initializeAssistantSDK = ({
         sdkVersion,
         surface,
         surfaceVersion: surfaceVersion || APP_VERSION,
-        features: FEATURES,
-        capabilities: CAPABILITIES,
+        features: features ?? FEATURES,
+        capabilities: capabilities ?? CAPABILITIES,
         deviceId,
         additionalInfo: JSON.stringify({
             host_app_id: 'ru.sberbank.sdakit.demo',
