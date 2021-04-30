@@ -93,9 +93,8 @@ export const initializeAssistantSDK = ({
     settings?: AssistantSettings;
     voiceSettings?: VoicePlayerSettings;
     vpsVersion?: number;
-    device?:IDevice;
+    device?: IDevice;
 }) => {
-
     const deviceSettings = {
         platformType: 'WEBDBG',
         platformVersion: '1.0',
@@ -109,7 +108,7 @@ export const initializeAssistantSDK = ({
             host_app_id: 'ru.sberbank.sdakit.demo',
             sdk_version: sdkVersion,
         }),
-        ...device
+        ...device,
     };
 
     const voicePlayer = createVoicePlayer(voiceSettings);
@@ -135,7 +134,7 @@ export const initializeAssistantSDK = ({
             token,
             userChannel,
             locale,
-            device:deviceSettings,
+            device: deviceSettings,
             legacyDevice,
             settings: {
                 ...settings,
