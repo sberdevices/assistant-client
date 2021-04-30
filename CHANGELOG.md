@@ -1,3 +1,15 @@
+# v2.13.0 (Fri Apr 30 2021)
+
+#### 🚀 Enhancement
+
+- feat(initializeassistantsdk): добавил features и capabilities как параметры initializeAssistantSDK [#116](https://github.com/sberdevices/assistant-client/pull/116) (PIReutov@sberbank.ru)
+
+#### Authors: 1
+
+- Pavel Reutov (PIReutov@sberbank.ru)
+
+---
+
 # v2.12.0 (Mon Apr 26 2021)
 
 #### 🚀 Enhancement
