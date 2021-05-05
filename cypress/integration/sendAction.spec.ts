@@ -30,7 +30,7 @@ describe('Проверяем sendAction', () => {
     const getRecoveryState = () => recoveryState;
     const initAssistant = () => createAssistant({ getState, getRecoveryState });
 
-    it('sendAction c одним параметром должен вызывать assistantHost.sendDataContainer', (done) => {
+    it('sendAction должен вызывать assistantHost.sendDataContainer', (done) => {
         const assistant = initAssistant();
 
         window.AssistantHost.sendDataContainer = (sended) => {
@@ -44,7 +44,7 @@ describe('Проверяем sendAction', () => {
         assistant.sendAction(action);
     });
 
-    it('sendAction c двумя параметрами должен вызывать assistantHost.sendDataContainer', (done) => {
+    it('sendAction должен проксировать name и requestId в assistantHost.sendDataContainer', (done) => {
         const assistant = initAssistant();
 
         window.AssistantHost.sendDataContainer = (sended) => {
@@ -88,6 +88,30 @@ describe('Проверяем sendAction', () => {
             },
             { requestId },
         );
+    });
+
+    it('Если не передавать onData и onError, должна срабатывать общая подписка', () => {
+        const commands = [dataCommand, errorCommand];
+        const assistant = initAssistant();
+
+        window.AssistantHost.sendDataContainer = (data) => {
+            const { requestId } = JSON.parse(data);
+            setTimeout(() =>
+                commands.map((command, i) =>
+                    setTimeout(() => window.AssistantClient.onData({ ...command, sdk_meta: { requestId } }), i),
+                ),
+            );
+        };
+
+        assistant.on('data', (data) => {
+            if (data.smart_app_data) {
+                expect(data.smart_app_data).to.deep.equal(dataCommand.smart_app_data);
+            } else {
+                expect(data.smart_app_error).to.deep.equal(errorCommand.smart_app_error);
+            }
+        });
+
+        assistant.sendAction(action);
     });
 
     it('После вызова clear обработчики не работают', (done) => {
