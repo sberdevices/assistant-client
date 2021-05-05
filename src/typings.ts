@@ -160,7 +160,7 @@ export interface AssistantNavigationCommand {
 
 export interface AssistantSmartAppData {
     type: 'smart_app_data';
-    smart_app_data: Record<string, unknown>;
+    smart_app_data: unknown;
     sdk_meta?: SdkMeta;
 }
 
