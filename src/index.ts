@@ -197,11 +197,17 @@ export const createAssistant = <A extends AssistantSmartAppData>({
             { name, requestId }: Pick<SendDataParams, 'name' | 'requestId'> = {},
         ) => {
             return sendData({ action, name, requestId }, (data: A | AssistantSmartAppError) => {
-                if (data.type === 'smart_app_data') {
-                    onData && onData(data.smart_app_data as D);
-                } else if (data.type === 'smart_app_error') {
-                    onError && onError(data.smart_app_error as E);
+                if (data.type === 'smart_app_data' && onData) {
+                    onData(data.smart_app_data as D);
+                    return;
                 }
+
+                if (data.type === 'smart_app_error' && onError) {
+                    onError(data.smart_app_error as E);
+                    return;
+                }
+
+                emitCommand(data as AssistantClientCustomizedCommand<A>);
             });
         },
         sendData,
