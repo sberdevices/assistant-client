@@ -33,7 +33,7 @@ export default [
         output: {
             ...common.output,
             dir: 'dist',
-            format: 'esm',
+            format: 'cjs',
         },
         plugins: [
             nodeResolve({
