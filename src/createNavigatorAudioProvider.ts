@@ -1,4 +1,14 @@
-const AudioContext = window.AudioContext || window.webkitAudioContext;
+const createAudioContext = (options?: AudioContextOptions): AudioContext => {
+    if (AudioContext) {
+        return new AudioContext(options);
+    }
+
+    if (window.webkitAudioContext) {
+        return window.webkitAudioContext;
+    }
+
+    throw new Error('Audio-context not supported');
+};
 
 let context: AudioContext;
 let processor: ScriptProcessorNode;
@@ -52,7 +62,7 @@ const createAudioRecorder = (stream: MediaStream, cb: (buffer: ArrayBuffer, last
         state = 'recording';
 
         if (!context) {
-            context = new AudioContext({
+            context = createAudioContext({
                 sampleRate: 16000,
             });
         }
