@@ -5,6 +5,20 @@ import { AssistantRecord, LogRecorder, RecordSaver } from '../typings';
 
 export const CURRENT_VERSION = '0.1.0';
 
+const RecordPanelStyles = `
+.recordPanel {
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    right: 0;
+}
+
+.recordButton {
+    margin-right: 8px;
+    margin-top: 8px;
+}
+`;
+
 interface AssistantRecordPanelProps {
     recorder: LogRecorder;
     onSave: (record: AssistantRecord) => void;
@@ -39,6 +53,12 @@ const AssistantRecordPanel: React.FC<AssistantRecordPanelProps> = ({ recorder, o
         recorderRef.current = recorder;
     }, [recorder]);
 
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.appendChild(document.createTextNode(RecordPanelStyles));
+        document.getElementsByTagName('head')[0].appendChild(style);
+    }, []);
+
     return (
         <div className="recordPanel">
             <button onClick={handleStart} type="button" disabled={isRecording} className="recordButton">
@@ -60,21 +80,3 @@ export const renderAssistantRecordPanel = (recorder: LogRecorder, saver: RecordS
 
     render(<AssistantRecordPanel recorder={recorder} onSave={saver.save} />, div);
 };
-
-const RecordPanelStyles = `
-.recordPanel {
-    position: fixed;
-    z-index: 999;
-    top: 0;
-    right: 0;
-}
-
-.recordButton {
-    margin-right: 8px;
-    margin-top: 8px;
-}
-`;
-
-const style = document.createElement('style');
-style.appendChild(document.createTextNode(RecordPanelStyles));
-document.getElementsByTagName('head')[0].appendChild(style);

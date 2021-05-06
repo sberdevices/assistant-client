@@ -29,11 +29,6 @@ import { createVoicePlayer } from './voice-player';
 const SDK_VERSION = '20.09.1.3576';
 const APP_VERSION = 'process.env.APP_VERSION';
 
-const CAPABILITIES = JSON.stringify({
-    screen: { available: true, width: window.innerWidth, height: window.innerHeight },
-    speak: { available: true },
-});
-
 const FEATURES = JSON.stringify({
     appTypes: ['DIALOG', 'WEB_APP'],
 });
@@ -103,7 +98,12 @@ export const initializeAssistantSDK = ({
         surface,
         surfaceVersion: surfaceVersion || APP_VERSION,
         features: features ?? FEATURES,
-        capabilities: capabilities ?? CAPABILITIES,
+        capabilities:
+            capabilities ??
+            JSON.stringify({
+                screen: { available: true, width: window?.innerWidth, height: window?.innerHeight },
+                speak: { available: true },
+            }),
         deviceId,
         additionalInfo: JSON.stringify({
             host_app_id: 'ru.sberbank.sdakit.demo',
