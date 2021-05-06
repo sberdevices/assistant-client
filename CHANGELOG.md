@@ -1,3 +1,22 @@
+# v2.14.0 (Thu May 06 2021)
+
+#### 🚀 Enhancement
+
+- fix: payload опционален в AssistantSmartAppCommand [#117](https://github.com/sberdevices/assistant-client/pull/117) ([@sasha-tlt](https://github.com/sasha-tlt))
+- feat: Ответ на sendAction без подписки теперь попадает в общие подписки (assistant.on('data')) [#117](https://github.com/sberdevices/assistant-client/pull/117) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- fix: Поддержка ssr [#117](https://github.com/sberdevices/assistant-client/pull/117) ([@sasha-tlt](https://github.com/sasha-tlt))
+- chore: Теперь собираем CommonJs-модуль [#117](https://github.com/sberdevices/assistant-client/pull/117) ([@sasha-tlt](https://github.com/sasha-tlt))
+- fix: AssistantSmartAppData['smart_app_data'] теперь unknown [#117](https://github.com/sberdevices/assistant-client/pull/117) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.13.0 (Fri Apr 30 2021)
 
 #### 🚀 Enhancement
