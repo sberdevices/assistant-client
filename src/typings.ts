@@ -298,6 +298,7 @@ export type AppInfoType = {
     frontendEndpoint: string;
     frontendType: string;
     projectId: string;
+    frontendStateId?: string;
 };
 
 export type itemType = {
@@ -342,6 +343,7 @@ type AssistantEmotionResponse = {
 };
 
 export type SystemMessageDataType = {
+    activate_app_info?: boolean;
     app_info: AppInfoType;
     auto_listening: boolean;
     items: Array<itemType>;
@@ -466,3 +468,43 @@ export interface AssistantSettings {
     authConnector?: string | null;
     surface?: string | null;
 }
+
+export type AssistantPostMessage =
+    | {
+          type: 'sendDataContainer';
+          payload: string;
+      }
+    | {
+          type: 'close';
+      }
+    | {
+          type: 'sendData';
+          payload: string;
+      }
+    | {
+          type: 'setSuggest';
+          payload: string;
+      }
+    | {
+          type: 'ready';
+      }
+    | {
+          type: 'onData';
+          payload: AssistantClientCommand;
+      }
+    | {
+          type: 'onRequestState';
+          requestId: string;
+      }
+    | {
+          type: 'onRequestRecoveryState';
+      }
+    | {
+          type: 'state';
+          payload: Record<string, unknown> | undefined;
+          requestId: string;
+      }
+    | {
+          type: 'recoveryState';
+          payload: unknown;
+      };

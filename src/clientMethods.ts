@@ -198,7 +198,7 @@ export const createClientMethods = (
     };
 
     const sendSystemMessage = (
-        { data, messageName: mesName = '' }: { data: unknown; messageName?: string },
+        { data, messageName: mesName = '' }: { data: Record<string, unknown>; messageName?: string },
         last = true,
         messageId = getMessageId(),
         params: {
@@ -254,7 +254,7 @@ export const createClientMethods = (
         send: typeof send;
         sendText: typeof sendText;
         sendSystemMessage: (
-            data: { data: unknown; messageName?: string },
+            data: { data: Record<string, unknown>; messageName?: string },
             last: boolean,
             params?: {
                 meta?: { [k: string]: string };
@@ -310,7 +310,7 @@ export const createClientMethods = (
         };
 
         const upgradedSendSystemMessage: (
-            data: { data: unknown; messageName?: string },
+            data: { data: Record<string, unknown>; messageName?: string },
             last: boolean,
             params?: {
                 meta?: { [k: string]: string };

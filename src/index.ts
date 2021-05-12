@@ -13,6 +13,7 @@ import {
     AssistantClientCommand,
     AssistantSmartAppError,
     AssistantSmartAppCommand,
+    AssistantPostMessage,
 } from './typings';
 import { createNanoEvents } from './nanoevents';
 import { initializeAssistantSDK } from './dev';
@@ -34,6 +35,70 @@ export interface SendDataParams {
     action: AssistantServerAction;
     name?: string;
     requestId?: string;
+}
+
+function inIframe() {
+    try {
+        return window.self !== window.top;
+    } catch (e) {
+        return true;
+    }
+}
+
+if (typeof window !== 'undefined' && inIframe()) {
+    const postMessage = (action: AssistantPostMessage) => {
+        window.top.postMessage(JSON.stringify(action), '*');
+    };
+
+    window.AssistantHost = {
+        sendDataContainer(json: string) {
+            postMessage({ type: 'sendDataContainer', payload: json });
+        },
+        close() {
+            postMessage({ type: 'close' });
+        },
+        sendData(json: string) {
+            postMessage({ type: 'sendData', payload: json });
+        },
+        setSuggest(suggests: string) {
+            postMessage({ type: 'setSuggest', payload: suggests });
+        },
+        ready() {
+            postMessage({ type: 'ready' });
+        },
+    };
+
+    window.addEventListener('message', (e) => {
+        try {
+            if (typeof e.data === 'string') {
+                const data = JSON.parse(e.data);
+
+                switch (data.type) {
+                    case 'onData':
+                        window.AssistantClient?.onData?.(data.payload);
+                        break;
+                    case 'onRequestState': {
+                        const state = window.AssistantClient?.onRequestState?.();
+                        postMessage({ type: 'state', payload: state, requestId: data.requestId });
+                        break;
+                    }
+                    case 'onRequestRecoveryState': {
+                        const recoverystate = window.AssistantClient?.onRequestRecoveryState?.();
+                        postMessage({ type: 'recoveryState', payload: recoverystate });
+                        break;
+                    }
+                    case 'onStart':
+                        window.AssistantClient?.onStart?.();
+                        break;
+                    default:
+                        console.error(e, 'Unknown parsed message');
+                        break;
+                }
+            }
+        } catch (e) {
+            console.error(e, 'Unknown message');
+        }
+    });
 }
 
 export const createAssistant = <A extends AssistantSmartAppData>({
