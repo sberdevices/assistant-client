@@ -288,6 +288,7 @@ export type EventsType = {
     ready: () => void;
     close: () => void;
     message: (message: OriginalMessageType) => void;
+    tokenExpired: (status: OriginalMessageType['status']) => void;
     systemMessage: (systemMessageData: SystemMessageDataType, originalMessage: OriginalMessageType) => void;
     outcoming: (message: OriginalMessageType) => void;
 };

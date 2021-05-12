@@ -117,6 +117,10 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         return sendSettingsOriginal(data, ...args);
     }) as typeof sendSettingsOriginal;
 
+    const setToken = (nextToken: CreateClientDataType['token']) => {
+        updateDefaults({ token: nextToken });
+    };
+
     const destroy = () => {
         destroyed = true;
         ws && ws.close();
@@ -215,6 +219,10 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
 
             emit('message', message);
 
+            if (message.status && message.status.code === -45) {
+                emit('tokenExpired', message.status);
+            }
+
             if (message.systemMessage?.data) {
                 const systemMessage = JSON.parse(message.systemMessage.data);
                 emit('systemMessage', systemMessage, message);
@@ -238,6 +246,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         updateDefaults,
         destroy,
         batch,
+        setToken,
         get currentMessageId() {
             return currentMessageId;
         },
