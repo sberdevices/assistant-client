@@ -5,7 +5,7 @@ import { createTrackStream } from './track-stream';
 import { generateSilence } from './silence-generator';
 
 const createAudioContext = (options?: AudioContextOptions): AudioContext => {
-    if (AudioContext) {
+    if (window.AudioContext) {
         return new AudioContext(options);
     }
 
@@ -13,8 +13,10 @@ const createAudioContext = (options?: AudioContextOptions): AudioContext => {
         return window.webkitAudioContext;
     }
 
-    throw new Error('Audio-context not supported');
+    throw new Error('Audio not supported');
 };
+
+const isAudioSupported = window.AudioContext || window.webkitAudioContext;
 
 /** Создает коллекцию треков  */
 const createTrackQueue = <T extends unknown>() => {
@@ -86,7 +88,7 @@ export const createVoicePlayer = ({
     sampleRate,
     numberOfChannels,
 }: VoicePlayerSettings = {}) => {
-    const actx: AudioContext | null = AudioContext ? createAudioContext() : null;
+    const actx: AudioContext | null = isAudioSupported ? createAudioContext() : null;
     const { on, emit } = createNanoEvents<EventsType>();
     const tracks = createTrackQueue<ReturnType<typeof createTrackStream>>();
     // true - воспроизводим все треки в очереди (новые в том числе), false - скипаем всю очередь (новые в т.ч.)
