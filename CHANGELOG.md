@@ -1,3 +1,15 @@
+# v2.14.1 (Thu May 13 2021)
+
+#### 🐛 Bug Fix
+
+- fix: В консоль не падают ошибки в ie [#120](https://github.com/sberdevices/assistant-client/pull/120) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.14.0 (Thu May 06 2021)
 
 #### 🚀 Enhancement
