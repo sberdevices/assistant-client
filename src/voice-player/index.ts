@@ -16,7 +16,7 @@ const createAudioContext = (options?: AudioContextOptions): AudioContext => {
     throw new Error('Audio not supported');
 };
 
-const isAudioSupported = window.AudioContext || window.webkitAudioContext;
+const isAudioSupported = typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext);
 
 /** Создает коллекцию треков  */
 const createTrackQueue = <T extends unknown>() => {
