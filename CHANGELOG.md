@@ -1,3 +1,15 @@
+# v2.14.2 (Mon May 17 2021)
+
+#### 🐛 Bug Fix
+
+- fix: ssr снова работает [#121](https://github.com/sberdevices/assistant-client/pull/121) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.14.1 (Thu May 13 2021)
 
 #### 🐛 Bug Fix
