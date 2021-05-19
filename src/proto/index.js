@@ -40,6 +40,7 @@
          * @property {IDevice|null} [device] Message device
          * @property {IBytes|null} [bytes] Message bytes
          * @property {IInitialSettings|null} [initialSettings] Message initialSettings
+         * @property {ICancel|null} [cancel] Message cancel
          * @property {number|Long|null} [timestamp] Message timestamp
          * @property {Object.<string,string>|null} [meta] Message meta
          */
@@ -206,6 +207,14 @@
         Message.prototype.initialSettings = null;
     
         /**
+         * Message cancel.
+         * @member {ICancel|null|undefined} cancel
+         * @memberof Message
+         * @instance
+         */
+        Message.prototype.cancel = null;
+    
+        /**
          * Message timestamp.
          * @member {number|Long} timestamp
          * @memberof Message
@@ -226,12 +235,12 @@
     
         /**
          * Message content.
-         * @member {"voice"|"text"|"systemMessage"|"legacyDevice"|"settings"|"status"|"device"|"bytes"|"initialSettings"|undefined} content
+         * @member {"voice"|"text"|"systemMessage"|"legacyDevice"|"settings"|"status"|"device"|"bytes"|"initialSettings"|"cancel"|undefined} content
          * @memberof Message
          * @instance
          */
         Object.defineProperty(Message.prototype, "content", {
-            get: $util.oneOfGetter($oneOfFields = ["voice", "text", "systemMessage", "legacyDevice", "settings", "status", "device", "bytes", "initialSettings"]),
+            get: $util.oneOfGetter($oneOfFields = ["voice", "text", "systemMessage", "legacyDevice", "settings", "status", "device", "bytes", "initialSettings", "cancel"]),
             set: $util.oneOfSetter($oneOfFields)
         });
     
@@ -301,6 +310,8 @@
             if (message.meta != null && Object.hasOwnProperty.call(message, "meta"))
                 for (var keys = Object.keys(message.meta), i = 0; i < keys.length; ++i)
                     writer.uint32(/* id 20, wireType 2 =*/162).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]).uint32(/* id 2, wireType 2 =*/18).string(message.meta[keys[i]]).ldelim();
+            if (message.cancel != null && Object.hasOwnProperty.call(message, "cancel"))
+                $root.Cancel.encode(message.cancel, writer.uint32(/* id 21, wireType 2 =*/170).fork()).ldelim();
             return writer;
         };
     
@@ -390,6 +401,9 @@
                     break;
                 case 18:
                     message.initialSettings = $root.InitialSettings.decode(reader, reader.uint32());
+                    break;
+                case 21:
+                    message.cancel = $root.Cancel.decode(reader, reader.uint32());
                     break;
                 case 19:
                     message.timestamp = reader.int64();
@@ -573,6 +587,16 @@
                         return "initialSettings." + error;
                 }
             }
+            if (message.cancel != null && message.hasOwnProperty("cancel")) {
+                if (properties.content === 1)
+                    return "content: multiple values";
+                properties.content = 1;
+                {
+                    var error = $root.Cancel.verify(message.cancel);
+                    if (error)
+                        return "cancel." + error;
+                }
+            }
             if (message.timestamp != null && message.hasOwnProperty("timestamp"))
                 if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
                     return "timestamp: integer|Long expected";
@@ -676,6 +700,11 @@
                 if (typeof object.initialSettings !== "object")
                     throw TypeError(".Message.initialSettings: object expected");
                 message.initialSettings = $root.InitialSettings.fromObject(object.initialSettings);
+            }
+            if (object.cancel != null) {
+                if (typeof object.cancel !== "object")
+                    throw TypeError(".Message.cancel: object expected");
+                message.cancel = $root.Cancel.fromObject(object.cancel);
             }
             if (object.timestamp != null)
                 if ($util.Long)
@@ -811,6 +840,11 @@
                 object.meta = {};
                 for (var j = 0; j < keys2.length; ++j)
                     object.meta[keys2[j]] = message.meta[keys2[j]];
+            }
+            if (message.cancel != null && message.hasOwnProperty("cancel")) {
+                object.cancel = $root.Cancel.toObject(message.cancel, options);
+                if (options.oneofs)
+                    object.content = "cancel";
             }
             return object;
         };
@@ -3473,6 +3507,166 @@
         };
     
         return DevContext;
+    })();
+    
+    $root.Cancel = (function() {
+    
+        /**
+         * Properties of a Cancel.
+         * @exports ICancel
+         * @interface ICancel
+         */
+    
+        /**
+         * Constructs a new Cancel.
+         * @exports Cancel
+         * @classdesc Represents a Cancel.
+         * @implements ICancel
+         * @constructor
+         * @param {ICancel=} [properties] Properties to set
+         */
+        function Cancel(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * Creates a new Cancel instance using the specified properties.
+         * @function create
+         * @memberof Cancel
+         * @static
+         * @param {ICancel=} [properties] Properties to set
+         * @returns {Cancel} Cancel instance
+         */
+        Cancel.create = function create(properties) {
+            return new Cancel(properties);
+        };
+    
+        /**
+         * Encodes the specified Cancel message. Does not implicitly {@link Cancel.verify|verify} messages.
+         * @function encode
+         * @memberof Cancel
+         * @static
+         * @param {ICancel} message Cancel message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Cancel.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified Cancel message, length delimited. Does not implicitly {@link Cancel.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof Cancel
+         * @static
+         * @param {ICancel} message Cancel message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Cancel.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes a Cancel message from the specified reader or buffer.
+         * @function decode
+         * @memberof Cancel
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {Cancel} Cancel
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Cancel.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.Cancel();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes a Cancel message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof Cancel
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {Cancel} Cancel
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Cancel.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies a Cancel message.
+         * @function verify
+         * @memberof Cancel
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Cancel.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            return null;
+        };
+    
+        /**
+         * Creates a Cancel message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof Cancel
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {Cancel} Cancel
+         */
+        Cancel.fromObject = function fromObject(object) {
+            if (object instanceof $root.Cancel)
+                return object;
+            return new $root.Cancel();
+        };
+    
+        /**
+         * Creates a plain object from a Cancel message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof Cancel
+         * @static
+         * @param {Cancel} message Cancel
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Cancel.toObject = function toObject() {
+            return {};
+        };
+    
+        /**
+         * Converts this Cancel to JSON.
+         * @function toJSON
+         * @memberof Cancel
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Cancel.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        return Cancel;
     })();
 
     return $root;
