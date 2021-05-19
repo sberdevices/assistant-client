@@ -1,3 +1,15 @@
+# v2.15.1 (Wed May 19 2021)
+
+#### 🐛 Bug Fix
+
+- fix: added field Message.content.cancel [#123](https://github.com/sberdevices/assistant-client/pull/123) ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+#### Authors: 1
+
+- Ivan Ushatsky ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+---
+
 # v2.15.0 (Wed May 19 2021)
 
 #### 🚀 Enhancement
