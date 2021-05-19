@@ -1,3 +1,15 @@
+# v2.15.0 (Wed May 19 2021)
+
+#### 🚀 Enhancement
+
+- feat: assistant host postmessage for iframe [#119](https://github.com/sberdevices/assistant-client/pull/119) ([@Turanchoks](https://github.com/Turanchoks))
+
+#### Authors: 1
+
+- Pavel Remizov ([@Turanchoks](https://github.com/Turanchoks))
+
+---
+
 # v2.14.2 (Mon May 17 2021)
 
 #### 🐛 Bug Fix
