@@ -4,10 +4,10 @@ message Message {
     string user_id = 1; //Не используется с версии контракта 3. Даже если будет передано, не будет использовано. Перенесено в InitialSettings
     int64 message_id = 2; //Обязательно
     int32 last = 3; // false = -1 | 0 - undefined | true = 1 // default=false //Обязательно
-    string token = 4; //Опционально 
+    string token = 4; //Опционально
     string user_channel = 11; //Не используется с версии контракта 3. Даже если будет передано, не будет использовано. Перенесено в InitialSettings
     string vps_token = 12; //Устарело с версии 3, должен передаваться в token = 4
-    repeated DevContext dev_context = 13; ////Устарело с версии 3. 
+    repeated DevContext dev_context = 13; ////Устарело с версии 3.
     string message_name = 14; //Опционально
     int32 version = 15; //Обязательно //версия 3
     oneof content {
@@ -20,11 +20,12 @@ message Message {
         Device device = 16; //Не используется с версии контракта 3. Даже если будет передано, не будет использовано. Перенесено в InitialSettings
         Bytes bytes = 17;//Массив данных для передачи сервису потребителю, в виде байтов
         InitialSettings initial_settings = 18;// Присылается первым сообщением после открытии сессии, они определяют контекст сессии, если не будет прислано будет ошибка
+        Cancel cancel = 21;
     }
     int64 timestamp = 19; // время создания чанка
     map<string, string> meta = 20; // для ufsInfo и т.д.
 }
- 
+
 //С версии контракта 3
 message InitialSettings {
     string user_id = 1;//Обязательно (max 36 символов)
@@ -33,7 +34,7 @@ message InitialSettings {
     Settings settings = 4;//Опционально
     string locale = 5; //Локаль пользователя (для транслирования user-friendly текстов ошибок на клиента в status.description)
 }
-  
+
 //Присылается только в рамках InitialSettings
 message Device {
     string platform_type = 1;  // Пример, ANDROID
@@ -48,7 +49,7 @@ message Device {
     string additional_info = 10; // JSON as String, который будет добавлен в блок additionalInfo блока device
     string tenant = 11;
 }
-  
+
 //Может присылаться как в рамках InitialSettings, при открытии сессии, так и уже в сессии, тем самым переопределяя дальнейшее поведение сессии
 message Settings {
     int32 dubbing = 1; // false = -1 | 0 - undefined | true = 1 // default:true
@@ -60,7 +61,7 @@ message Settings {
     string auth_connector = 7; //Алиас коннектора для аутентификации. Должен совпадать с ключем в настройках auth:auth-config:КЛЮЧ
     string surface = 8; //Не используется с версии контракт 3. Даже если будет передано, не будет использовано. Значение должно передаваться в device
 }
- 
+
 message LegacyDevice { // Не используется с версии контракт 3. Даже если будет передано, будет ошибка
     string client_type = 1;
     string channel = 2;
@@ -70,26 +71,26 @@ message LegacyDevice { // Не используется с версии конт
     string sdk_version = 6;
     string protocol_version = 7;
 }
- 
+
 message Voice {
     bytes data = 1;
 }
-  
+
 message Text {
     string data = 1;//текст
     string type = 2;//тип разметки
 }
-  
+
 message SystemMessage {
     string data = 1; // JSON as String.
 }
- 
+
 message Status {
     int32 code = 1; //код статуса/ошибки
     string description = 2; //описание статуса/ошибки
     string technical_description = 3; //техническое описание статуса/ошибки
 }
- 
+
 message Bytes {
     bytes data = 1;//Массив байтов для передачи сервису потребителю
     string desc = 2;//Описание для логов, что за массив байтов
@@ -100,3 +101,5 @@ message DevContext {
     int64 timestamp_ms = 2;
     string data = 3;
 }
+
+message Cancel {}

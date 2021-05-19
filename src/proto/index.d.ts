@@ -56,6 +56,9 @@ export interface IMessage {
     /** Message initialSettings */
     initialSettings?: (IInitialSettings|null);
 
+    /** Message cancel */
+    cancel?: (ICancel|null);
+
     /** Message timestamp */
     timestamp?: (number|Long|null);
 
@@ -126,6 +129,9 @@ export class Message implements IMessage {
     /** Message initialSettings. */
     public initialSettings?: (IInitialSettings|null);
 
+    /** Message cancel. */
+    public cancel?: (ICancel|null);
+
     /** Message timestamp. */
     public timestamp: (number|Long);
 
@@ -133,7 +139,7 @@ export class Message implements IMessage {
     public meta: { [k: string]: string };
 
     /** Message content. */
-    public content?: ("voice"|"text"|"systemMessage"|"legacyDevice"|"settings"|"status"|"device"|"bytes"|"initialSettings");
+    public content?: ("voice"|"text"|"systemMessage"|"legacyDevice"|"settings"|"status"|"device"|"bytes"|"initialSettings"|"cancel");
 
     /**
      * Creates a new Message instance using the specified properties.
@@ -1299,6 +1305,90 @@ export class DevContext implements IDevContext {
 
     /**
      * Converts this DevContext to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a Cancel. */
+export interface ICancel {
+}
+
+/** Represents a Cancel. */
+export class Cancel implements ICancel {
+
+    /**
+     * Constructs a new Cancel.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: ICancel);
+
+    /**
+     * Creates a new Cancel instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Cancel instance
+     */
+    public static create(properties?: ICancel): Cancel;
+
+    /**
+     * Encodes the specified Cancel message. Does not implicitly {@link Cancel.verify|verify} messages.
+     * @param message Cancel message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ICancel, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Cancel message, length delimited. Does not implicitly {@link Cancel.verify|verify} messages.
+     * @param message Cancel message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: ICancel, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Cancel message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Cancel
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Cancel;
+
+    /**
+     * Decodes a Cancel message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Cancel
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Cancel;
+
+    /**
+     * Verifies a Cancel message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a Cancel message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Cancel
+     */
+    public static fromObject(object: { [k: string]: any }): Cancel;
+
+    /**
+     * Creates a plain object from a Cancel message. Also converts values to other types if specified.
+     * @param message Cancel
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: Cancel, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this Cancel to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
