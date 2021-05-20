@@ -260,6 +260,7 @@ export interface Device {
     deviceManufacturer?: string | null;
     deviceModel?: string | null;
     additionalInfo?: string | null;
+    tenant?: string | null;
 }
 
 export interface LegacyDevice {
@@ -393,6 +394,7 @@ export interface OriginalMessageType {
         settings?: Settings | null;
         locale?: string | null;
     } | null;
+    cancel?: {} | null;
     device?: Device | null;
     legacyDevice?: LegacyDevice | null;
     settings?: Settings | null;
