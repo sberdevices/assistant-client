@@ -1,10 +1,20 @@
 import { Server } from 'mock-socket';
 
-import { createClient } from '../../../src/client';
-import { appendHeader } from '../../../src/clientMethods';
+import { appendHeader, createClient } from '../../../src/client';
 import { Message } from '../../../src/proto';
-import { legacyDevice, settings } from '../../../src/dev';
 import { EventsType, MessageNames } from '../../../src/typings';
+
+const legacyDevice = {
+    clientType: 'simple',
+    channel: 'Android_SB',
+    channelVersion: '8.1.0.2932_RC',
+    platformName: 'WEBDBG 1.0',
+    platformVersion: '1.0',
+};
+const settings = {
+    dubbing: 1,
+    echo: -1,
+};
 
 export const createAnswerBuffer = ({
     messageId = 1,
