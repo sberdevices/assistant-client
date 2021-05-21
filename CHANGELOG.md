@@ -1,3 +1,15 @@
+# v2.15.2 (Fri May 21 2021)
+
+#### 🐛 Bug Fix
+
+- fix: updated typing.ts same as .proto [#124](https://github.com/sberdevices/assistant-client/pull/124) ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+#### Authors: 1
+
+- Ivan Ushatsky ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+---
+
 # v2.15.1 (Wed May 19 2021)
 
 #### 🐛 Bug Fix
