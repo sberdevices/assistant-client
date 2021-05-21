@@ -11,6 +11,8 @@ import {
     ILegacyDevice,
     InitialSettings,
     IInitialSettings,
+    Cancel,
+    ICancel,
 } from './proto';
 import { SystemMessageDataType, VpsVersion } from './typings';
 
@@ -100,6 +102,7 @@ export const createClientMethods = (
             | { voice: Voice }
             | { legacyDevice: LegacyDevice }
             | { initialSettings: InitialSettings }
+            | { cancel: Cancel }
         ) & {
             last: 1 | -1;
             messageName?: string;
@@ -143,6 +146,16 @@ export const createClientMethods = (
                 initialSettings: InitialSettings.create(data),
                 last: last ? 1 : -1,
                 ...params,
+            },
+            messageId,
+        });
+    };
+
+    const sendCancel = (data: ICancel, last = true, messageId = getMessageId()) => {
+        return send({
+            payload: {
+                cancel: Cancel.create(data),
+                last: last ? 1 : -1,
             },
             messageId,
         });
@@ -251,6 +264,7 @@ export const createClientMethods = (
         sendLegacyDevice: typeof sendLegacyDevice;
         sendSettings: typeof sendSettings;
         sendInitialSettings: typeof sendInitialSettings;
+        sendCancel: typeof sendCancel;
         send: typeof send;
         sendText: typeof sendText;
         sendSystemMessage: (
@@ -290,15 +304,21 @@ export const createClientMethods = (
             sendDevice,
             sendSettings,
             sendInitialSettings,
+            sendCancel,
             sendLegacyDevice,
         }).reduce((acc, curr) => {
-            const key = curr[0] as 'sendDevice' | 'sendSettings' | 'sendInitialSettings' | 'sendLegacyDevice';
+            const key = curr[0] as
+                | 'sendDevice'
+                | 'sendSettings'
+                | 'sendInitialSettings'
+                | 'sendCancel'
+                | 'sendLegacyDevice';
             acc[key] = (...params: Parameters<typeof curr[1]>) => {
                 checkLastMessageStatus(params[1]);
                 return curr[1](params[0], params[1], batchingMessageId);
             };
             return acc;
-        }, {} as Pick<BatchableMethods, 'sendDevice' | 'sendSettings' | 'sendInitialSettings' | 'sendLegacyDevice'>);
+        }, {} as Pick<BatchableMethods, 'sendDevice' | 'sendSettings' | 'sendInitialSettings' | 'sendCancel' | 'sendLegacyDevice'>);
         const upgradedSend: typeof send = (params) => {
             checkLastMessageStatus(params.payload.last === 1);
             return send({ ...params, messageId: batchingMessageId });
@@ -346,6 +366,7 @@ export const createClientMethods = (
         send,
         sendDevice,
         sendInitialSettings,
+        sendCancel,
         sendLegacyDevice,
         sendSettings,
         sendText,
