@@ -1,9 +1,62 @@
-import { Message, IDevice, ISettings, ILegacyDevice, IInitialSettings } from './proto';
-import { EventsType, SystemMessageDataType, CreateClientDataType, ClientLogger, MessageNames } from './typings';
+import { Message, IDevice, ISettings, ILegacyDevice, IInitialSettings, IMessage } from './proto';
+import {
+    EventsType,
+    SystemMessageDataType,
+    CreateClientDataType,
+    ClientLogger,
+    MessageNames,
+    VpsVersion,
+} from './typings';
 import { createNanoEvents } from './nanoevents';
 import { createClientMethods } from './clientMethods';
 
-export const createClient = (clientParams: CreateClientDataType, logger?: ClientLogger) => {
+const compileBasePayload = ({
+    userId,
+    token,
+    userChannel,
+    version,
+    messageName,
+    vpsToken,
+}: {
+    userId: string;
+    token: string;
+    userChannel: string;
+    version: VpsVersion;
+    messageName?: string;
+    vpsToken?: string;
+}) => {
+    if (version < 3) {
+        return {
+            userId,
+            token,
+            userChannel,
+            messageName,
+            vpsToken,
+            version,
+        };
+    }
+
+    return {
+        token,
+        messageName,
+        version,
+    };
+};
+
+export const appendHeader = (buffer: Uint8Array) => {
+    // Добавляем 4 байта в начало с длинной сообщения
+    const arrayBuffer = new ArrayBuffer(4);
+    const dataView = new DataView(arrayBuffer, 0);
+    dataView.setInt32(0, buffer.length, true);
+    const uint8Array = new Uint8Array(4 + buffer.length);
+    uint8Array.set(new Uint8Array(arrayBuffer));
+    uint8Array.set(buffer, 4);
+
+    return uint8Array;
+};
+
+export const createClient = (params: CreateClientDataType, logger?: ClientLogger) => {
+    const clientParams = { ...params };
     const {
         url,
         userId,
@@ -18,10 +71,11 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         vpsToken,
         meta,
     } = clientParams;
+    const basePayload = compileBasePayload({ userId, token, messageName, vpsToken, userChannel, version });
 
     let status: 'connecting' | 'ready' | 'closed' = 'connecting';
 
-    const messageQueue: Array<Uint8Array> = [];
+    const messageQueue: Array<IMessage> = [];
 
     const { on, emit, once } = createNanoEvents<EventsType>();
 
@@ -54,15 +108,24 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         });
     };
 
-    const sendMessage = (message: Message, buffer: Uint8Array) => {
-        logger?.logOutcoming(message);
+    const send = (message: IMessage) => {
+        const newMessage = Message.create({ ...basePayload, ...message });
 
-        emit('outcoming', message);
+        const buffer = Message.encode(newMessage).finish();
+        const bufferWithHeader = appendHeader(buffer);
 
+        logger?.logOutcoming(newMessage);
+
+        emit('outcoming', newMessage);
+
+        ws.send(bufferWithHeader);
+    };
+
+    const sendMessage = (message: IMessage) => {
         if (status === 'ready') {
-            ws.send(buffer);
+            send(message);
         } else {
-            messageQueue.push(buffer);
+            messageQueue.push(message);
             if (status === 'closed' && !destroyed) {
                 // eslint-disable-next-line @typescript-eslint/no-use-before-define
                 startWebSocket();
@@ -71,7 +134,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
     };
 
     const {
-        send,
+        send: sendOriginal,
         sendDevice: sendDeviceOriginal,
         sendInitialSettings: sendInitialSettingsOriginal,
         sendCancel,
@@ -80,12 +143,8 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
         sendText,
         sendSystemMessage,
         sendVoice,
-        updateDefaults,
         batch,
-    } = createClientMethods(
-        { userId, token, messageName, vpsToken, userChannel, version },
-        { getMessageId, sendMessage, waitForAnswerToUser },
-    );
+    } = createClientMethods({ getMessageId, sendMessage, waitForAnswerToUser });
 
     const sendDevice = ((data: IDevice, ...args: never[]) => {
         currentSettings = { ...currentSettings, device: data };
@@ -113,10 +172,18 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
     }) as typeof sendLegacyDeviceOriginal;
 
     const sendSettings = ((data: ISettings, ...args: never[]) => {
-        currentSettings = { ...currentSettings, settings: data };
+        currentSettings = { ...currentSettings, settings: { ...currentSettings.settings, ...data } };
 
         return sendSettingsOriginal(data, ...args);
     }) as typeof sendSettingsOriginal;
+
+    const updateDefaults = (obj: Partial<typeof basePayload>) => {
+        ws.close();
+        Object.assign(basePayload, obj);
+        Object.assign(clientParams, obj);
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        startWebSocket();
+    };
 
     const destroy = () => {
         destroyed = true;
@@ -167,7 +234,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
                 while (messageQueue.length > 0) {
                     const message = messageQueue.shift();
                     if (message) {
-                        ws.send(message);
+                        send(message);
                     }
                 }
             }
@@ -227,7 +294,7 @@ export const createClient = (clientParams: CreateClientDataType, logger?: Client
 
     return {
         once,
-        send,
+        send: sendOriginal,
         sendDevice,
         sendLegacyDevice,
         sendSettings,

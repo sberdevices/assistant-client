@@ -1,5 +1,4 @@
 import {
-    Message,
     Settings,
     SystemMessage,
     Device,
@@ -13,82 +12,19 @@ import {
     IInitialSettings,
     Cancel,
     ICancel,
+    IMessage,
 } from './proto';
 import { SystemMessageDataType, VpsVersion } from './typings';
 
-export const appendHeader = (buffer: Uint8Array) => {
-    // Добавляем 4 байта в начало с длинной сообщения
-    const arrayBuffer = new ArrayBuffer(4);
-    const dataView = new DataView(arrayBuffer, 0);
-    dataView.setInt32(0, buffer.length, true);
-    const uint8Array = new Uint8Array(4 + buffer.length);
-    uint8Array.set(new Uint8Array(arrayBuffer));
-    uint8Array.set(buffer, 4);
-
-    return uint8Array;
-};
-
-const compileBasePayload = ({
-    userId,
-    token,
-    userChannel,
-    version,
-    messageName,
-    vpsToken,
+export const createClientMethods = ({
+    getMessageId,
+    sendMessage,
+    waitForAnswerToUser,
 }: {
-    userId: string;
-    token: string;
-    userChannel: string;
-    version: VpsVersion;
-    messageName?: string;
-    vpsToken?: string;
+    getMessageId: () => number;
+    sendMessage: (message: IMessage) => void;
+    waitForAnswerToUser: (messageId: number) => Promise<SystemMessageDataType>;
 }) => {
-    if (version < 3) {
-        return {
-            userId,
-            token,
-            userChannel,
-            messageName,
-            vpsToken,
-            version,
-        };
-    }
-
-    return {
-        token,
-        messageName,
-        version,
-    };
-};
-
-export const createClientMethods = (
-    {
-        userId,
-        token,
-        userChannel,
-        version,
-        messageName,
-        vpsToken,
-    }: {
-        userId: string;
-        token: string;
-        userChannel: string;
-        version: VpsVersion;
-        messageName?: string;
-        vpsToken?: string;
-    },
-    {
-        getMessageId,
-        sendMessage,
-        waitForAnswerToUser,
-    }: {
-        getMessageId: () => number;
-        sendMessage: (message: Message, buffer: Uint8Array) => void;
-        waitForAnswerToUser: (messageId: number) => Promise<SystemMessageDataType>;
-    },
-) => {
-    const basePayload = compileBasePayload({ userId, token, messageName, vpsToken, userChannel, version });
-
     const send = ({
         payload,
         messageId,
@@ -110,19 +46,12 @@ export const createClientMethods = (
         };
         messageId: number;
     }) => {
-        const message = Message.create({
+        sendMessage({
             messageName: '',
-            // vpsToken: '',
-            ...basePayload,
             ...payload,
             messageId,
             ...other,
         });
-
-        const buffer = Message.encode(message).finish();
-        const bufferWithHeader = appendHeader(buffer);
-
-        sendMessage(message, bufferWithHeader);
     };
 
     const sendDevice = (data: IDevice, last = true, messageId = getMessageId()) => {
@@ -255,10 +184,6 @@ export const createClientMethods = (
         });
     };
 
-    const updateDefaults = (obj: Partial<typeof basePayload>) => {
-        Object.assign(basePayload, obj);
-    };
-
     type BatchableMethods = {
         sendDevice: typeof sendDevice;
         sendLegacyDevice: typeof sendLegacyDevice;
@@ -372,7 +297,6 @@ export const createClientMethods = (
         sendText,
         sendSystemMessage,
         sendVoice,
-        updateDefaults,
         batch,
     };
 };
