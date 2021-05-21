@@ -1,3 +1,15 @@
+# v2.15.3 (Fri May 21 2021)
+
+#### 🐛 Bug Fix
+
+- fix: added sendCancel method [#125](https://github.com/sberdevices/assistant-client/pull/125) ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+#### Authors: 1
+
+- Ivan Ushatsky ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+---
+
 # v2.15.2 (Fri May 21 2021)
 
 #### 🐛 Bug Fix
