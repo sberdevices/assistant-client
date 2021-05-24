@@ -1,3 +1,16 @@
+# v2.16.1 (Mon May 24 2021)
+
+#### 🐛 Bug Fix
+
+- chore: тесты [#128](https://github.com/sberdevices/assistant-client/pull/128) ([@sasha-tlt](https://github.com/sasha-tlt))
+- fix: обработка ошибок коннекта [#128](https://github.com/sberdevices/assistant-client/pull/128) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.16.0 (Mon May 24 2021)
 
 #### 🚀 Enhancement
