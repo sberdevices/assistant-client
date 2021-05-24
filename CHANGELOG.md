@@ -1,3 +1,15 @@
+# v2.15.4 (Mon May 24 2021)
+
+#### 🐛 Bug Fix
+
+- fix: корректная отправка сообщений из очереди после вызова updateDefaults [#126](https://github.com/sberdevices/assistant-client/pull/126) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.15.3 (Fri May 21 2021)
 
 #### 🐛 Bug Fix
