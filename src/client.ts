@@ -258,10 +258,15 @@ export const createClient = (params: CreateClientDataType, logger?: ClientLogger
                 if (timeOut) {
                     clearTimeout(timeOut);
                 }
-                timeOut = window.setTimeout(() => {
-                    startWebSocket();
-                    retries++;
-                }, 300 * retries);
+                if (retries < 3) {
+                    timeOut = window.setTimeout(() => {
+                        startWebSocket();
+                        retries++;
+                    }, 300 * retries);
+                } else {
+                    retries = 0;
+                    emit('connectionError', e);
+                }
             }
         });
 
@@ -307,6 +312,7 @@ export const createClient = (params: CreateClientDataType, logger?: ClientLogger
         updateDefaults,
         destroy,
         batch,
+        start: startWebSocket,
         get currentMessageId() {
             return currentMessageId;
         },
