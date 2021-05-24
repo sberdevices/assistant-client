@@ -1,3 +1,15 @@
+# v2.16.0 (Mon May 24 2021)
+
+#### 🚀 Enhancement
+
+- feat: эмитить ошибку при неудачном реконекте сокета [#127](https://github.com/sberdevices/assistant-client/pull/127) ([@soulko](https://github.com/soulko))
+
+#### Authors: 1
+
+- Anton Kostenko ([@soulko](https://github.com/soulko))
+
+---
+
 # v2.15.4 (Mon May 24 2021)
 
 #### 🐛 Bug Fix
