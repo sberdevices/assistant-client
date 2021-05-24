@@ -73,7 +73,7 @@ export const createClient = (params: CreateClientDataType, logger?: ClientLogger
     } = clientParams;
     const basePayload = compileBasePayload({ userId, token, messageName, vpsToken, userChannel, version });
 
-    let status: 'connecting' | 'ready' | 'closed' = 'connecting';
+    let status: 'connecting' | 'ready' | 'closed' = 'closed';
 
     const messageQueue: Array<IMessage> = [];
 
@@ -82,13 +82,14 @@ export const createClient = (params: CreateClientDataType, logger?: ClientLogger
     const pendingMessages: Map<number | Long, Array<Message>> = new Map();
     const commitedMessages: Map<number | Long, Array<Message>> = new Map();
 
+    let initMessageId: number;
     let currentSettings = { device, legacyDevice, settings, locale };
     let currentMessageId = Date.now();
     let retries = 0; // количество попыток коннекта при ошибке
     let destroyed = false;
     let ws: WebSocket;
     let timeOut: number | undefined;
-    let clearRetryTimer: number; // ид таймера реконнекта при ошибке
+    let clearReadyTimer: number; // ид таймера установки состояния ready
 
     const getMessageId = () => {
         return currentMessageId++;
@@ -122,7 +123,8 @@ export const createClient = (params: CreateClientDataType, logger?: ClientLogger
     };
 
     const sendMessage = (message: IMessage) => {
-        if (status === 'ready') {
+        // отправляем инициализационные сообщения или все, когда сессия = ready
+        if (status === 'ready' || (typeof initMessageId !== undefined && message.messageId === initMessageId)) {
             send(message);
         } else {
             messageQueue.push(message);
@@ -182,7 +184,7 @@ export const createClient = (params: CreateClientDataType, logger?: ClientLogger
         Object.assign(basePayload, obj);
         Object.assign(clientParams, obj);
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        startWebSocket();
+        setTimeout(startWebSocket); // даем время случиться close
     };
 
     const destroy = () => {
@@ -193,6 +195,10 @@ export const createClient = (params: CreateClientDataType, logger?: ClientLogger
     };
 
     const startWebSocket = () => {
+        if (status !== 'closed') {
+            return;
+        }
+
         status = 'connecting';
         setTimeout(() => {
             emit('connecting');
@@ -201,19 +207,16 @@ export const createClient = (params: CreateClientDataType, logger?: ClientLogger
 
         ws.binaryType = 'arraybuffer';
         ws.addEventListener('open', () => {
-            status = 'ready';
-            // сбрасываем количество попыток реконнекта по таймауту
-            clearRetryTimer = window.setTimeout(() => {
-                retries = 0;
-            }, 500);
             if (ws.readyState === 1) {
+                initMessageId = getMessageId();
+
                 if (version < 3) {
                     if (version === 1 && currentSettings.legacyDevice) {
-                        sendLegacyDevice(currentSettings.legacyDevice);
+                        sendLegacyDevice(currentSettings.legacyDevice, false, initMessageId);
                     } else if (version === 2 && currentSettings.device) {
-                        sendDevice(currentSettings.device);
+                        sendDevice(currentSettings.device, false, initMessageId);
                     }
-                    sendSettings(currentSettings.settings);
+                    sendSettings(currentSettings.settings, true, initMessageId);
                 } else {
                     sendInitialSettings(
                         {
@@ -224,22 +227,35 @@ export const createClient = (params: CreateClientDataType, logger?: ClientLogger
                             locale: version > 3 ? currentSettings.locale : undefined,
                         },
                         true,
-                        undefined,
+                        initMessageId,
                         { meta },
                     );
                 }
 
-                logger?.logInit({ ...clientParams, ...currentSettings });
+                clearTimeout(clearReadyTimer);
 
-                while (messageQueue.length > 0) {
-                    const message = messageQueue.shift();
-                    if (message) {
-                        send(message);
+                /// считаем коннект = ready, если по истечении таймаута сокет не был разорван
+                /// т.к бек может разрывать сокет, если с settings что-то не так
+                clearReadyTimer = window.setTimeout(() => {
+                    if (status !== 'connecting') {
+                        return;
                     }
-                }
-            }
 
-            emit('ready');
+                    status = 'ready';
+                    retries = 0; // сбрасываем количество попыток реконнекта
+
+                    while (messageQueue.length > 0) {
+                        const message = messageQueue.shift();
+                        if (message) {
+                            send(message);
+                        }
+                    }
+
+                    emit('ready');
+                }, 500);
+
+                logger?.logInit({ ...clientParams, ...currentSettings });
+            }
         });
 
         ws.addEventListener('close', () => {
@@ -253,7 +269,6 @@ export const createClient = (params: CreateClientDataType, logger?: ClientLogger
             }
 
             // пробуем переподключаться, если возникла ошибка при коннекте
-            clearTimeout(clearRetryTimer);
             if (!ws || (ws.readyState === 3 && !destroyed)) {
                 if (timeOut) {
                     clearTimeout(timeOut);
