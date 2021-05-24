@@ -172,13 +172,12 @@ describe('Проверяем createAssistantDev', () => {
         });
     });
 
-    it('Проверяем оповещение подписчиков о старте', () => {
+    it('Проверяем оповещение подписчиков о старте', (done) => {
         server.on('connection', (socket) => {
             socket.binaryType = 'arraybuffer';
             initProtocol(socket, { initPhrase: INIT_PHRASE });
         });
 
-        const handleStart = cy.stub();
         const assistant = createAssistantDev({
             getState: () => ({}),
             url: SOCKET_URL,
@@ -187,9 +186,7 @@ describe('Проверяем createAssistantDev', () => {
             initPhrase: INIT_PHRASE,
         });
 
-        assistant.on('start', handleStart);
-
-        setTimeout(() => expect(handleStart).to.calledOnce);
+        assistant.on('start', done);
     });
 
     it('Проверяем вызов send_data - ожидаем мессадж с app_info и стейтом в нем', (done) => {
@@ -237,6 +234,7 @@ describe('Проверяем createAssistantDev', () => {
         const data: AssistantSmartAppCommand = { type: 'smart_app_data', smart_app_data: { command: 'TEST_COMMAND' } };
         const navigation: AssistantNavigationCommand = { type: 'navigation', navigation: { command: 'DOWN' } };
         const received = { character: false, navigation: false, data: false, insets: false };
+        let handleStart: () => void;
 
         server.on('connection', (socket) => {
             socket.binaryType = 'arraybuffer';
@@ -244,15 +242,13 @@ describe('Проверяем createAssistantDev', () => {
                 initPhrase: INIT_PHRASE,
             });
 
-            setTimeout(
-                () =>
-                    socket.send(
-                        createAnswerBuffer({
-                            systemMessageData: JSON.stringify({ items: [{ command: data }, { command: navigation }] }),
-                        }),
-                    ),
-                100,
-            );
+            handleStart = () => {
+                socket.send(
+                    createAnswerBuffer({
+                        systemMessageData: JSON.stringify({ items: [{ command: data }, { command: navigation }] }),
+                    }),
+                );
+            };
         });
 
         const assistant = createAssistantDev<AssistantSmartAppCommand>({
@@ -261,6 +257,10 @@ describe('Проверяем createAssistantDev', () => {
             userChannel: USER_CHANNEL,
             surface: SURFACE,
             initPhrase: INIT_PHRASE,
+        });
+
+        assistant.on('start', () => {
+            setTimeout(handleStart);
         });
 
         assistant.on('data', (command: AssistantClientCustomizedCommand<AssistantSmartAppCommand>) => {
@@ -272,6 +272,9 @@ describe('Проверяем createAssistantDev', () => {
                 case 'navigation':
                     received.navigation = true;
                     expect(command.navigation).to.deep.equal(navigation.navigation);
+                    break;
+                case 'character':
+                case 'insets':
                     break;
                 default:
                     throw new Error('Unexpected command');
@@ -286,22 +289,20 @@ describe('Проверяем createAssistantDev', () => {
 
     it('Проверяем оповещение при смене персонажа - ожидаем первым сообщением "sber", вторым -  "joy"', (done) => {
         const characterId = 'joy';
+        let handleStart: () => void;
 
         server.on('connection', (socket) => {
             socket.binaryType = 'arraybuffer';
             initProtocol(socket, { initPhrase: INIT_PHRASE });
 
-            setTimeout(
-                () =>
-                    socket.send(
-                        createAnswerBuffer({
-                            systemMessageData: JSON.stringify({
-                                items: [{ command: { character: { id: characterId }, type: 'character' } }],
-                            }),
+            handleStart = () =>
+                socket.send(
+                    createAnswerBuffer({
+                        systemMessageData: JSON.stringify({
+                            items: [{ command: { character: { id: characterId }, type: 'character' } }],
                         }),
-                    ),
-                100,
-            );
+                    }),
+                );
         });
 
         const assistant = createAssistantDev<AssistantSmartAppCommand>({
@@ -310,6 +311,10 @@ describe('Проверяем createAssistantDev', () => {
             userChannel: USER_CHANNEL,
             surface: SURFACE,
             initPhrase: INIT_PHRASE,
+        });
+
+        assistant.on('start', () => {
+            setTimeout(handleStart);
         });
 
         assistant.on('data', (command: AssistantClientCustomizedCommand<AssistantSmartAppCommand>) => {
@@ -336,7 +341,7 @@ describe('Проверяем createAssistantDev', () => {
             initPhrase: INIT_PHRASE,
         });
 
-        setTimeout(() => {
+        assistant.on('start', () => {
             assistant.close();
 
             assistant = createAssistantDev<AssistantSmartAppCommand>({
@@ -352,7 +357,7 @@ describe('Проверяем createAssistantDev', () => {
                 expect(assistant.getRecoveryState()).to.deep.equal(recoveryState);
                 done();
             });
-        }, 100);
+        });
     });
 
     it("Проверяем реакцию на system.command = 'back' - не должна попадать в onData, должна вызывать window.history.back()", (done) => {
