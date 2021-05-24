@@ -291,6 +291,7 @@ export type EventsType = {
     message: (message: OriginalMessageType) => void;
     systemMessage: (systemMessageData: SystemMessageDataType, originalMessage: OriginalMessageType) => void;
     outcoming: (message: OriginalMessageType) => void;
+    connectionError: (error: Event) => void;
 };
 
 export type AppInfoType = {
