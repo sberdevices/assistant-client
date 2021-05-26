@@ -1,5 +1,5 @@
 import { Message } from '../proto';
-import { AssistantRecord, CreateClientDataType, LogRecorder } from '../typings';
+import { AssistantRecord, VpsConfiguration, LogRecorder } from '../typings';
 
 export interface IncomingLogEntry {
     type: 'incoming';
@@ -13,7 +13,7 @@ export interface OutcomingLogEntry {
 
 export interface ParametersLogEntry {
     type: 'params';
-    parameters: CreateClientDataType;
+    parameters: VpsConfiguration;
 }
 
 export type RecorderCallback = (message: IncomingLogEntry | OutcomingLogEntry | ParametersLogEntry) => void;

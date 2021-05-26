@@ -1,10 +1,10 @@
 import { Message } from '../proto';
-import { ClientLogger, CreateClientDataType } from '../typings';
+import { ClientLogger, VpsConfiguration } from '../typings';
 
 import { RecorderCallback } from './callback-recorder';
 
 export const createCallbackLogger: (cb: RecorderCallback) => ClientLogger = (cb) => ({
-    logInit: (message: CreateClientDataType) => {
+    logInit: (message: VpsConfiguration) => {
         cb({ type: 'params', parameters: message });
     },
 

@@ -284,7 +284,7 @@ interface AssistantViewItem {
   // Проксирование action обратно на бэкенд
   server_action?: AssistantServerAction;
   // Выполнение действия от имени пользователя
-  action?: AssistantAction | { type: string };
+  action?: Action | { type: string };
   // Дополнительные данные для бэкенд
   [key: string]: unknown;
 }

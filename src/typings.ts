@@ -1,4 +1,37 @@
-import { IDevice, ILegacyDevice, ISettings, Message } from './proto';
+import {
+    Action,
+    ActionCommand,
+    BubbleCommand,
+    CardCommand,
+    Suggestions,
+    AppInfo,
+    Character as SaluteCharacter,
+    UUID,
+    Meta,
+} from '@salutejs/types';
+
+import { IDevice, ILegacyDevice, IMessage, ISettings, Message } from './proto';
+
+export {
+    Suggestions,
+    TextAction,
+    DeepLinkAction,
+    Action,
+    ActionCommand,
+    AppInfo,
+    UUID,
+    Bubble,
+    Card,
+    Meta,
+    PermissionType,
+    PermissionStatus,
+} from '@salutejs/types';
+
+export type CharacterId = 'sber' | 'eva' | 'joy';
+
+export type Character = SaluteCharacter & {
+    id: CharacterId;
+};
 
 export enum VpsVersion {
     '1.0' = 1,
@@ -14,40 +47,9 @@ export const MessageNames = {
     MUSIC_RECOGNITION: 'MUSIC_RECOGNITION',
 };
 
-export interface DPMessage {
-    messageName: 'SERVER_ACTION' | 'MESSAGE_TO_SKILL' | string;
-    messageId: string;
+export interface DPMessage extends IMessage {
     sessionId: string;
-    meta: {
-        current_app: {
-            state: AssistantAppState;
-        };
-    };
-    uuid: {
-        userId: string;
-        userChannel: string;
-    };
-    systemMessage?: {
-        data: {
-            app_info: {};
-            server_action: {};
-        };
-    };
-    payload: {
-        applicationId: string;
-        appversionId: string;
-        message: {
-            original_text?: string;
-        };
-        device: {
-            type: string;
-            locale: string;
-            timezone: string;
-            install_id: string;
-            capabilities?: {};
-        };
-        intent?: string;
-    };
+    uuid: UUID;
 }
 
 export interface AssistantAppStateBase<T> {
@@ -60,7 +62,7 @@ export interface AssistantAppStateBase<T> {
     };
 }
 
-export type AssistantAppState = AssistantAppStateBase<AssistantAction>;
+export type AssistantAppState = AssistantAppStateBase<Action>;
 
 export interface AssistantViewItemBase<T> {
     /* Порядковый номер элемента, назначается смартаппом, уникален в рамках items */
@@ -79,24 +81,7 @@ export interface AssistantViewItemBase<T> {
     [key: string]: unknown;
 }
 
-export type AssistantViewItem = AssistantViewItemBase<AssistantAction>;
-
-export type AssistantAction = AssistantDeepLinkAction | AssistantTextAction;
-
-export interface AssistantTextAction {
-    type: 'text';
-    /* Строка из поля text будет отправлена в чат от имени пользователя */
-    text: string;
-    /* default = true, true если сообщение нужно отобразить в чате и отправить в бекэнд,
-        false если сообщение нужно только отобразить в чате, и не отправлять на бекэнд */
-    should_send_to_backend?: boolean;
-}
-
-export interface AssistantDeepLinkAction {
-    type: 'deep_link';
-    /* https ссылки будут открыты в браузере, а android-app://ru.sberbankmoblie/... - будут открыты в приложении */
-    deep_link: string;
-}
+export type AssistantViewItem = AssistantViewItemBase<Action>;
 
 export interface AssistantServerActionAppInfo {
     projectId: string;
@@ -109,20 +94,13 @@ export type AssistantServerAction =
     | { type: string; payload?: Record<string, unknown> };
 
 export type AssistantCommands =
-    | AssistantActionCommand
+    | ActionCommand
     | AssistantCharacterCommand
     | AssistantCloseAppCommand
     | AssistantNavigationCommand
     | AssistantSmartAppCommand
     | AssistantPlayerCommand
     | AssistantSystemCommand;
-
-export interface AssistantActionCommand {
-    type: 'action';
-    action: { type: 'deep_link'; deep_link: string };
-}
-
-export type AssistantCharacterType = 'sber' | 'eva' | 'joy';
 
 export interface SdkMeta {
     mid?: string;
@@ -131,9 +109,7 @@ export interface SdkMeta {
 
 export interface AssistantCharacterCommand {
     type: 'character';
-    character: {
-        id: AssistantCharacterType;
-    };
+    character: Character;
     sdk_meta: SdkMeta;
 }
 
@@ -160,7 +136,7 @@ export interface AssistantNavigationCommand {
 
 export interface AssistantSmartAppData {
     type: 'smart_app_data';
-    smart_app_data: unknown;
+    smart_app_data: Record<string, unknown>;
     sdk_meta?: SdkMeta;
 }
 
@@ -181,24 +157,22 @@ export interface AssistantSmartAppCommand extends AssistantSmartAppData {
     sdk_meta?: SdkMeta;
 }
 
-export interface AppInfo {
-    app_info: {
-        projectId: string;
-        applicationId: string;
-        appversionId: string;
-        systemName: string;
-        frontendEndpoint: string;
-        frontendType: string;
-        frontendStateId: string;
-    };
-    device_id: string;
-    platform: string;
-    sdk_version: string;
-}
-
 export interface AssistantAppContext {
     type: 'app_context';
-    app_context: AppInfo;
+    app_context: {
+        app_info: {
+            projectId: string;
+            applicationId: string;
+            appversionId: string;
+            systemName: string;
+            frontendEndpoint: string;
+            frontendType: string;
+            frontendStateId: string;
+        };
+        device_id: string;
+        platform: string;
+        sdk_version: string;
+    };
     sdk_meta?: SdkMeta;
 }
 
@@ -294,32 +268,19 @@ export type EventsType = {
     connectionError: (error: Event) => void;
 };
 
-export type AppInfoType = {
-    applicationId: string;
-    appversionId: string;
-    frontendEndpoint: string;
-    frontendType: string;
-    projectId: string;
-    frontendStateId?: string;
-};
-
-export type itemType = {
-    bubble?: {
-        text: string;
+export type ItemType = Partial<BubbleCommand> &
+    Partial<CardCommand> & {
+        command?:
+            | Omit<AssistantSmartAppData, 'sdk_meta'>
+            | Omit<AssistantSystemCommand, 'sdk_meta'>
+            | Omit<AssistantNavigationCommand, 'sdk_meta'>
+            | {
+                  type: string;
+                  [k: string]: unknown;
+              };
     };
-    card?: {
-        cells: Array<any>;
-        type: 'list_card';
-    };
-    command: any;
-};
 
-export type SuggestionButtonType = {
-    title: string;
-    action: AssistantAction;
-};
-
-export type AssistantEmotionId =
+export type EmotionId =
     | 'bespokoistvo'
     | 'idle'
     | 'igrivost'
@@ -339,30 +300,25 @@ export type AssistantEmotionId =
     | 'zadumalsa'
     | 'zhdu_otvet';
 
-type AssistantEmotionResponse = {
-    emotionId?: AssistantEmotionId;
-    ttsAnimation?: string;
-};
-
 export type SystemMessageDataType = {
     activate_app_info?: boolean;
-    app_info: AppInfoType;
+    app_info?: AppInfo;
     auto_listening: boolean;
-    items: Array<itemType>;
-    suggestions?: {
-        buttons: Array<SuggestionButtonType>;
+    items?: Array<ItemType>;
+    suggestions?: Suggestions;
+    character?: Character;
+    emotion?: {
+        emotionId: EmotionId;
     };
-    character?: {
-        id: AssistantCharacterType;
-    };
-    emotion?: AssistantEmotionResponse;
     server_action?: AssistantServerAction;
-    meta?: {
-        current_app: {
-            app_info: AppInfoType;
-            state: AssistantAppState;
-        };
-    };
+    meta?:
+        | {
+              current_app: {
+                  app_info: AppInfo;
+                  state: AssistantAppState;
+              };
+          }
+        | Meta;
     sdk_meta?: SdkMeta;
 };
 
@@ -406,7 +362,7 @@ export interface OriginalMessageType {
     meta?: { [k: string]: string } | null;
 }
 
-export type CreateClientDataType = {
+export type VpsConfiguration = {
     url: string;
     userId: string;
     token: string;
@@ -419,6 +375,7 @@ export type CreateClientDataType = {
     messageName?: string;
     vpsToken?: string;
     meta?: { [k: string]: string };
+    logger?: ClientLogger;
 };
 
 export interface IncomingMessage {
@@ -434,13 +391,13 @@ export interface OutcomingMessage {
 }
 
 export interface AssistantRecord {
-    parameters?: CreateClientDataType;
+    parameters?: VpsConfiguration;
     entries: Array<IncomingMessage | OutcomingMessage>;
     version: string;
 }
 
 export interface ClientLogger {
-    logInit: (params: CreateClientDataType) => void;
+    logInit: (params: VpsConfiguration) => void;
     logIncoming: (message: Message) => void;
     logOutcoming: (message: Message) => void;
 }

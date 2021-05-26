@@ -29,6 +29,7 @@
     "author": "SberDevices Frontend Team <sberdevices.frontend@gmail.com>",
     "license": "Sber Public License at-nc-sa v.2",
     "dependencies": {
+        "@salutejs/types": "0.6.0",
         "axios": "0.21.1",
         "protobufjs": "6.10.2",
         "uuid": "8.0.0"

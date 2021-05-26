@@ -7,7 +7,7 @@ import { v4 } from 'uuid';
 import {
     DPMessage,
     AssistantAppState,
-    AssistantAction,
+    Action,
     AssistantServerAction,
     AssistantCharacterCommand,
     AssistantNavigationCommand,
@@ -40,10 +40,10 @@ const createMessage = (props: CreateMessageProps): DPMessage => {
     const systemMessage = props.data
         ? {
               systemMessage: {
-                  data: {
+                  data: JSON.stringify({
                       app_info: {},
                       server_action: JSON.parse(props.data),
-                  },
+                  }),
               },
           }
         : {};
@@ -69,15 +69,16 @@ const createMessage = (props: CreateMessageProps): DPMessage => {
     return {
         messageName,
         sessionId: props.sessionId,
-        messageId: String(Math.floor(Math.random() * Math.floor(9999999))),
+        messageId: Math.floor(Math.random() * Math.floor(9999999)),
         meta: {
-            current_app: {
+            current_app: JSON.stringify({
                 state: props.state,
-            },
+            }),
         },
         uuid: {
             userId: props.userId,
             userChannel: 'FAKE',
+            sub: 'fake_sub',
         },
         ...systemMessage,
         ...payload,
@@ -90,10 +91,10 @@ export interface IntitializeProps {
         method?: 'get' | 'post' | 'put';
         headers?: {};
     };
-    device?: DPMessage['payload']['device'];
+    device?: DPMessage['device'];
     onRequest: (message: DPMessage) => {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onResponse: (res: any) => AssistantAction | AssistantServerAction | undefined;
+    onResponse: (res: any) => Action | AssistantServerAction | undefined;
     onError?: (e: Error) => void;
 }
 

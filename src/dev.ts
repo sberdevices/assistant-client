@@ -5,15 +5,16 @@ import { createClient } from './client';
 import { renderNativePanel, NativePanelParams } from './NativePanel/NativePanel';
 import {
     SystemMessageDataType,
-    SuggestionButtonType,
     ClientLogger,
     VoicePlayerSettings,
     AssistantSettings,
-    AssistantCharacterType,
     AssistantCharacterCommand,
     AssistantNavigationCommand,
     AssistantSmartAppCommand,
     OriginalMessageType,
+    ItemType,
+    Suggestions,
+    CharacterId,
 } from './typings';
 import { renderAssistantRecordPanel } from './record';
 import { createCallbackLogger } from './record/callback-logger';
@@ -147,13 +148,13 @@ export const initializeAssistantSDK = ({
     );
 
     let appInfo: SystemMessageDataType['app_info'] | undefined;
-    const initialSmartAppData: Array<SystemMessageDataType['items'][0]['command']> = [];
+    const initialSmartAppData: Array<ItemType['command']> = [];
     const requestIdMap: Record<string, string> = {};
     let clientReady = false; // флаг готовности клиента к приему onData
     let assistantReady = false; // флаг готовности контекста ассистента
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let state: unknown = null;
-    let character: AssistantCharacterType;
+    let character: CharacterId;
 
     const createSystemMessageBase = () => {
         return {
@@ -388,7 +389,7 @@ export const initializeAssistantSDK = ({
         });
     };
 
-    const updateDevUI = (suggestions: SuggestionButtonType[] = [], bubbleText = '') => {
+    const updateDevUI = (suggestions: Suggestions['buttons'] = [], bubbleText = '') => {
         if (nativePanel) {
             const { render, ...props } = nativePanel;
 
@@ -417,7 +418,7 @@ export const initializeAssistantSDK = ({
             autolistenMesId = original.messageId.toString();
         }
 
-        for (const item of message.items) {
+        for (const item of message.items || []) {
             if (item.bubble) {
                 bubbleText = item.bubble.text;
             }
