@@ -17,7 +17,7 @@ export const createRecordOfflinePlayer = (
     let entryCursor = 0;
 
     const playMessage = (message: SystemMessageDataType, onPlay?: (command: AssistantClientCommand) => void) => {
-        for (const item of message.items) {
+        for (const item of message.items || []) {
             if (item.command) {
                 onPlay
                     ? onPlay(item.command)
@@ -36,7 +36,7 @@ export const createRecordOfflinePlayer = (
             (entry.type !== 'incoming' ||
                 entry.message?.data == null ||
                 entry.message.name !== MessageNames.ANSWER_TO_USER ||
-                !entry.message.data.items.some(({ command }) => command != null)) &&
+                !(entry.message.data.items || []).some(({ command }) => command != null)) &&
             entryCursor < currentRecord.entries.length
         ) {
             entry = currentRecord.entries[entryCursor++];
@@ -51,7 +51,7 @@ export const createRecordOfflinePlayer = (
                 e.type === 'incoming' &&
                 e.message?.data != null &&
                 e.message.name === MessageNames.ANSWER_TO_USER &&
-                e.message.data.items.some(({ command }) => command != null),
+                (e.message.data.items || []).some(({ command }) => command != null),
         );
     };
 

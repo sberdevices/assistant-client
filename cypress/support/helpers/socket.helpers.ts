@@ -1,23 +1,29 @@
 import { Message } from '../../../src/proto';
 import { appendHeader } from '../../../src/client';
 import {
-    AssistantCharacterType,
     AssistantNavigationCommand,
     AssistantSmartAppCommand,
     SystemMessageDataType,
     MessageNames,
+    AppInfo,
+    Character,
 } from '../../../src/typings';
 
-export const APP_INFO = {
+export const APP_INFO: AppInfo = {
     applicationId: 'test_app',
     appversionId: '0.0.0',
     frontendEndpoint: 'https://test.test',
-    frontendType: 'test_front',
+    frontendType: 'WEB_APP',
     projectId: 'test_project',
 };
 
+export interface Socket {
+    dispatchEvent: (e: { type: string; data: Uint8Array }) => void;
+    on: (event: 'message', cb: (data: Uint8Array) => void) => void;
+}
+
 export const sendMessage = (
-    socket: any,
+    socket: Socket,
     messageId: number | Long,
     { systemMessageData, textData }: { systemMessageData?: SystemMessageDataType; textData?: string },
 ) => {
@@ -40,14 +46,14 @@ export const sendMessage = (
 };
 
 export const initProtocol = (
-    socket: any,
+    socket: Socket,
     {
         initPhrase,
-        character = 'sber',
+        character = { id: 'sber', name: 'Сбер', gender: 'male', appeal: 'official' },
         items = [],
     }: {
         initPhrase?: string;
-        character?: AssistantCharacterType;
+        character?: Character;
         items?: Array<{ command: AssistantSmartAppCommand | AssistantNavigationCommand }>;
     } = {},
 ) => {
@@ -57,11 +63,13 @@ export const initProtocol = (
             sendMessage(socket, message.messageId, {
                 systemMessageData: {
                     // eslint-disable-next-line @typescript-eslint/camelcase
+                    auto_listening: false,
+                    // eslint-disable-next-line @typescript-eslint/camelcase
                     app_info: {
                         applicationId: '',
                         appversionId: '',
                         frontendEndpoint: '',
-                        frontendType: '',
+                        frontendType: 'WEB_APP',
                         projectId: '',
                     },
                     items: [],
@@ -72,8 +80,10 @@ export const initProtocol = (
             sendMessage(socket, message.messageId, {
                 systemMessageData: {
                     // eslint-disable-next-line @typescript-eslint/camelcase
+                    auto_listening: false,
+                    // eslint-disable-next-line @typescript-eslint/camelcase
                     app_info: APP_INFO,
-                    character: { id: character },
+                    character,
                     items,
                 },
             });

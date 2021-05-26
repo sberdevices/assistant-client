@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import { Message } from '../proto';
-import { ClientLogger, CreateClientDataType } from '../typings';
+import { ClientLogger, VpsConfiguration } from '../typings';
 
 export const createConsoleLogger: (level?: 'debug' | 'log') => ClientLogger = (level = 'debug') => ({
-    logInit: (message: CreateClientDataType) => {
+    logInit: (message: VpsConfiguration) => {
         console[level]('Initialize', message);
     },
 
