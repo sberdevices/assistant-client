@@ -1,5 +1,6 @@
+import { createNanoEvents } from '../../nanoevents';
+
 import { createNavigatorAudioProvider } from './createNavigatorAudioProvider';
-import { createNanoEvents } from './nanoevents';
 
 type voiceStreamEvents = {
     status: (status: 'listen' | 'stopped') => void;

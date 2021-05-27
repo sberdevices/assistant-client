@@ -13,17 +13,50 @@ import {
     Cancel,
     ICancel,
     IMessage,
-} from './proto';
-import { SystemMessageDataType, VpsVersion } from './typings';
+} from '../../proto';
+import { VpsVersion } from '../../typings';
+
+export type BatchableMethods = {
+    sendText: (
+        data: string,
+        params?: {
+            messageId?: number;
+            last?: 1 | -1;
+            messageName?: string;
+            vpsToken?: string;
+            userId?: string;
+            token?: string;
+            userChannel?: string;
+            version?: VpsVersion;
+            meta?: { [k: string]: string };
+        },
+        type?: string,
+        messageId?: number,
+    ) => void;
+    sendSystemMessage: (
+        data: { data: Record<string, unknown>; messageName?: string },
+        last: boolean,
+        params?: {
+            meta?: { [k: string]: string };
+        },
+    ) => void;
+    sendVoice: (
+        data: Uint8Array,
+        last: boolean,
+        messageName?: string,
+        params?: {
+            meta?: { [k: string]: string };
+        },
+    ) => void;
+    messageId: number;
+};
 
 export const createClientMethods = ({
     getMessageId,
     sendMessage,
-    waitForAnswerToUser,
 }: {
     getMessageId: () => number;
     sendMessage: (message: IMessage) => void;
-    waitForAnswerToUser: (messageId: number) => Promise<SystemMessageDataType>;
 }) => {
     const send = ({
         payload,
@@ -135,8 +168,6 @@ export const createClientMethods = ({
             messageId,
             ...params,
         });
-
-        return waitForAnswerToUser(messageId);
     };
 
     const sendSystemMessage = (
@@ -158,8 +189,6 @@ export const createClientMethods = ({
             },
             messageId,
         });
-
-        return waitForAnswerToUser(messageId);
     };
 
     const sendVoice = (
@@ -184,32 +213,6 @@ export const createClientMethods = ({
         });
     };
 
-    type BatchableMethods = {
-        sendDevice: typeof sendDevice;
-        sendLegacyDevice: typeof sendLegacyDevice;
-        sendSettings: typeof sendSettings;
-        sendInitialSettings: typeof sendInitialSettings;
-        sendCancel: typeof sendCancel;
-        send: typeof send;
-        sendText: typeof sendText;
-        sendSystemMessage: (
-            data: { data: Record<string, unknown>; messageName?: string },
-            last: boolean,
-            params?: {
-                meta?: { [k: string]: string };
-            },
-        ) => void;
-        sendVoice: (
-            data: Uint8Array,
-            last: boolean,
-            messageName?: string,
-            params?: {
-                meta?: { [k: string]: string };
-            },
-        ) => void;
-        messageId: number;
-    };
-
     const batch = <T>(cb: (methods: BatchableMethods) => T): T => {
         const batchingMessageId = getMessageId();
         let lastMessageSent = false;
@@ -225,30 +228,6 @@ export const createClientMethods = ({
             }
         };
 
-        const threeParamsMethods = Object.entries({
-            sendDevice,
-            sendSettings,
-            sendInitialSettings,
-            sendCancel,
-            sendLegacyDevice,
-        }).reduce((acc, curr) => {
-            const key = curr[0] as
-                | 'sendDevice'
-                | 'sendSettings'
-                | 'sendInitialSettings'
-                | 'sendCancel'
-                | 'sendLegacyDevice';
-            acc[key] = (...params: Parameters<typeof curr[1]>) => {
-                checkLastMessageStatus(params[1]);
-                return curr[1](params[0], params[1], batchingMessageId);
-            };
-            return acc;
-        }, {} as Pick<BatchableMethods, 'sendDevice' | 'sendSettings' | 'sendInitialSettings' | 'sendCancel' | 'sendLegacyDevice'>);
-        const upgradedSend: typeof send = (params) => {
-            checkLastMessageStatus(params.payload.last === 1);
-            return send({ ...params, messageId: batchingMessageId });
-        };
-
         const upgradedSendText: typeof sendText = (...[data, params, type]) => {
             checkLastMessageStatus(params?.last === 1);
             return sendText(data, params, type, batchingMessageId);
@@ -260,7 +239,7 @@ export const createClientMethods = ({
             params?: {
                 meta?: { [k: string]: string };
             },
-        ) => void = (data, last, params) => {
+        ) => ReturnType<typeof sendSystemMessage> = (data, last, params) => {
             checkLastMessageStatus(last);
             return sendSystemMessage(data, last, batchingMessageId, params);
         };
@@ -272,14 +251,12 @@ export const createClientMethods = ({
             params?: {
                 meta?: { [k: string]: string };
             },
-        ) => void = (data, last, mesName, params) => {
+        ) => ReturnType<typeof sendVoice> = (data, last, mesName, params) => {
             checkLastMessageStatus(last);
             return sendVoice(data, last, batchingMessageId, mesName, params);
         };
 
         return cb({
-            ...threeParamsMethods,
-            send: upgradedSend,
             sendText: upgradedSendText,
             sendSystemMessage: upgradedSendSystemMessage,
             sendVoice: upgradedSendVoice,
@@ -288,7 +265,6 @@ export const createClientMethods = ({
     };
 
     return {
-        send,
         sendDevice,
         sendInitialSettings,
         sendCancel,

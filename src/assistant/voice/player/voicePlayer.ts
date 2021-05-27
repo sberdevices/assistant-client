@@ -1,8 +1,8 @@
-import { createNanoEvents } from '../nanoevents';
-import { VoicePlayerSettings } from '../typings';
+import { createNanoEvents } from '../../../nanoevents';
+import { VoicePlayerSettings } from '../../../typings';
 
-import { createTrackStream } from './track-stream';
-import { generateSilence } from './silence-generator';
+import { createTrackStream } from './trackStream';
+import { generateSilence } from './silenceGenerator';
 
 const createAudioContext = (options?: AudioContextOptions): AudioContext => {
     if (window.AudioContext) {

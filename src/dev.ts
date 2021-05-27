@@ -1,31 +1,24 @@
-/* eslint-disable no-unused-expressions, @typescript-eslint/camelcase, no-underscore-dangle */
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
+/* eslint-disable @typescript-eslint/camelcase, no-underscore-dangle */
 
-import { createClient } from './client';
+import { AppEvent, createAssistant, VpsEvent } from './assistant/assistant';
 import { renderNativePanel, NativePanelParams } from './NativePanel/NativePanel';
 import {
     SystemMessageDataType,
     ClientLogger,
-    VoicePlayerSettings,
     AssistantSettings,
-    AssistantCharacterCommand,
-    AssistantNavigationCommand,
     AssistantSmartAppCommand,
-    OriginalMessageType,
-    ItemType,
     Suggestions,
     CharacterId,
+    AssistantAppState,
+    AssistantClientCommand,
+    AssistantSystemCommand,
 } from './typings';
 import { renderAssistantRecordPanel } from './record';
 import { createCallbackLogger } from './record/callback-logger';
 import { createConsoleLogger } from './record/console-logger';
 import { createLogCallbackRecorder, RecorderCallback } from './record/callback-recorder';
 import { createRecordDownloader } from './record/record-downloader';
-import { createVoiceListener } from './createVoiceListener';
 import { createRecoveryStateRepository } from './createRecoveryStateRepository';
-import { createMusicRecognizer } from './createMusicRecognizer';
-import { createSpeechRecognizer } from './createSpeechRecognizer';
-import { createVoicePlayer } from './voice-player';
 
 const SDK_VERSION = '20.09.1.3576';
 const APP_VERSION = 'process.env.APP_VERSION';
@@ -64,7 +57,6 @@ export const initializeAssistantSDK = ({
     enableRecord,
     recordParams,
     settings = {},
-    voiceSettings,
     vpsVersion = 3,
     features,
     capabilities,
@@ -87,7 +79,6 @@ export const initializeAssistantSDK = ({
         logger?: ClientLogger;
     };
     settings?: AssistantSettings;
-    voiceSettings?: VoicePlayerSettings;
     vpsVersion?: number;
     features?: string;
     capabilities?: string;
@@ -112,9 +103,7 @@ export const initializeAssistantSDK = ({
         }),
     };
 
-    const voicePlayer = createVoicePlayer(voiceSettings);
     const recoveryStateRepository = createRecoveryStateRepository();
-    let autolistenMesId: string | null = null;
     let clientLogger = recordParams?.logger ? recordParams.logger : createConsoleLogger();
     let loggerCb: RecorderCallback;
     const recorder = createLogCallbackRecorder(
@@ -124,129 +113,54 @@ export const initializeAssistantSDK = ({
         recordParams?.defaultActive != null ? recordParams.defaultActive : true,
     );
     const saver = createRecordDownloader();
+
     if (enableRecord && recordParams?.logger == null) {
         clientLogger = createCallbackLogger((logEntry) => loggerCb && loggerCb(logEntry));
     }
 
-    const vpsClient = createClient(
-        {
-            url,
-            userId,
-            token,
-            userChannel,
-            locale,
-            device,
-            legacyDevice,
-            settings: {
-                ...settings,
-                dubbing: settings.dubbing === false ? -1 : 1,
-                echo: settings.echo || -1,
-            },
-            version: vpsVersion,
+    const assistant = createAssistant({
+        url,
+        userId,
+        token,
+        userChannel,
+        locale,
+        device,
+        legacyDevice,
+        settings: {
+            ...settings,
+            dubbing: settings.dubbing === false ? -1 : 1,
+            echo: settings.echo || -1,
         },
-        clientLogger,
-    );
+        version: vpsVersion,
+        logger: clientLogger,
+    });
 
     let appInfo: SystemMessageDataType['app_info'] | undefined;
-    const initialSmartAppData: Array<ItemType['command']> = [];
-    const requestIdMap: Record<string, string> = {};
+    const initialSmartAppData: Array<AssistantClientCommand> = [];
     let clientReady = false; // флаг готовности клиента к приему onData
     let assistantReady = false; // флаг готовности контекста ассистента
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let state: unknown = null;
     let character: CharacterId;
 
-    const createSystemMessageBase = () => {
-        return {
-            app_info: appInfo,
-            meta: {
-                current_app: {
-                    app_info: appInfo,
-                    state,
-                },
-            },
-        };
+    const sendText = (text: string) => {
+        assistant.sendText(text);
     };
 
-    const sendServerAction = ({
-        data,
-        message_name,
-        requestId,
-    }: {
-        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-        data: any;
-        /* eslint-disable-next-line @typescript-eslint/camelcase */
-        message_name?: string | null;
-        requestId?: string;
-    }) => {
-        let messageId: number | undefined;
-
-        if (requestId) {
-            messageId = Date.now();
-            requestIdMap[messageId.toString()] = requestId;
-        }
-
-        return vpsClient.sendSystemMessage(
-            {
-                data: {
-                    ...createSystemMessageBase(),
-                    server_action: data,
-                },
-                messageName: message_name || 'SERVER_ACTION',
-            },
-            undefined,
-            messageId,
-        );
-    };
-
-    const updateState = () => {
-        if (window.AssistantClient?.onRequestState) {
-            state = window.AssistantClient.onRequestState();
-        }
-    };
-
-    const sendText = (text: string, params: {} = {}) => {
-        voicePlayer.active = false;
-        voicePlayer.active = true;
-        updateState();
-
-        return vpsClient.batch(({ sendText: batchedSendText, sendSystemMessage }) => {
-            state &&
-                sendSystemMessage(
-                    {
-                        data: {
-                            ...createSystemMessageBase(),
-                        },
-                        messageName: '',
-                    },
-                    false,
-                );
-            return batchedSendText(text, params);
-        });
-    };
-
-    const emitOnData = (command: AssistantCharacterCommand | AssistantNavigationCommand | AssistantSmartAppCommand) => {
+    const emitOnData = (command: AssistantClientCommand) => {
         if (clientReady && assistantReady && window.AssistantClient?.onData) {
             window.AssistantClient.onData(command);
         }
     };
 
     const fn = async () => {
-        await new Promise((resolve) => {
-            vpsClient.on('ready', resolve);
-        });
+        const res = await assistant.start(initPhrase);
 
-        await vpsClient.sendSystemMessage({ data: {}, messageName: 'OPEN_ASSISTANT' });
-
-        if (initPhrase) {
+        if (initPhrase && res) {
             initialSmartAppData.push({
                 type: 'insets',
                 insets: { left: 0, top: 0, right: 0, bottom: 144 },
                 sdk_meta: { mid: '-1' },
             });
 
-            const messageId = vpsClient.currentMessageId;
-            const res = await vpsClient.sendText(initPhrase);
             appInfo = res?.app_info;
             if (res?.character) {
                 character = res?.character.id;
@@ -254,14 +168,20 @@ export const initializeAssistantSDK = ({
             }
 
             for (const item of res?.items || []) {
-                if (item.command != null) {
-                    initialSmartAppData.push({ ...item.command, sdk_meta: { mid: messageId.toString() } });
+                if (item.command != null && item.command.type === 'smart_app_data') {
+                    initialSmartAppData.push({
+                        ...(item.command as AssistantSmartAppCommand),
+                        sdk_meta: { mid: '-1' },
+                    });
                 }
             }
 
             window.appInitialData = initialSmartAppData;
 
             if (appInfo && appInfo.applicationId) {
+                assistant.setActiveApp(appInfo, () =>
+                    Promise.resolve((window.AssistantClient?.onRequestState?.() || {}) as AssistantAppState),
+                );
                 window.appRecoveryState = recoveryStateRepository.get(appInfo.applicationId);
             }
 
@@ -290,9 +210,8 @@ export const initializeAssistantSDK = ({
                 }
             }
 
-            appInfo = undefined;
+            assistant.closeApp();
             initialSmartAppData.splice(0, initialSmartAppData.length);
-            state = null;
             window.appRecoveryState = null;
         },
         ready() {
@@ -304,90 +223,29 @@ export const initializeAssistantSDK = ({
         },
         async sendData(payload: string, messageName: string | null = null) {
             await promise;
-
-            updateState();
-
-            sendServerAction({ data: JSON.parse(payload), message_name: messageName || undefined });
+            assistant.sendServerAction(JSON.parse(payload), messageName || undefined);
         },
         async sendDataContainer(container: string) {
             await promise;
 
-            updateState();
-
-            sendServerAction(JSON.parse(container));
+            const { data, message_name: messageName, requestId } = JSON.parse(container);
+            assistant.sendServerAction(data, messageName || 'SERVER_ACTION', requestId);
         },
         setSuggest() {},
     };
 
-    const voiceListener = createVoiceListener();
-    const speechRecognizer = createSpeechRecognizer(voiceListener);
-    const musciRecognizer = createMusicRecognizer(voiceListener);
     const subscribeToListenerStatus = (cb: (event: 'listen' | 'stopped') => void): (() => void) =>
-        voiceListener.on('status', cb);
+        assistant.on('assistant', (event) => {
+            if (event.emotion) {
+                cb(event.emotion === 'listen' ? 'listen' : 'stopped');
+            }
+        });
     const subscribeToListenerHypotesis = (cb: (hypotesis: string, last: boolean) => void): (() => void) =>
-        speechRecognizer.on('hypotesis', cb);
-    voiceListener.on('status', (status: 'listen' | 'stopped') => {
-        if (status === 'listen') {
-            voicePlayer.active = false;
-        } else {
-            voicePlayer.active = true;
-        }
-    });
-
-    const handleListen = () => {
-        autolistenMesId = null;
-        if (speechRecognizer.status === 'active') {
-            speechRecognizer.stop();
-            return;
-        }
-
-        if (musciRecognizer.status === 'active') {
-            musciRecognizer.stop();
-            return;
-        }
-
-        updateState();
-
-        vpsClient.batch(({ sendSystemMessage, sendVoice, messageId }) => {
-            state &&
-                sendSystemMessage(
-                    {
-                        data: {
-                            ...createSystemMessageBase(),
-                        },
-                        messageName: '',
-                    },
-                    false,
-                );
-
-            speechRecognizer.start({
-                sendVoice,
-                messageId,
-                onMessage: (cb: (message: OriginalMessageType) => void) => vpsClient.on('message', cb),
-            });
+        assistant.on('assistant', (event) => {
+            if (event.asr) {
+                cb(event.asr.text, typeof event.asr.last === 'undefined' ? false : event.asr.last);
+            }
         });
-    };
-
-    const handleMusicRecognize = () => {
-        autolistenMesId = null;
-        if (speechRecognizer.status === 'active') {
-            speechRecognizer.stop();
-            return;
-        }
-
-        if (musciRecognizer.status === 'active') {
-            musciRecognizer.stop();
-            return;
-        }
-
-        vpsClient.batch(({ sendVoice, messageId }) => {
-            musciRecognizer.start({
-                sendVoice,
-                messageId,
-                onMessage: (cb: (message: OriginalMessageType) => void) => vpsClient.on('message', cb),
-            });
-        });
-    };
 
     const updateDevUI = (suggestions: Suggestions['buttons'] = [], bubbleText = '') => {
         if (nativePanel) {
@@ -396,7 +254,7 @@ export const initializeAssistantSDK = ({
             (render || renderNativePanel)({
                 ...props,
                 sendText,
-                onListen: handleListen,
+                onListen: assistant.listen,
                 suggestions: suggestions || [],
                 bubbleText,
                 onSubscribeListenStatus: subscribeToListenerStatus,
@@ -405,70 +263,50 @@ export const initializeAssistantSDK = ({
         }
     };
 
-    voicePlayer.on('end', (messageId) => {
-        if (autolistenMesId === messageId) {
-            handleListen();
+    assistant.on('app', (event: AppEvent) => {
+        switch (event.type) {
+            case 'close':
+                window.AssistantHost?.close();
+                break;
+            case 'command':
+                emitOnData(event.command as AssistantSmartAppCommand);
+                break;
+            case 'run':
+            default:
+                break;
         }
     });
 
-    vpsClient.on('systemMessage', (message, original) => {
-        let bubbleText = '';
-
-        if (message.auto_listening) {
-            autolistenMesId = original.messageId.toString();
+    assistant.on('vps', (event: VpsEvent) => {
+        if (event.type !== 'incoming') {
+            return;
         }
 
-        for (const item of message.items || []) {
+        const { systemMessage } = event;
+        let bubbleText = '';
+
+        for (const item of systemMessage.items || []) {
             if (item.bubble) {
                 bubbleText = item.bubble.text;
             }
 
             if (item.command) {
                 if (
-                    item.command.type.toLowerCase() === 'close_app' &&
-                    appInfo &&
-                    appInfo.applicationId === message.app_info?.applicationId
+                    item.command.type === 'system' &&
+                    (item.command as AssistantSystemCommand).system.command.toUpperCase() === 'BACK'
                 ) {
-                    window.AssistantHost?.close();
-                    return;
-                }
-
-                if (item.command.type.toLowerCase() === 'start_music_recognition') {
-                    handleMusicRecognize();
-                    return;
-                }
-
-                if (item.command.type === 'system' && item.command.system?.command?.toUpperCase() === 'BACK') {
                     window.history.back();
                     return;
                 }
-
-                emitOnData({
-                    ...item.command,
-                    sdk_meta: {
-                        mid: original.messageId.toString(),
-                        requestId: requestIdMap[original.messageId.toString()],
-                    },
-                });
             }
         }
 
-        if (message.character && message.character.id !== character) {
-            character = message.character.id;
-            emitOnData({ type: 'character', character: message.character, sdk_meta: { mid: '-1' } });
+        if (systemMessage.character && systemMessage.character.id !== character) {
+            character = systemMessage.character.id;
+            emitOnData({ type: 'character', character: systemMessage.character, sdk_meta: { mid: '-1' } });
         }
 
-        updateDevUI(message.suggestions?.buttons ?? [], bubbleText);
-    });
-
-    vpsClient.on('message', (message: OriginalMessageType) => {
-        if (message.voice) {
-            voicePlayer.append(
-                message.voice.data || new Uint8Array(),
-                message.messageId.toString(),
-                message.last === 1,
-            );
-        }
+        updateDevUI(systemMessage.suggestions?.buttons ?? [], bubbleText);
     });
 
     updateDevUI();
@@ -478,7 +316,5 @@ export const initializeAssistantSDK = ({
 
     return {
         sendText,
-        on: vpsClient.on,
-        destroy: vpsClient.destroy,
     };
 };
