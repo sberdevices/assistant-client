@@ -1,20 +1,8 @@
 import { Server } from 'mock-socket';
 
-import { appendHeader, createClient } from '../../../src/client';
+import { appendHeader } from '../../../src/assistant/client/transport';
 import { Message } from '../../../src/proto';
-import { EventsType, MessageNames } from '../../../src/typings';
-
-const legacyDevice = {
-    clientType: 'simple',
-    channel: 'Android_SB',
-    channelVersion: '8.1.0.2932_RC',
-    platformName: 'WEBDBG 1.0',
-    platformVersion: '1.0',
-};
-const settings = {
-    dubbing: 1,
-    echo: -1,
-};
+import { MessageNames } from '../../../src/typings';
 
 export const createAnswerBuffer = ({
     messageId = 1,
@@ -53,21 +41,3 @@ export const createServerPong = (server: Server) => {
         });
     });
 };
-
-export const getClient = (socketUrl: string) =>
-    createClient({
-        url: socketUrl,
-        userId: '123',
-        token: 'token',
-        legacyDevice,
-        settings,
-        version: 3,
-        userChannel: 'test',
-    });
-
-export const createOnPromise = (client: ReturnType<typeof getClient>, eventName: keyof EventsType) =>
-    new Cypress.Promise((resolve) => {
-        client.on(eventName, () => {
-            resolve(eventName);
-        });
-    });

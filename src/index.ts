@@ -6,7 +6,6 @@ import {
     AssistantAppState,
     AssistantServerAction,
     ClientLogger,
-    VoicePlayerSettings,
     AssistantSettings,
     AssistantClientCustomizedCommand,
     AssistantSmartAppData,
@@ -91,12 +90,14 @@ if (typeof window !== 'undefined' && inIframe()) {
                         window.AssistantClient?.onStart?.();
                         break;
                     default:
+                        // eslint-disable-next-line no-console
                         console.error(e, 'Unknown parsed message');
                         break;
                 }
             }
-        } catch (e) {
-            console.error(e, 'Unknown message');
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error(err, 'Unknown message');
         }
     });
 }
@@ -301,7 +302,6 @@ export const createAssistantDev = <A extends AssistantSmartAppData>({
     enableRecord = false,
     recordParams,
     settings,
-    voiceSettings,
 }: {
     getState: () => AssistantAppState;
     getRecoveryState?: () => Record<string, unknown> | undefined;
@@ -321,7 +321,6 @@ export const createAssistantDev = <A extends AssistantSmartAppData>({
         logger?: ClientLogger;
     };
     settings?: AssistantSettings;
-    voiceSettings?: VoicePlayerSettings; // настройки озвучки
 }) => {
     initializeAssistantSDK({
         initPhrase,
@@ -336,7 +335,6 @@ export const createAssistantDev = <A extends AssistantSmartAppData>({
         enableRecord,
         recordParams,
         settings,
-        voiceSettings: voiceSettings || { startVoiceDelay: 1 },
     });
 
     return createAssistant<A>({ getState, getRecoveryState });
@@ -414,11 +412,7 @@ export { createOnlineRecordPlayer } from './record/online-player';
 export { NativePanelParams } from './NativePanel/NativePanel';
 export * from './typings';
 export * from './dev';
-export { createClient } from './client';
-export { createMusicRecognizer } from './createMusicRecognizer';
-export { createSpeechRecognizer } from './createSpeechRecognizer';
-export { createVoiceListener } from './createVoiceListener';
-export { createVoicePlayer } from './voice-player';
+export { AssistantEvent, AppEvent, VpsEvent, createAssistant as createAssistantClient } from './assistant/assistant';
 export { initializeDebugging } from './debug';
 export {
     createAssistantHostMock,

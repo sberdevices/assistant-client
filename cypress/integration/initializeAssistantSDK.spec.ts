@@ -34,10 +34,12 @@ describe('Проверяем', () => {
 
         server.on('connection', (socket) => {
             socket.binaryType = 'arraybuffer';
-            initProtocol(socket);
+            initProtocol(socket, {
+                initPhrase: INIT_PHRASE,
+            });
 
-            socket.on('message', (data: Uint8Array) => {
-                const message = Message.decode(data.slice(4));
+            socket.on('message', (mes: Uint8Array) => {
+                const message = Message.decode(mes.slice(4));
                 if (message.text && message.text.data === actionText) {
                     action = message;
                 }
@@ -59,7 +61,12 @@ describe('Проверяем', () => {
         });
 
         window.AssistantClient = {
+            onData: () => {},
             onRequestState: () => state,
+            onStart: () => {
+                // eslint-disable-next-line @typescript-eslint/no-use-before-define
+                assistant.sendText(actionText);
+            },
         };
 
         const assistant = initializeAssistantSDK({
@@ -70,6 +77,6 @@ describe('Проверяем', () => {
             nativePanel: null,
         });
 
-        assistant.sendText(actionText);
+        window.AssistantHost.ready();
     });
 });

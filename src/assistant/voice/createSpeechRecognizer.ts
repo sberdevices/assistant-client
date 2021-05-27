@@ -1,10 +1,11 @@
-import { PacketWrapperFromServer } from './asr';
+import { PacketWrapperFromServer } from '../../asr';
+import { createNanoEvents } from '../../nanoevents';
+import { MessageNames, OriginalMessageType } from '../../typings';
+
 import { createVoiceListener } from './createVoiceListener';
-import { createNanoEvents } from './nanoevents';
-import { MessageNames, OriginalMessageType } from './typings';
 
 type speechRecognizerEvents = {
-    hypotesis: (text: string, last: boolean) => void;
+    hypotesis: (text: string, last: boolean, mid: OriginalMessageType['messageId']) => void;
 };
 
 export const createSpeechRecognizer = (voiceListener: ReturnType<typeof createVoiceListener>) => {
@@ -40,7 +41,7 @@ export const createSpeechRecognizer = (voiceListener: ReturnType<typeof createVo
 
                     if (message.messageId === messageId && message.messageName === MessageNames.STT) {
                         if (message.text) {
-                            emit('hypotesis', message.text.data || '', message.last === 1);
+                            emit('hypotesis', message.text.data || '', message.last === 1, message.messageId);
                             if (message.last === 1) {
                                 off();
                                 stop();
@@ -55,6 +56,7 @@ export const createSpeechRecognizer = (voiceListener: ReturnType<typeof createVo
                                     'hypotesis',
                                     decoderResultField.hypothesis[0].normalizedText || '',
                                     !!decoderResultField.isFinal,
+                                    message.messageId,
                                 );
                                 if (decoderResultField.isFinal) {
                                     off();

@@ -1,5 +1,5 @@
+import { appendHeader } from '../../../src/assistant/client/transport';
 import { Message } from '../../../src/proto';
-import { appendHeader } from '../../../src/client';
 import {
     AssistantNavigationCommand,
     AssistantSmartAppCommand,
@@ -15,6 +15,7 @@ export const APP_INFO: AppInfo = {
     frontendEndpoint: 'https://test.test',
     frontendType: 'WEB_APP',
     projectId: 'test_project',
+    frontendStateId: 'test_app',
 };
 
 export interface Socket {

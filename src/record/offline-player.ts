@@ -5,6 +5,7 @@ import {
     AssistantClientCommand,
     OutcomingMessage,
     MessageNames,
+    AssistantSmartAppCommand,
 } from '../typings';
 
 import { CURRENT_VERSION } from './index';
@@ -19,9 +20,9 @@ export const createRecordOfflinePlayer = (
     const playMessage = (message: SystemMessageDataType, onPlay?: (command: AssistantClientCommand) => void) => {
         for (const item of message.items || []) {
             if (item.command) {
-                onPlay
-                    ? onPlay(item.command)
-                    : context.AssistantClient?.onData && context.AssistantClient.onData(item.command);
+                const command: AssistantClientCommand = { ...(item.command as AssistantSmartAppCommand) };
+
+                onPlay ? onPlay(command) : context.AssistantClient?.onData && context.AssistantClient.onData(command);
             }
         }
     };

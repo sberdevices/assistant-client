@@ -84,7 +84,7 @@ describe('Проверяем createAssistantDev', () => {
     it('Проверяем заполнение appInitialData - после onStart ожидаем insets, и все что пришло в ответ на initPhrase', (done) => {
         const COMMAND: AssistantSmartAppCommand = {
             type: 'smart_app_data',
-            smart_app_data: { command: 'test_command' },
+            smart_app_data: { type: 'test_command' },
         };
         server.on('connection', (socket) => {
             socket.binaryType = 'arraybuffer';
@@ -131,7 +131,7 @@ describe('Проверяем createAssistantDev', () => {
     it('Проверяем appInitialData - должно приходить в onData в dev-режиме', (done) => {
         const COMMAND: AssistantSmartAppCommand = {
             type: 'smart_app_data',
-            smart_app_data: { command: 'test_command' },
+            smart_app_data: { type: 'test_command' },
         };
         server.on('connection', (socket) => {
             socket.binaryType = 'arraybuffer';
@@ -196,11 +196,16 @@ describe('Проверяем createAssistantDev', () => {
             socket.binaryType = 'arraybuffer';
             initProtocol(socket, { initPhrase: INIT_PHRASE });
 
-            socket.on('message', (data: Uint8Array) => {
-                const message = Message.decode(data.slice(4));
+            socket.on('message', (mes: Uint8Array) => {
+                const message = Message.decode(mes.slice(4));
                 if (message.systemMessage?.data && message.systemMessage?.data !== '{}') {
                     const data: SystemMessageDataType = JSON.parse(message.systemMessage.data);
-                    const { server_action, meta } = data;
+                    const { app_info, server_action, meta } = data;
+
+                    if (!app_info || app_info.frontendStateId !== APP_INFO.frontendStateId) {
+                        return;
+                    }
+
                     expect(server_action).to.ok;
                     expect(meta).to.ok;
 
@@ -231,7 +236,7 @@ describe('Проверяем createAssistantDev', () => {
     });
 
     it('Проверяем оповещение подписчиков при получении команд от ассистента', (done) => {
-        const data: AssistantSmartAppCommand = { type: 'smart_app_data', smart_app_data: { command: 'TEST_COMMAND' } };
+        const data: AssistantSmartAppCommand = { type: 'smart_app_data', smart_app_data: { type: 'TEST_COMMAND' } };
         const navigation: AssistantNavigationCommand = { type: 'navigation', navigation: { command: 'DOWN' } };
         const received = { character: false, navigation: false, data: false, insets: false };
         let handleStart: () => void;
@@ -245,7 +250,10 @@ describe('Проверяем createAssistantDev', () => {
             handleStart = () => {
                 socket.send(
                     createAnswerBuffer({
-                        systemMessageData: JSON.stringify({ items: [{ command: data }, { command: navigation }] }),
+                        systemMessageData: JSON.stringify({
+                            app_info: APP_INFO,
+                            items: [{ command: data }, { command: navigation }],
+                        }),
                     }),
                 );
             };
@@ -299,7 +307,7 @@ describe('Проверяем createAssistantDev', () => {
                 socket.send(
                     createAnswerBuffer({
                         systemMessageData: JSON.stringify({
-                            items: [{ command: { character: { id: characterId }, type: 'character' } }],
+                            character: { id: characterId },
                         }),
                     }),
                 );
