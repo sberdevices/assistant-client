@@ -310,8 +310,6 @@ export const createClient = (params: CreateClientDataType, logger?: ClientLogger
         });
     };
 
-    startWebSocket();
-
     return {
         once,
         send: sendOriginal,
