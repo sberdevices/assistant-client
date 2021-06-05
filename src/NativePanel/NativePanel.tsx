@@ -28,8 +28,8 @@ const NativePanelStyles = `
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 9rem;
-    padding: 2rem 3rem;
+    height: 72px;
+    padding: 8px 18px 8px;
     background: linear-gradient(#ffffff00, #000000);
 }
 
@@ -49,11 +49,13 @@ const NativePanelStyles = `
 }
 
 .sphere {
+    box-sizing: border-box;
     background-size: contain;
     background-repeat: no-repeat;
-    padding: 2.2rem;
     transition: transform 0.2s;
     background-position: center;
+    height: 56px;
+    width: 56px;
 }
 
 .keyboard-touch {
@@ -69,13 +71,13 @@ const NativePanelStyles = `
 }
 
 .input {
-    font-size: 36px;
-    line-height: 42px;
+    font-size: 14px;
+    line-height: 18px;
     font-weight: 500;
     color: #fff;
     height: 42px;
     padding: 0;
-    margin-left: 2rem;
+    margin-left: 10px;
     outline: none;
     border: 0;
     background: transparent;
@@ -84,43 +86,49 @@ const NativePanelStyles = `
 
 .suggestPanel {
     position: absolute;
-    bottom: calc(100% - 1.5rem);
-    right: 3rem;
+    bottom: 77px;
+    right: 5px;
     display: flex;
     flex-direction: row;
-    height: 28px;
+    align-items: flex-end;
+    height: 36px;
 }
 
 .suggest {
-    line-height: 26px;
+    height: 30px;
+    line-height: 32px;
     padding: 0 15px;
     margin-left: 5px;
     border: 1px solid #c4c4c4;
     border-radius: 16px;
     color: #fff;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
 }
 
-@media screen and (max-width: 900px) {
+/** small */
+@media screen and (max-width: 639px) {
+    .sphere {
+        position: absolute;
+        left: calc(50% - 28px);
+    }
+
     .input {
         display: none;
     }
 
-    .sphere {
-        margin: 0 auto;
+    .suggest {
+        height: 34px;
+        line-height: 36px;
     }
 
-    .suggestPanel {
-        bottom: calc(100% - 3rem);
-    }
 
     .keyboard-touch {
         position: absolute;
         display: block;
         color: rgba(197, 197, 197, 0.8);
-        font-size: 1.5rem;
-        right: calc(3rem);
+        font-size: 32px;
+        right: 40px;
     }
 
     .keyboard-visible .sphere {
@@ -129,9 +137,55 @@ const NativePanelStyles = `
 
     .keyboard-visible .input {
         display: block;
-        margin-left: 0rem;
+        margin-left: 0;
         background: rgb(144, 144, 144, 0.15);
-        border-radius: 1rem;
+        border-radius: 18px;
+        padding: 8px 16px;
+        height: 36px;
+        box-sizing: border-box;
+    }
+}
+
+/** medium */
+@media screen and (min-width: 640px) and (max-width: 959px) {
+    .nativePanel {
+        padding: 28px 12px 12px;
+    }
+
+    .sphere {
+        height: 36px;
+        width: 36px;
+    }
+
+    .suggestPanel {
+        bottom: 46px;
+        right: 12px;
+    }
+
+    .suggest {
+        font-size: 14px;
+    }
+}
+
+/** large */
+@media screen and (min-width: 960px) {
+    .nativePanel {
+        height: 96px;
+        padding: 36px 64px 24px;
+    }
+
+    .sphere {
+        height: 36px;
+        width: 36px;
+    }
+
+    .suggestPanel {
+        bottom: 65px;
+        right: 64px;
+    }
+
+    .input {
+        margin-left: 14px;
     }
 }
 `;
