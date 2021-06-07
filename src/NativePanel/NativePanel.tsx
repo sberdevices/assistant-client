@@ -28,7 +28,7 @@ const NativePanelStyles = `
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 72px;
+    height: 58px;
     padding: 8px 18px 8px;
     background: linear-gradient(#ffffff00, #000000);
 }
@@ -36,12 +36,12 @@ const NativePanelStyles = `
 .bubble {
     cursor: pointer;
     position: absolute;
-    bottom: calc(100% - 1.5rem);
-    left: 1rem;
+    bottom: calc(100% - 36px);
     max-width: 80%;
-    border-radius: 0.2rem;
+    border-radius: 24px 24px 24px 6px;
     background-color: rgba(255, 255, 255, 0.08);
-    padding: 0.3rem;
+    padding: 12px 24px;
+    font-size: 16px;
     line-height: 24px;
     font-weight: 500;
     color: #fff;
@@ -170,13 +170,17 @@ const NativePanelStyles = `
 /** large */
 @media screen and (min-width: 960px) {
     .nativePanel {
-        height: 96px;
-        padding: 36px 64px 24px;
+        height: calc(96px * 1.5);
+        padding: calc(36px * 1.5) calc(64px * 1.5) calc(24px * 1.5);
+    }
+
+    .bubble {
+        font-size: calc(16px * 1.5);
     }
 
     .sphere {
-        height: 36px;
-        width: 36px;
+        height: calc(36px * 1.5);
+        width: calc(36px * 1.5);
     }
 
     .suggestPanel {
@@ -185,7 +189,26 @@ const NativePanelStyles = `
     }
 
     .input {
-        margin-left: 14px;
+        font-size: calc(14px * 1.5);
+        line-height: calc(18px * 1.5);
+        height: calc(42px * 1.5);
+        margin-left: calc(14px * 1.5);
+    }
+
+    .suggestPanel {
+        bottom: calc(77px * 1.5);
+        right: calc(5px * 1.5);
+        height: calc(36px * 1.5);
+    }
+    
+    .suggest {
+        height: calc(30px * 1.5);
+        line-height: calc(30px * 1.5);
+        padding: 0 calc(15px * 1.5);
+        margin-left: calc(5px * 1.5);
+        border: 2px solid #c4c4c4;
+        border-radius: calc(16px * 1.5);
+        font-size: calc(16px * 1.5);
     }
 }
 `;
