@@ -1,3 +1,23 @@
+# v3.0.0 (Mon Jun 07 2021)
+
+#### 💥 Breaking Change
+
+- BREAKING: createAssistantClient [#129](https://github.com/sberdevices/assistant-client/pull/129) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🚀 Enhancement
+
+- feat: Частичный переход на типы из @salutejs/types [#129](https://github.com/sberdevices/assistant-client/pull/129) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- chore: конфигурация commitlint [#129](https://github.com/sberdevices/assistant-client/pull/129) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v2.16.1 (Mon May 24 2021)
 
 #### 🐛 Bug Fix
