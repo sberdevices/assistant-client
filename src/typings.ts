@@ -134,6 +134,14 @@ export interface AssistantNavigationCommand {
     sdk_meta?: SdkMeta;
 }
 
+export interface AssistantActionCommand {
+    type: 'action';
+    action: {
+        type: string;
+        [key: string]: unknown;
+    };
+}
+
 export interface AssistantSmartAppData {
     type: 'smart_app_data';
     smart_app_data: Record<string, unknown>;
@@ -269,7 +277,8 @@ export type EventsType = {
 };
 
 export type ItemType = Partial<BubbleCommand> &
-    Partial<CardCommand> & {
+    Partial<CardCommand> &
+    Partial<ActionCommand> & {
         command?:
             | Omit<AssistantSmartAppData, 'sdk_meta'>
             | Omit<AssistantSystemCommand, 'sdk_meta'>

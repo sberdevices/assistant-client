@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import { ActionCommand } from '@salutejs/types';
+
 import { createNanoEvents } from '../nanoevents';
 import {
     AppInfo,
@@ -45,10 +47,16 @@ export type VpsEvent =
     | { type: 'outcoming'; message: OriginalMessageType }
     | { type: 'incoming'; systemMessage: SystemMessageDataType; originalMessage: OriginalMessageType };
 
+export type ActionCommandEvent = {
+    type: 'command';
+    command: ActionCommand;
+};
+
 export type AssistantEvents = {
     app: (event: AppEvent) => void;
     assistant: (event: AssistantEvent) => void;
     vps: (event: VpsEvent) => void;
+    actionCommand: (event: ActionCommandEvent) => void;
 };
 
 export const createAssistant = (configuration: VpsConfiguration) => {
@@ -198,6 +206,13 @@ export const createAssistant = (configuration: VpsConfiguration) => {
                                     command.permissions as PermissionType[],
                                 );
                                 return;
+                            }
+
+                            if (command.type === 'action') {
+                                emit('actionCommand', {
+                                    type: 'command',
+                                    command: command as ActionCommand,
+                                });
                             }
 
                             if ((command.type === 'smart_app_data' || command.type === 'navigation') && mesAppInfo) {
