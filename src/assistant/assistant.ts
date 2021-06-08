@@ -140,13 +140,13 @@ export const createAssistant = (configuration: VpsConfiguration) => {
     };
 
     /** отправляет ответ на запрос доступа к местоположению и пр. меты */
-    const sendMetaForPermissionRequest = async (requestMessageId: number | Long, items: PermissionType[]) => {
-        if (app === null) {
-            throw new Error('Unexpected state - appInfo is null');
-        }
-
+    const sendMetaForPermissionRequest = async (
+        requestMessageId: number | Long,
+        appInfo: AppInfo,
+        items: PermissionType[],
+    ) => {
         client.sendData({
-            data: await getAnswerForRequestPermissions(requestMessageId, app.info, items),
+            data: await getAnswerForRequestPermissions(requestMessageId, appInfo, items),
             messageName: 'SERVER_ACTION',
         });
     };
@@ -194,6 +194,7 @@ export const createAssistant = (configuration: VpsConfiguration) => {
                             if (command.type === 'request_permissions') {
                                 sendMetaForPermissionRequest(
                                     originalMessage.messageId,
+                                    mesAppInfo,
                                     command.permissions as PermissionType[],
                                 );
                                 return;
