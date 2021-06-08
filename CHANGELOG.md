@@ -1,3 +1,15 @@
+# v3.0.1 (Tue Jun 08 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Отправлять appInfo в ответ на запрос пермишенов [#133](https://github.com/sberdevices/assistant-client/pull/133) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.0.0 (Mon Jun 07 2021)
 
 #### 💥 Breaking Change
