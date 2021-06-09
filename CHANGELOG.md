@@ -1,3 +1,15 @@
+# v3.1.0 (Wed Jun 09 2021)
+
+#### 🚀 Enhancement
+
+- feat: эмитить ActionCommand приходящие в systemMessage [#134](https://github.com/sberdevices/assistant-client/pull/134) ([@soulko](https://github.com/soulko))
+
+#### Authors: 1
+
+- Anton Kostenko ([@soulko](https://github.com/soulko))
+
+---
+
 # v3.0.1 (Tue Jun 08 2021)
 
 #### 🐛 Bug Fix
