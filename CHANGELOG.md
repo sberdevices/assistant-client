@@ -1,3 +1,15 @@
+# v3.1.1 (Wed Jun 09 2021)
+
+#### 🐛 Bug Fix
+
+- fix: export ActionCommandEvent type [#135](https://github.com/sberdevices/assistant-client/pull/135) ([@soulko](https://github.com/soulko))
+
+#### Authors: 1
+
+- Anton Kostenko ([@soulko](https://github.com/soulko))
+
+---
+
 # v3.1.0 (Wed Jun 09 2021)
 
 #### 🚀 Enhancement
