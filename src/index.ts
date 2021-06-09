@@ -412,7 +412,13 @@ export { createOnlineRecordPlayer } from './record/online-player';
 export { NativePanelParams } from './NativePanel/NativePanel';
 export * from './typings';
 export * from './dev';
-export { AssistantEvent, AppEvent, VpsEvent, createAssistant as createAssistantClient } from './assistant/assistant';
+export {
+    AssistantEvent,
+    AppEvent,
+    VpsEvent,
+    ActionCommandEvent,
+    createAssistant as createAssistantClient,
+} from './assistant/assistant';
 export { initializeDebugging } from './debug';
 export {
     createAssistantHostMock,
