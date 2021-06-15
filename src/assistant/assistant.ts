@@ -199,7 +199,7 @@ export const createAssistant = (configuration: VpsConfiguration) => {
                                 return;
                             }
 
-                            if (command.type === 'request_permissions') {
+                            if (command.type === 'request_permissions' && mesAppInfo) {
                                 sendMetaForPermissionRequest(
                                     originalMessage.messageId,
                                     mesAppInfo,

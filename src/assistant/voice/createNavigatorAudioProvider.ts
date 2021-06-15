@@ -49,6 +49,7 @@ const downsampleBuffer = (buffer: Float32Array, sampleRate: number, outSampleRat
 };
 
 const TARGET_SAMPLE_RATE = 16000;
+const IS_FIREFOX = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 const createAudioRecorder = (stream: MediaStream, cb: (buffer: ArrayBuffer, last: boolean) => void) => {
     let state: 'inactive' | 'recording' = 'inactive';
@@ -63,7 +64,8 @@ const createAudioRecorder = (stream: MediaStream, cb: (buffer: ArrayBuffer, last
 
         if (!context) {
             context = createAudioContext({
-                sampleRate: 16000,
+                // firefox не умеет выравнивать samplerate, будем делать это самостоятельно
+                sampleRate: IS_FIREFOX ? undefined : TARGET_SAMPLE_RATE,
             });
         }
 
