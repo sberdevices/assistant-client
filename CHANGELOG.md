@@ -1,3 +1,16 @@
+# v3.1.2 (Wed Jun 16 2021)
+
+#### 🐛 Bug Fix
+
+- fix: слушание и озвучка в safari ios [#137](https://github.com/sberdevices/assistant-client/pull/137) ([@sasha-tlt](https://github.com/sasha-tlt))
+- fix: слушание не работает в firefox [#137](https://github.com/sberdevices/assistant-client/pull/137) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.1.1 (Wed Jun 09 2021)
 
 #### 🐛 Bug Fix
