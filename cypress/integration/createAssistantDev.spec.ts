@@ -47,7 +47,7 @@ describe('Проверяем createAssistantDev', () => {
 
             socket.on('message', (data: Uint8Array) => {
                 const message = Message.decode(data.slice(4));
-                if (message.messageName === 'OPEN_ASSISTANT' && message.systemMessage?.data === '{}') {
+                if (message.messageName === 'OPEN_ASSISTANT') {
                     openReceived = true;
                 }
 

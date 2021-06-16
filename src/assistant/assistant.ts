@@ -259,7 +259,7 @@ export const createAssistant = (configuration: VpsConfiguration) => {
 
         if (!settings.disableGreetings) {
             const isFirstSession = !checkHadFirstSession();
-            await client.sendOpenAssistant().then(() => {
+            await client.sendOpenAssistant({ isFirstSession }).then(() => {
                 if (isFirstSession) {
                     setHadFirstSession();
                 }
