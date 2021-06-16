@@ -2,7 +2,6 @@ import { createNanoEvents } from '../../../nanoevents';
 import { VoicePlayerSettings } from '../../../typings';
 
 import { createTrackStream } from './trackStream';
-import { generateSilence } from './silenceGenerator';
 
 const createAudioContext = (options?: AudioContextOptions): AudioContext => {
     if (window.AudioContext) {
@@ -10,7 +9,8 @@ const createAudioContext = (options?: AudioContextOptions): AudioContext => {
     }
 
     if (window.webkitAudioContext) {
-        return window.webkitAudioContext;
+        // eslint-disable-next-line new-cap
+        return new window.webkitAudioContext();
     }
 
     throw new Error('Audio not supported');
@@ -97,22 +97,17 @@ export const createVoicePlayer = ({
 
     // если safari - нужно активировать аудиоконтекст по событию ввода
     if (actx && navigator.vendor.search('Apple') >= 0) {
-        let empty: AudioBuffer | null = null;
-
-        actx.decodeAudioData(generateSilence(), (buffer) => {
-            empty = buffer;
-        });
-
         const handleClick = () => {
             document.removeEventListener('click', handleClick);
             document.removeEventListener('touchstart', handleClick);
 
             /// нужно что-то проиграть, чтобы сафари разрешил воспроизводить звуки в любой момент в этом контексте
             /// проигрываем тишину
-            const source = actx.createBufferSource();
-            source.buffer = empty;
-            source.connect(actx.destination);
-            source.start(0);
+            const oscillator = actx.createOscillator();
+            oscillator.frequency.value = 0;
+            oscillator.connect(actx.destination);
+            oscillator.start(0);
+            oscillator.stop(0.5);
         };
 
         // для пк

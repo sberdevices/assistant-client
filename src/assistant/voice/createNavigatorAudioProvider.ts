@@ -4,7 +4,8 @@ const createAudioContext = (options?: AudioContextOptions): AudioContext => {
     }
 
     if (window.webkitAudioContext) {
-        return window.webkitAudioContext;
+        // eslint-disable-next-line new-cap
+        return new window.webkitAudioContext();
     }
 
     throw new Error('Audio-context not supported');
