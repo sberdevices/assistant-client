@@ -152,7 +152,7 @@ export const createProtocol = (
         transport.stop();
         Object.assign(basePayload, obj);
         Object.assign(clientParams, obj);
-        setTimeout(transport.start); // даем время случиться close
+        setTimeout(() => transport.start(url)); // даем время случиться close
     };
 
     subscriptions.push(
