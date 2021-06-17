@@ -1,3 +1,16 @@
+# v3.1.3 (Thu Jun 17 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Вызов changeConfiguration крашит сокет [#139](https://github.com/sberdevices/assistant-client/pull/139) ([@sasha-tlt](https://github.com/sasha-tlt))
+- fix: Отправка флага первой сессии [#138](https://github.com/sberdevices/assistant-client/pull/138) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.1.2 (Wed Jun 16 2021)
 
 #### 🐛 Bug Fix
