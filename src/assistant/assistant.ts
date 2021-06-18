@@ -67,6 +67,9 @@ export const createAssistant = (configuration: VpsConfiguration) => {
     // хеш [messageId]: requestId, где requestId - пользовательский ид экшена
     const requestIdMap: Record<string, string> = {};
 
+    // запущен/не запущен
+    let started = false;
+
     // текущий апп
     let app: { info: AppInfo; getState?: () => Promise<AssistantAppState> } | null = null;
     let settings: AssistantSettings & {
@@ -121,7 +124,7 @@ export const createAssistant = (configuration: VpsConfiguration) => {
     const sendText = (text: string) => {
         voice.stop();
 
-        if (settings.disabled) {
+        if (settings.disabled || !started) {
             return;
         }
 
@@ -136,7 +139,7 @@ export const createAssistant = (configuration: VpsConfiguration) => {
     ) => {
         voice.stop();
 
-        if (settings.disabled) {
+        if (settings.disabled || !started) {
             return;
         }
 
@@ -178,7 +181,7 @@ export const createAssistant = (configuration: VpsConfiguration) => {
     // обработка входящих команд, и событий аппа
     subscriptions.push(
         client.on('systemMessage', (systemMessage: SystemMessageDataType, originalMessage: OriginalMessageType) => {
-            if (settings.disabled) {
+            if (settings.disabled || !started) {
                 return;
             }
 
@@ -257,6 +260,8 @@ export const createAssistant = (configuration: VpsConfiguration) => {
             return;
         }
 
+        started = true;
+
         if (!settings.disableGreetings) {
             const isFirstSession = !checkHadFirstSession();
             await client.sendOpenAssistant({ isFirstSession }).then(() => {
@@ -297,6 +302,10 @@ export const createAssistant = (configuration: VpsConfiguration) => {
         on,
         changeConfiguration: protocol.changeConfiguration,
         changeSettings: (newSettings: Partial<AssistantSettings>) => {
+            if (settings.disableDubbing !== !!newSettings.disableDubbing && started) {
+                client.sendSettings({ dubbing: newSettings.disableDubbing ? -1 : 1 });
+            }
+
             settings = { ...settings, ...newSettings };
 
             if (!settings.disabled) {

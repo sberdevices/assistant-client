@@ -203,7 +203,6 @@ export const createVoice = (
             // вкл/выкл фичи озвучки
             if (typeof disableDubbing !== 'undefined' && settings.disableDubbing !== disableDubbing) {
                 settings.disableDubbing = disableDubbing;
-                client.sendSettings({ dubbing: disableDubbing ? -1 : 1 });
                 voicePlayer.active = !disableDubbing;
             }
 
