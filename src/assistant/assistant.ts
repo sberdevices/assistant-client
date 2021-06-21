@@ -21,8 +21,6 @@ import { getAnswerForRequestPermissions, getTime } from './meta';
 import { createVoice } from './voice/voice';
 
 export interface AssistantSettings {
-    /** Отключение приветственного сообщения при старте */
-    disableGreetings: boolean;
     /** Отключение фичи воспроизведения голоса */
     disableDubbing: boolean;
     /** Отключение фичи слушания речи */
@@ -72,7 +70,6 @@ export const createAssistant = (configuration: VpsConfiguration) => {
     let settings: AssistantSettings & {
         disabled: boolean;
     } = {
-        disableGreetings: false,
         disableDubbing: configuration.settings.dubbing !== -1,
         disableListening: false,
         sendTextAsSsml: false,
@@ -252,12 +249,19 @@ export const createAssistant = (configuration: VpsConfiguration) => {
     };
 
     /** запускает ассистент (приветствие) */
-    const start = async (initPhrase: string | undefined = undefined): Promise<SystemMessageDataType | undefined> => {
+    const start = async ({
+        disableGreetings = false,
+        initPhrase = undefined,
+    }: {
+        /** Отключение приветственного сообщения при старте */
+        disableGreetings?: boolean;
+        initPhrase?: string;
+    } = {}): Promise<SystemMessageDataType | undefined> => {
         if (settings.disabled) {
             return;
         }
 
-        if (!settings.disableGreetings) {
+        if (!disableGreetings) {
             const isFirstSession = !checkHadFirstSession();
             await client.sendOpenAssistant({ isFirstSession }).then(() => {
                 if (isFirstSession) {

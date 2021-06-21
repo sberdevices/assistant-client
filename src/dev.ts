@@ -152,7 +152,7 @@ export const initializeAssistantSDK = ({
     };
 
     const fn = async () => {
-        const res = await assistant.start(initPhrase);
+        const res = await assistant.start({ initPhrase });
 
         if (initPhrase && res) {
             initialSmartAppData.push({
