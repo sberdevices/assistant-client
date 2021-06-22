@@ -100,7 +100,7 @@ export const createProtocol = (
             // накапливаем сообщения, отправим после успешного коннекта
             messageQueue.push(message);
             if (status === 'closed' && !destroyed) {
-                transport.start(url);
+                transport.open(url);
             }
         }
     };
@@ -149,10 +149,21 @@ export const createProtocol = (
     }) as typeof sendSettingsOriginal;
 
     const updateDefaults = (obj: Partial<typeof basePayload>) => {
-        transport.stop();
         Object.assign(basePayload, obj);
         Object.assign(clientParams, obj);
-        setTimeout(() => transport.start(url)); // даем время случиться close
+
+        if (status !== 'closed') {
+            transport.reconnect(url); // даем время случиться close
+        }
+    };
+
+    const updateSettings = (obj: Partial<VpsConfiguration['settings']>, sendNow = false) => {
+        if (sendNow) {
+            sendSettings(obj);
+            return;
+        }
+
+        Object.assign(currentSettings.settings, obj);
     };
 
     subscriptions.push(
@@ -222,21 +233,24 @@ export const createProtocol = (
     );
 
     return {
+        clearQueue: () => {
+            messageQueue.splice(0, messageQueue.length);
+        },
         destroy: () => {
             destroyed = true;
-            transport.stop();
+            transport.close();
             subscriptions.splice(0, subscriptions.length).map((unsubscribe) => unsubscribe());
         },
         on,
         getMessageId,
         sendCancel,
         sendText,
-        sendSettings,
         sendSystemMessage,
         sendVoice,
         send: sendMessage,
         batch,
         changeConfiguration: updateDefaults,
+        changeSettings: updateSettings,
         get currentMessageId() {
             return currentMessageId;
         },

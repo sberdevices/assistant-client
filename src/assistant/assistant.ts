@@ -65,15 +65,15 @@ export const createAssistant = (configuration: VpsConfiguration) => {
     // хеш [messageId]: requestId, где requestId - пользовательский ид экшена
     const requestIdMap: Record<string, string> = {};
 
+    // запущен/не запущен
+    let started = false;
+
     // текущий апп
     let app: { info: AppInfo; getState?: () => Promise<AssistantAppState> } | null = null;
-    let settings: AssistantSettings & {
-        disabled: boolean;
-    } = {
-        disableDubbing: configuration.settings.dubbing !== -1,
+    let settings: AssistantSettings = {
+        disableDubbing: configuration.settings.dubbing === -1,
         disableListening: false,
         sendTextAsSsml: false,
-        disabled: false, // вкл/выкл
     };
 
     const metaProvider = async (): Promise<Partial<Pick<SystemMessageDataType, 'app_info' | 'meta'>>> => {
@@ -118,10 +118,6 @@ export const createAssistant = (configuration: VpsConfiguration) => {
     const sendText = (text: string) => {
         voice.stop();
 
-        if (settings.disabled) {
-            return;
-        }
-
         client.sendText(text, settings.sendTextAsSsml);
     };
 
@@ -132,10 +128,6 @@ export const createAssistant = (configuration: VpsConfiguration) => {
         requestId: string | undefined = undefined,
     ) => {
         voice.stop();
-
-        if (settings.disabled) {
-            return;
-        }
 
         client.sendServerAction(serverAction, messageName).then((messageId) => {
             if (requestId && messageId) {
@@ -175,10 +167,6 @@ export const createAssistant = (configuration: VpsConfiguration) => {
     // обработка входящих команд, и событий аппа
     subscriptions.push(
         client.on('systemMessage', (systemMessage: SystemMessageDataType, originalMessage: OriginalMessageType) => {
-            if (settings.disabled) {
-                return;
-            }
-
             if (originalMessage.messageName === 'ANSWER_TO_USER') {
                 const { activate_app_info, items, app_info: mesAppInfo } = systemMessage;
 
@@ -257,10 +245,7 @@ export const createAssistant = (configuration: VpsConfiguration) => {
         disableGreetings?: boolean;
         initPhrase?: string;
     } = {}): Promise<SystemMessageDataType | undefined> => {
-        if (settings.disabled) {
-            return;
-        }
-
+        started = true;
         if (!disableGreetings) {
             const isFirstSession = !checkHadFirstSession();
             await client.sendOpenAssistant({ isFirstSession }).then(() => {
@@ -280,15 +265,6 @@ export const createAssistant = (configuration: VpsConfiguration) => {
     };
 
     return {
-        enable: () => {
-            settings.disabled = false;
-            voice.change({ disableDubbing: settings.disableDubbing, disableListening: settings.disableListening });
-        },
-        disable: () => {
-            settings.disabled = true;
-
-            voice.change({ disableDubbing: true, disableListening: true });
-        },
         get activeApp() {
             return app?.info || null;
         },
@@ -298,14 +274,26 @@ export const createAssistant = (configuration: VpsConfiguration) => {
         sendServerAction,
         sendText,
         start,
+        stop: () => {
+            voice.stop();
+            protocol.clearQueue();
+            transport.close();
+            started = false;
+        },
+        emit,
         on,
         changeConfiguration: protocol.changeConfiguration,
         changeSettings: (newSettings: Partial<AssistantSettings>) => {
+            const dubbingChanged = settings.disableDubbing !== !!newSettings.disableDubbing;
             settings = { ...settings, ...newSettings };
 
-            if (!settings.disabled) {
-                voice.change({ disableDubbing: settings.disableDubbing, disableListening: settings.disableListening });
+            voice.change({ disableDubbing: settings.disableDubbing, disableListening: settings.disableListening });
+
+            if (!dubbingChanged) {
+                return;
             }
+
+            protocol.changeSettings({ dubbing: settings.disableDubbing ? -1 : 1 }, started);
         },
         get protocol() {
             return protocol;

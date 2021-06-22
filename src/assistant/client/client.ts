@@ -151,9 +151,7 @@ export const createClient = (
         sendMeta,
         sendOpenAssistant,
         sendServerAction,
-        sendSettings: protocol.sendSettings,
         sendText,
-        changeConfiguration: protocol.changeConfiguration,
         on,
         waitForAnswerToUser,
     };
