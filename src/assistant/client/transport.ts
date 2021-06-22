@@ -30,7 +30,7 @@ export const createTransport = () => {
     let timeOut: number | undefined; // ид таймера автореконнекта
     let retries = 0; // количество попыток коннекта при ошибке
 
-    const stop = () => {
+    const close = () => {
         stopped = true;
         ws && ws.close(); // статус изменится по подписке
         clearTimeout(timeOut);
@@ -44,7 +44,7 @@ export const createTransport = () => {
         ws.send(bufferWithHeader);
     };
 
-    const start = (vpsUrl: string) => {
+    const open = (vpsUrl: string) => {
         if (status !== 'closed') {
             return;
         }
@@ -80,7 +80,7 @@ export const createTransport = () => {
                 }
                 if (retries < 3) {
                     timeOut = window.setTimeout(() => {
-                        start(vpsUrl);
+                        open(vpsUrl);
                         retries++;
                     }, 300 * retries);
                 } else {
@@ -95,10 +95,21 @@ export const createTransport = () => {
         });
     };
 
+    const reconnect = (vpsUrl: string) => {
+        if (status === 'closed') {
+            open(vpsUrl);
+            return;
+        }
+
+        close();
+        setTimeout(() => reconnect(vpsUrl));
+    };
+
     return {
         send,
-        start,
-        stop,
+        open,
+        close,
+        reconnect,
         on,
         get status() {
             return status;
