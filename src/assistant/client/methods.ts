@@ -48,6 +48,7 @@ export type BatchableMethods = {
             meta?: { [k: string]: string };
         },
     ) => void;
+    sendSettings: (data: ISettings, last?: boolean, messageId?: number) => void;
     messageId: number;
 };
 
@@ -256,10 +257,20 @@ export const createClientMethods = ({
             return sendVoice(data, last, batchingMessageId, mesName, params);
         };
 
+        const upgradedSendSettings: (
+            data: ISettings,
+            last?: boolean,
+            messageId?: number,
+        ) => ReturnType<typeof sendSettings> = (data, last, messageId) => {
+            checkLastMessageStatus(last);
+            return sendSettings(data, last, messageId);
+        };
+
         return cb({
             sendText: upgradedSendText,
             sendSystemMessage: upgradedSendSystemMessage,
             sendVoice: upgradedSendVoice,
+            sendSettings: upgradedSendSettings,
             messageId: batchingMessageId,
         });
     };

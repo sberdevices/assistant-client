@@ -99,14 +99,30 @@ export const createClient = (
     };
 
     /** отправляет текст и текущую мету */
-    const sendText = async (text: string, isSsml = false): Promise<number | Long | undefined> => {
+    const sendText = async (
+        text: string,
+        isSsml = false,
+        shouldSendDisableDubbing?: boolean,
+    ): Promise<number | Long | undefined> => {
         if (text.trim() === '') {
             return undefined;
         }
 
-        return protocol.batch(async ({ sendSystemMessage, sendText: clientSendText, messageId }) => {
+        return protocol.batch(async ({ sendSystemMessage, sendText: clientSendText, sendSettings, messageId }) => {
             await sendMeta(sendSystemMessage);
+            const prevDubbing = protocol.configuration.settings.dubbing;
+            const sendDisableDubbing = prevDubbing !== -1 && shouldSendDisableDubbing;
+
+            if (sendDisableDubbing) {
+                await sendSettings({ dubbing: -1 }, false);
+            }
+
             isSsml ? clientSendText(text, {}, 'application/ssml') : clientSendText(text, {});
+
+            if (sendDisableDubbing) {
+                sendSettings({ dubbing: prevDubbing });
+            }
+
             return messageId;
         });
     };
