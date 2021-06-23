@@ -50,7 +50,7 @@ export const createProtocol = (
     transport: ReturnType<typeof createTransport>,
     { logger, ...params }: VpsConfiguration,
 ) => {
-    const clientParams = { ...params };
+    const configuration = { ...params };
     const {
         url,
         userId,
@@ -64,7 +64,7 @@ export const createProtocol = (
         messageName,
         vpsToken,
         meta,
-    } = clientParams;
+    } = configuration;
     const basePayload = compileBasePayload({ userId, token, messageName, vpsToken, userChannel, version });
 
     const { on, emit } = createNanoEvents<ProtocolEvents>();
@@ -142,15 +142,9 @@ export const createProtocol = (
         return sendLegacyDeviceOriginal(data, ...args);
     }) as typeof sendLegacyDeviceOriginal;
 
-    const sendSettings = ((data: ISettings, ...args: never[]) => {
-        currentSettings = { ...currentSettings, settings: { ...currentSettings.settings, ...data } };
-
-        return sendSettingsOriginal(data, ...args);
-    }) as typeof sendSettingsOriginal;
-
     const updateDefaults = (obj: Partial<typeof basePayload>) => {
         Object.assign(basePayload, obj);
-        Object.assign(clientParams, obj);
+        Object.assign(configuration, obj);
 
         if (status !== 'closed') {
             transport.reconnect(url); // даем время случиться close
@@ -158,12 +152,11 @@ export const createProtocol = (
     };
 
     const updateSettings = (obj: Partial<VpsConfiguration['settings']>, sendNow = false) => {
-        if (sendNow) {
-            sendSettings(obj);
-            return;
-        }
-
         Object.assign(currentSettings.settings, obj);
+
+        if (sendNow) {
+            sendSettingsOriginal(obj);
+        }
     };
 
     subscriptions.push(
@@ -185,7 +178,7 @@ export const createProtocol = (
                 } else if (version === 2 && currentSettings.device) {
                     sendDevice(currentSettings.device, false, initMessageId);
                 }
-                sendSettings(currentSettings.settings, true, initMessageId);
+                sendSettingsOriginal(currentSettings.settings, true, initMessageId);
             } else {
                 sendInitialSettings(
                     {
@@ -222,7 +215,7 @@ export const createProtocol = (
                 emit('ready');
             }, 500);
 
-            logger?.logInit({ ...clientParams, ...currentSettings });
+            logger?.logInit({ ...configuration, ...currentSettings });
         }),
     );
     subscriptions.push(
@@ -253,6 +246,9 @@ export const createProtocol = (
         changeSettings: updateSettings,
         get currentMessageId() {
             return currentMessageId;
+        },
+        get configuration() {
+            return configuration;
         },
     };
 };

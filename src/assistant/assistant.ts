@@ -115,10 +115,10 @@ export const createAssistant = (configuration: VpsConfiguration) => {
     };
 
     /** отправляет текст */
-    const sendText = (text: string) => {
+    const sendText = (text: string, shouldSendDisableDubbing = false) => {
         voice.stop();
 
-        client.sendText(text, settings.sendTextAsSsml);
+        client.sendText(text, settings.sendTextAsSsml, shouldSendDisableDubbing);
     };
 
     /** отправляет server_action */
