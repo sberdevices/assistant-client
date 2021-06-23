@@ -1,3 +1,16 @@
+# v3.2.0 (Wed Jun 23 2021)
+
+#### 🚀 Enhancement
+
+- fix: Отправлять настройки звука если был старт [#142](https://github.com/sberdevices/assistant-client/pull/142) ([@sasha-tlt](https://github.com/sasha-tlt))
+- feat: Отключение приветствия - параметр для start [#142](https://github.com/sberdevices/assistant-client/pull/142) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.1.3 (Thu Jun 17 2021)
 
 #### 🐛 Bug Fix
