@@ -1,3 +1,15 @@
+# v3.2.1 (Thu Jun 24 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Не проигрывать озвучку в ответ на текстовые сообщения [#141](https://github.com/sberdevices/assistant-client/pull/141) ([@soulko](https://github.com/soulko))
+
+#### Authors: 1
+
+- Anton Kostenko ([@soulko](https://github.com/soulko))
+
+---
+
 # v3.2.0 (Wed Jun 23 2021)
 
 #### 🚀 Enhancement
