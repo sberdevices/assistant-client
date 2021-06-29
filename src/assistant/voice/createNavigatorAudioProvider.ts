@@ -1,5 +1,5 @@
 const createAudioContext = (options?: AudioContextOptions): AudioContext => {
-    if (AudioContext) {
+    if (window.AudioContext) {
         return new AudioContext(options);
     }
 
