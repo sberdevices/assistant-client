@@ -1,3 +1,15 @@
+# v3.2.2 (Tue Jun 29 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Не работает лавашар на ios safari [#143](https://github.com/sberdevices/assistant-client/pull/143) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.2.1 (Thu Jun 24 2021)
 
 #### 🐛 Bug Fix
