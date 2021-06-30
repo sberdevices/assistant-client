@@ -20,6 +20,22 @@ import { checkHadFirstSession, setHadFirstSession } from './firstSessionProvider
 import { getAnswerForRequestPermissions, getTime } from './meta';
 import { createVoice } from './voice/voice';
 
+const DEFAULT_PROJECT_ID = 'd929986a-611a-2ba0-6174-1928c99600a5';
+const DEFAULT_APPLICATION_ID = '7c4e23bf-cd93-b57e-874b-d9fc1b35f93d';
+const DEFAULT_APP_VERSION_ID = '26d0bb2e-45d6-a276-f70e-6c016d1f9cff';
+
+const DEFAULT_APP: AppInfo = {
+    projectId: DEFAULT_PROJECT_ID,
+    applicationId: DEFAULT_APPLICATION_ID,
+    appversionId: DEFAULT_APP_VERSION_ID,
+    frontendStateId: [DEFAULT_PROJECT_ID, DEFAULT_APPLICATION_ID, DEFAULT_APP_VERSION_ID].join('_'),
+    frontendType: 'DIALOG',
+    systemName: 'assistant',
+    frontendEndpoint: 'None',
+};
+
+const isDefaultApp = (appInfo: AppInfo) => appInfo.frontendStateId === DEFAULT_APP.frontendStateId;
+
 export interface AssistantSettings {
     /** Отключение фичи воспроизведения голоса */
     disableDubbing: boolean;
@@ -73,7 +89,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
     let started = false;
 
     // текущий апп
-    let app: { info: AppInfo; getState?: () => Promise<AssistantAppState> } | null = null;
+    let app: { info: AppInfo; getState?: () => Promise<AssistantAppState> } = { info: DEFAULT_APP };
     let settings: AssistantSettings = {
         disableDubbing: configuration.settings.dubbing === -1,
         disableListening: false,
@@ -88,16 +104,12 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                 : undefined;
 
         return {
-            app_info: app?.info,
             meta: {
                 time: getTime(),
-                current_app:
-                    app !== null && appState
-                        ? {
-                              app_info: app.info,
-                              state: appState,
-                          }
-                        : undefined,
+                current_app: {
+                    app_info: app.info,
+                    state: appState || {},
+                },
                 ...(getMeta ? getMeta() : {}),
             },
         };
@@ -112,9 +124,11 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
     const closeApp = () => {
         const current = app;
 
-        app = null;
+        app = {
+            info: DEFAULT_APP,
+        };
 
-        if (current !== null) {
+        if (!isDefaultApp(current.info)) {
             emit('app', { type: 'close', app: current.info });
         }
     };
@@ -134,7 +148,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
     ) => {
         voice.stop();
 
-        client.sendServerAction(serverAction, messageName).then((messageId) => {
+        client.sendServerAction(serverAction, app.info, messageName).then((messageId) => {
             if (requestId && messageId) {
                 requestIdMap[messageId.toString()] = requestId;
             }
@@ -271,7 +285,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
 
     return {
         get activeApp() {
-            return app?.info || null;
+            return !isDefaultApp(app.info) ? app.info : null;
         },
         destroy,
         closeApp,

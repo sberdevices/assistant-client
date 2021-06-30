@@ -1,5 +1,5 @@
 import { createNanoEvents } from '../../nanoevents';
-import { SystemMessageDataType, OriginalMessageType, MessageNames } from '../../typings';
+import { SystemMessageDataType, OriginalMessageType, MessageNames, AppInfo } from '../../typings';
 
 import { BatchableMethods, createProtocol } from './protocol';
 
@@ -78,6 +78,7 @@ export const createClient = (
     /** отправляет server_action и мету */
     const sendServerAction = async (
         serverAction: unknown,
+        appInfo: AppInfo,
         messageName = 'SERVER_ACTION',
     ): Promise<number | Long | undefined> => {
         let messageId: number | undefined;
@@ -87,7 +88,7 @@ export const createClient = (
             protocol.sendSystemMessage(
                 {
                     // eslint-disable-next-line @typescript-eslint/camelcase
-                    data: { ...data, server_action: serverAction },
+                    data: { ...data, app_info: appInfo, server_action: serverAction },
                     messageName: messageName || 'SERVER_ACTION',
                 },
                 true,
