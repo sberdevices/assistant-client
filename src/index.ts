@@ -5,7 +5,6 @@ import { v4 } from 'uuid';
 import {
     AssistantAppState,
     AssistantServerAction,
-    ClientLogger,
     AssistantSettings,
     AssistantClientCustomizedCommand,
     AssistantSmartAppData,
@@ -15,8 +14,7 @@ import {
     AssistantPostMessage,
 } from './typings';
 import { createNanoEvents } from './nanoevents';
-import { initializeAssistantSDK } from './dev';
-import { NativePanelParams } from './NativePanel/NativePanel';
+import { initializeAssistantSDK, InitializeAssistantSDKParams } from './dev';
 import { createNanoObservable, ObserverFunc } from './nanoobservable';
 
 export interface AssistantEvents<A extends AssistantSmartAppData> {
@@ -290,51 +288,28 @@ export const createAssistant = <A extends AssistantSmartAppData>({
 export const createAssistantDev = <A extends AssistantSmartAppData>({
     getState,
     getRecoveryState,
-    initPhrase,
-    nativePanel,
-    url,
-    userId,
-    token,
-    userChannel,
-    surface,
-    surfaceVersion,
-    sdkVersion,
-    enableRecord = false,
-    recordParams,
-    settings,
+    ...sdkParams
 }: {
     getState: () => AssistantAppState;
     getRecoveryState?: () => Record<string, unknown> | undefined;
-    url: string;
-    userChannel: string; // канал (влияет на навыки)
-    surface: string; // поверхность (влияет на навыки)
-    initPhrase: string;
-    nativePanel?: NativePanelParams | null;
-    userId?: string;
-    token?: string;
-    surfaceVersion?: string; // версия хост-приложения (может влиять на навыки)
-    sdkVersion?: string; // версия sdk (может влиять на навыки)
-    enableRecord?: boolean; // показать управление записью лога сообщений
-    recordParams?: {
-        // параметры логирования сообщений
-        defaultActive?: boolean;
-        logger?: ClientLogger;
-    };
-    settings?: AssistantSettings;
-}) => {
+} & Pick<
+    InitializeAssistantSDKParams,
+    | 'initPhrase'
+    | 'url'
+    | 'userChannel'
+    | 'surface'
+    | 'userId'
+    | 'token'
+    | 'surfaceVersion'
+    | 'nativePanel'
+    | 'sdkVersion'
+    | 'enableRecord'
+    | 'recordParams'
+    | 'settings'
+    | 'getMeta'
+>) => {
     initializeAssistantSDK({
-        initPhrase,
-        nativePanel,
-        url,
-        userId,
-        token,
-        userChannel,
-        surface,
-        surfaceVersion,
-        sdkVersion,
-        enableRecord,
-        recordParams,
-        settings,
+        ...sdkParams,
     });
 
     return createAssistant<A>({ getState, getRecoveryState });
@@ -356,24 +331,16 @@ const parseJwt = (token: string) => {
 // Публичный метод, использующий токен из SmartApp Studio
 export const createSmartappDebugger = <A extends AssistantSmartAppData>({
     token,
-    initPhrase,
     getState,
     getRecoveryState,
     settings = {},
-    enableRecord,
-    recordParams,
+    ...sdkParams
 }: {
     token: string;
-    initPhrase: string;
     getState: () => AssistantAppState;
     getRecoveryState?: () => Record<string, unknown> | undefined;
     settings?: Pick<AssistantSettings, 'dubbing'>;
-    enableRecord?: boolean;
-    recordParams?: {
-        defaultActive?: boolean;
-        logger?: ClientLogger;
-    };
-}) => {
+} & Pick<InitializeAssistantSDKParams, 'initPhrase' | 'enableRecord' | 'recordParams' | 'getMeta'>) => {
     try {
         const { exp } = parseJwt(token);
         if (exp * 1000 <= Date.now()) {
@@ -391,7 +358,7 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
     }
 
     return createAssistantDev<A>({
-        initPhrase,
+        ...sdkParams,
         token,
         settings: {
             ...settings,
@@ -402,8 +369,6 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
         url: 'wss://nlp2vps.online.sberbank.ru:443/vps/',
         surface: 'SBERBOX',
         userChannel: 'B2C',
-        enableRecord,
-        recordParams,
     });
 };
 

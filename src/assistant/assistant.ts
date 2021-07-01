@@ -57,7 +57,11 @@ export type AssistantEvents = {
     actionCommand: (event: ActionCommandEvent) => void;
 };
 
-export const createAssistant = (configuration: VpsConfiguration) => {
+export interface CreateAssistantDevOptions {
+    getMeta?: () => Record<string, unknown>;
+}
+
+export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration & CreateAssistantDevOptions) => {
     const { on, emit } = createNanoEvents<AssistantEvents>();
 
     const subscriptions: Array<() => void> = [];
@@ -94,6 +98,7 @@ export const createAssistant = (configuration: VpsConfiguration) => {
                               state: appState,
                           }
                         : undefined,
+                ...(getMeta ? getMeta() : {}),
             },
         };
     };

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase, no-underscore-dangle */
 
-import { AppEvent, createAssistant, VpsEvent } from './assistant/assistant';
+import { AppEvent, createAssistant, CreateAssistantDevOptions, VpsEvent } from './assistant/assistant';
 import { renderNativePanel, NativePanelParams } from './NativePanel/NativePanel';
 import {
     SystemMessageDataType,
@@ -35,6 +35,35 @@ const legacyDevice = {
     platformVersion: '1.0',
 };
 
+export type InitializeAssistantSDKParams = {
+    initPhrase: string;
+    url: string;
+    /** канал (влияет на навыки) */
+    userChannel: string;
+    /** поверхность (влияет на навыки) */
+    surface: string;
+    userId?: string;
+    token?: string;
+    /** версия хост-приложения (может влиять на навыки) */
+    surfaceVersion?: string;
+    deviceId?: string;
+    locale?: string;
+    nativePanel?: NativePanelParams | null;
+    /** версия sdk (может влиять на навыки) */
+    sdkVersion?: string;
+    /** показать управление записью лога сообщений */
+    enableRecord?: boolean;
+    recordParams?: {
+        // параметры логирования сообщений
+        defaultActive?: boolean;
+        logger?: ClientLogger;
+    };
+    settings?: AssistantSettings;
+    vpsVersion?: number;
+    features?: string;
+    capabilities?: string;
+} & CreateAssistantDevOptions;
+
 export const initializeAssistantSDK = ({
     initPhrase,
     url,
@@ -60,29 +89,8 @@ export const initializeAssistantSDK = ({
     vpsVersion = 3,
     features,
     capabilities,
-}: {
-    initPhrase: string;
-    url: string;
-    userChannel: string;
-    surface: string;
-    userId?: string;
-    token?: string;
-    surfaceVersion?: string; // версия хост (андроид) приложения
-    deviceId?: string;
-    locale?: string;
-    nativePanel?: NativePanelParams | null;
-    sdkVersion?: string; // версия sdk
-    enableRecord?: boolean; // показать управление записью лога сообщений
-    recordParams?: {
-        // параметры логирования сообщений
-        defaultActive?: boolean;
-        logger?: ClientLogger;
-    };
-    settings?: AssistantSettings;
-    vpsVersion?: number;
-    features?: string;
-    capabilities?: string;
-}) => {
+    getMeta,
+}: InitializeAssistantSDKParams) => {
     const device = {
         platformType: 'WEBDBG',
         platformVersion: '1.0',
@@ -133,6 +141,7 @@ export const initializeAssistantSDK = ({
         },
         version: vpsVersion,
         logger: clientLogger,
+        getMeta,
     });
 
     let appInfo: SystemMessageDataType['app_info'] | undefined;
