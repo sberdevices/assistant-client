@@ -1,5 +1,5 @@
 import { createNanoEvents } from '../../nanoevents';
-import { IDevice, IInitialSettings, ILegacyDevice, IMessage, ISettings, Message } from '../../proto';
+import { IDevice, IInitialSettings, ILegacyDevice, IMessage, Message } from '../../proto';
 import { VpsConfiguration, OriginalMessageType, VpsVersion } from '../../typings';
 
 import { createClientMethods } from './methods';
