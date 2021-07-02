@@ -1,3 +1,15 @@
+# v3.3.0 (Fri Jul 02 2021)
+
+#### 🚀 Enhancement
+
+- feat: Добавить возможность расширять meta [#146](https://github.com/sberdevices/assistant-client/pull/146) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.2.2 (Tue Jun 29 2021)
 
 #### 🐛 Bug Fix
