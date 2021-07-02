@@ -1,3 +1,15 @@
+# v3.3.1 (Fri Jul 02 2021)
+
+#### 🐛 Bug Fix
+
+- fix: После закрытия аппа, логика взаимодействия с аппом продолжается [#145](https://github.com/sberdevices/assistant-client/pull/145) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.3.0 (Fri Jul 02 2021)
 
 #### 🚀 Enhancement
