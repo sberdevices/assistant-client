@@ -20,6 +20,8 @@ import { checkHadFirstSession, setHadFirstSession } from './firstSessionProvider
 import { getAnswerForRequestPermissions, getTime } from './meta';
 import { createVoice } from './voice/voice';
 
+const STATE_UPDATE_TIMEOUT = 200;
+
 const DEFAULT_PROJECT_ID = 'd929986a-611a-2ba0-6174-1928c99600a5';
 const DEFAULT_APPLICATION_ID = '7c4e23bf-cd93-b57e-874b-d9fc1b35f93d';
 const DEFAULT_APP_VERSION_ID = '26d0bb2e-45d6-a276-f70e-6c016d1f9cff';
@@ -35,6 +37,22 @@ const DEFAULT_APP: AppInfo = {
 };
 
 const isDefaultApp = (appInfo: AppInfo) => appInfo.frontendStateId === DEFAULT_APP.frontendStateId;
+const promiseTimeout = <T>(promise: Promise<T>, timeout: number): Promise<T> => {
+    let timeoutId: number | undefined;
+    return Promise.race([
+        promise.then((v) => {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            return v;
+        }),
+        new Promise<never>((_, reject) => {
+            timeoutId = window.setTimeout(() => {
+                reject(new Error(`Timed out in ${timeout} ms.`));
+            }, timeout);
+        }),
+    ]);
+};
 
 export interface AssistantSettings {
     /** Отключение фичи воспроизведения голоса */
@@ -100,7 +118,11 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         // стейт нужен только для канваса
         const appState =
             app !== null && app.info.frontendEndpoint && app.info.frontendEndpoint !== 'None' && app.getState
-                ? await app.getState()
+                ? await promiseTimeout<AssistantAppState>(app.getState(), STATE_UPDATE_TIMEOUT).catch(() => {
+                      // eslint-disable-next-line no-console
+                      console.error('App-state wasn`t resolved, timeout had been expired');
+                      return undefined;
+                  })
                 : undefined;
 
         return {
