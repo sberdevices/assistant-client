@@ -1,20 +1,16 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable global-require */
-/**
- * @type {Cypress.PluginConfig}
- */
-const wp = require('@cypress/webpack-preprocessor');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const webpackPreprocessor = require('@cypress/webpack-preprocessor');
 
 module.exports = (on, config) => {
     const options = {
         webpackOptions: {
             resolve: {
-                extensions: ['.ts', '.tsx', '.js'],
+                extensions: ['.js', '.jsx', '.ts', '.tsx'],
             },
             module: {
                 rules: [
                     {
-                        test: /\.tsx?$/,
+                        test: /\.(ts|tsx)$/,
                         loader: 'ts-loader',
                         options: { transpileOnly: true },
                     },
@@ -35,6 +31,8 @@ module.exports = (on, config) => {
             },
         },
     };
-    on('file:preprocessor', wp(options));
+
+    on('file:preprocessor', webpackPreprocessor(options));
+
     return config;
 };

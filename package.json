@@ -5,7 +5,8 @@
     "main": "dist/index.js",
     "unpkg": "umd/assistant.min.js",
     "scripts": {
-        "build": "rm -rf dist umd && rollup -c",
+        "prebuild": "rm -rf ./dist ./umd",
+        "build": "rollup -c",
         "prepublishOnly": "npm run build",
         "release": "auto shipit",
         "proto": "pbjs -t static-module src/proto/index.proto > src/proto/index.js && pbts src/proto/index.js -o src/proto/index.d.ts",
@@ -14,8 +15,7 @@
         "cy:open": "cypress open",
         "cy:run": "cypress run",
         "test:cy": "cypress run -b chromium --headless",
-        "lint": "eslint --ext .js,.ts,.tsx src/.",
-        "test": "echo \"Error: no test specified\""
+        "lint": "eslint --ext .js,.ts,.tsx src/."
     },
     "repository": {
         "type": "git",
@@ -43,7 +43,7 @@
         "@auto-it/slack": "^10.25.0",
         "@commitlint/cli": "11.0.0",
         "@commitlint/config-conventional": "11.0.0",
-        "@cypress/webpack-preprocessor": "5.4.5",
+        "@cypress/webpack-preprocessor": "5.9.1",
         "@rollup/plugin-commonjs": "^16.0.0",
         "@rollup/plugin-json": "^4.1.0",
         "@rollup/plugin-node-resolve": "^10.0.0",
@@ -54,12 +54,11 @@
         "@types/react-dom": "16.9.8",
         "@types/uuid": "7.0.3",
         "auto": "^10.25.0",
-        "cypress": "4.11.0",
-        "cypress-react-unit-test": "4.14.2",
+        "cypress": "7.6.0",
         "eslint": "6.8.0",
         "eslint-config-airbnb": "18.1.0",
         "eslint-config-prettier": "6.11.0",
-        "eslint-plugin-cypress": "2.11.1",
+        "eslint-plugin-cypress": "2.11.3",
         "eslint-plugin-flowtype": "4.7.0",
         "eslint-plugin-import": "2.20.2",
         "eslint-plugin-jest": "23.8.2",
