@@ -1,3 +1,15 @@
+# v3.3.2 (Thu Jul 08 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Остановка воспроизведения озвучки и последующий старт работают некорректно [#151](https://github.com/sberdevices/assistant-client/pull/151) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.3.1 (Fri Jul 02 2021)
 
 #### 🐛 Bug Fix
