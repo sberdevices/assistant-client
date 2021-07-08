@@ -172,8 +172,10 @@ export const createVoicePlayer = ({
 
     const stop = () => {
         while (cursor < tracks.length) {
-            tracks.getByIndex(cursor).stop();
+            const cur = cursor;
+
             cursor++;
+            tracks.getByIndex(cur).stop();
         }
     };
 
