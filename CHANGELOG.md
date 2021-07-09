@@ -1,3 +1,15 @@
+# v3.3.3 (Fri Jul 09 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Ограничить время ожидания стейта от аппа [#147](https://github.com/sberdevices/assistant-client/pull/147) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.3.2 (Thu Jul 08 2021)
 
 #### 🐛 Bug Fix
