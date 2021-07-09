@@ -16,7 +16,6 @@ import {
 import { createClient } from './client/client';
 import { createProtocol } from './client/protocol';
 import { createTransport } from './client/transport';
-import { checkHadFirstSession, setHadFirstSession } from './firstSessionProvider';
 import { getAnswerForRequestPermissions, getTime } from './meta';
 import { createVoice } from './voice/voice';
 
@@ -281,19 +280,16 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
     const start = async ({
         disableGreetings = false,
         initPhrase = undefined,
+        isFirstSession = false,
     }: {
         /** Отключение приветственного сообщения при старте */
         disableGreetings?: boolean;
         initPhrase?: string;
+        isFirstSession?: boolean;
     } = {}): Promise<SystemMessageDataType | undefined> => {
         started = true;
         if (!disableGreetings) {
-            const isFirstSession = !checkHadFirstSession();
-            await client.sendOpenAssistant({ isFirstSession }).then(() => {
-                if (isFirstSession) {
-                    setHadFirstSession();
-                }
-            });
+            await client.sendOpenAssistant({ isFirstSession });
         }
 
         if (initPhrase) {
