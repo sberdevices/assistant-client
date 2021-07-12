@@ -1,3 +1,20 @@
+# v3.4.0 (Mon Jul 12 2021)
+
+#### 🚀 Enhancement
+
+- feat: Флаг первой сессии должен быть аргументом assistant.start [#152](https://github.com/sberdevices/assistant-client/pull/152) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- test: приветствие [#150](https://github.com/sberdevices/assistant-client/pull/150) ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+#### Authors: 2
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+- Ivan Ushatsky ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+---
+
 # v3.3.3 (Fri Jul 09 2021)
 
 #### 🐛 Bug Fix
