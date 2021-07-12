@@ -1,3 +1,15 @@
+# v3.4.1 (Mon Jul 12 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Параметр features отсутсвует у createAssistantDev [#154](https://github.com/sberdevices/assistant-client/pull/154) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.4.0 (Mon Jul 12 2021)
 
 #### 🚀 Enhancement
