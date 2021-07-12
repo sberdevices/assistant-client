@@ -307,6 +307,7 @@ export const createAssistantDev = <A extends AssistantSmartAppData>({
     | 'recordParams'
     | 'settings'
     | 'getMeta'
+    | 'features'
 >) => {
     initializeAssistantSDK({
         ...sdkParams,
