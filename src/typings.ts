@@ -458,6 +458,9 @@ export type AssistantPostMessage =
           type: 'ready';
       }
     | {
+          type: 'onStart';
+      }
+    | {
           type: 'onData';
           payload: AssistantClientCommand;
       }
