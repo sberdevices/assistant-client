@@ -64,21 +64,22 @@ export const createVoice = (
             return;
         }
 
+        if (isPlaying) {
+            voicePlayer.stop();
+            return;
+        }
+
         if (settings.disableListening) {
             return;
         }
 
-        if (!isPlaying) {
-            client.createVoiceStream(({ sendVoice, messageId, onMessage }) => {
-                speechRecognizer.start({
-                    sendVoice,
-                    messageId,
-                    onMessage,
-                });
+        client.createVoiceStream(({ sendVoice, messageId, onMessage }) => {
+            speechRecognizer.start({
+                sendVoice,
+                messageId,
+                onMessage,
             });
-        } else {
-            voicePlayer.stop();
-        }
+        });
     };
 
     /** Активирует распознавание музыки
@@ -89,21 +90,21 @@ export const createVoice = (
             return;
         }
 
+        if (isPlaying) {
+            voicePlayer.stop();
+        }
+
         if (settings.disableListening) {
             return;
         }
 
-        if (!isPlaying) {
-            client.createVoiceStream(({ sendVoice, messageId, onMessage }) => {
-                musicRecognizer.start({
-                    sendVoice,
-                    messageId,
-                    onMessage,
-                });
+        client.createVoiceStream(({ sendVoice, messageId, onMessage }) => {
+            musicRecognizer.start({
+                sendVoice,
+                messageId,
+                onMessage,
             });
-        } else {
-            voicePlayer.stop();
-        }
+        });
     };
 
     // обработка входящей озвучки
