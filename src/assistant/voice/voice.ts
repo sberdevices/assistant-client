@@ -73,13 +73,16 @@ export const createVoice = (
             return;
         }
 
-        client.createVoiceStream(({ sendVoice, messageId, onMessage }) => {
-            speechRecognizer.start({
-                sendVoice,
-                messageId,
-                onMessage,
-            });
-        });
+        // повторные вызовы не пройдут, пока пользователь не разрешит/запретит аудио
+        if (listener.status === 'stopped') {
+            client.createVoiceStream(({ sendVoice, messageId, onMessage }) =>
+                speechRecognizer.start({
+                    sendVoice,
+                    messageId,
+                    onMessage,
+                }),
+            );
+        }
     };
 
     /** Активирует распознавание музыки
@@ -98,13 +101,16 @@ export const createVoice = (
             return;
         }
 
-        client.createVoiceStream(({ sendVoice, messageId, onMessage }) => {
-            musicRecognizer.start({
-                sendVoice,
-                messageId,
-                onMessage,
-            });
-        });
+        // повторные вызовы не пройдут, пока пользователь не разрешит/запретит аудио
+        if (listener.status === 'stopped') {
+            client.createVoiceStream(({ sendVoice, messageId, onMessage }) =>
+                musicRecognizer.start({
+                    sendVoice,
+                    messageId,
+                    onMessage,
+                }),
+            );
+        }
     };
 
     // обработка входящей озвучки
@@ -153,7 +159,7 @@ export const createVoice = (
 
     // статусы слушания речи
     subscriptions.push(
-        listener.on('status', (status: 'listen' | 'stopped') => {
+        listener.on('status', (status: 'listen' | 'started' | 'stopped') => {
             if (status === 'listen') {
                 voicePlayer.active = false;
                 emit({ emotion: 'listen' });
