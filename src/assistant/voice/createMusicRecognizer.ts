@@ -22,7 +22,7 @@ export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoi
         sendVoice: (data: Uint8Array, last: boolean, messageName?: string) => void;
         messageId: number;
         onMessage: (cb: (message: OriginalMessageType) => void) => () => void;
-    }) => {
+    }) =>
         voiceListener
             .listen(
                 (data: ArrayBuffer, last: boolean) =>
@@ -53,9 +53,7 @@ export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoi
                         }
                     }
                 });
-            })
-            .catch(() => {});
-    };
+            });
 
     return {
         start,

@@ -3,7 +3,7 @@ import { createNanoEvents } from '../../nanoevents';
 import { createNavigatorAudioProvider } from './createNavigatorAudioProvider';
 
 type voiceStreamEvents = {
-    status: (status: 'listen' | 'stopped') => void;
+    status: (status: 'listen' | 'started' | 'stopped') => void;
     hypotesis: (text: string, last: boolean) => void;
 };
 
@@ -14,7 +14,7 @@ export const createVoiceListener = (
 ) => {
     const { emit, on } = createNanoEvents<voiceStreamEvents>();
     let stopRecord: () => void;
-    let status: 'listen' | 'stopped' = 'stopped';
+    let status: 'listen' | 'started' | 'stopped' = 'stopped';
 
     const stop = () => {
         status = 'stopped';
@@ -22,15 +22,24 @@ export const createVoiceListener = (
         emit('status', 'stopped');
     };
 
-    const listen = (handleVoice: (data: Uint8Array, last: boolean) => void): Promise<void> =>
-        createAudioProvider((data: ArrayBuffer, last: boolean) => handleVoice(new Uint8Array(data), last))
+    const listen = (handleVoice: (data: Uint8Array, last: boolean) => void): Promise<void> => {
+        status = 'started';
+        emit('status', 'started');
+
+        return createAudioProvider((data: ArrayBuffer, last: boolean) => handleVoice(new Uint8Array(data), last))
             .then((recStop) => {
                 stopRecord = recStop;
             })
             .then(() => {
                 status = 'listen';
                 emit('status', 'listen');
+            })
+            .catch((err) => {
+                status = 'stopped';
+                emit('status', 'stopped');
+                throw err;
             });
+    };
 
     return {
         listen,

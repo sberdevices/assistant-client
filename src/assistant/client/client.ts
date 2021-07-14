@@ -137,15 +137,14 @@ export const createClient = (
             onMessage,
         }: Pick<BatchableMethods, 'messageId' | 'sendVoice'> & {
             onMessage: (cb: (message: OriginalMessageType) => void) => () => void;
-        }) => void,
+        }) => Promise<void>,
     ) => {
         protocol.batch(async ({ sendSystemMessage, sendVoice, messageId }) => {
-            await sendMeta(sendSystemMessage);
             callback({
                 sendVoice,
                 messageId,
                 onMessage: (cb: (message: OriginalMessageType) => void) => protocol.on('incoming', cb),
-            });
+            }).then(() => sendMeta(sendSystemMessage));
         });
     };
 
