@@ -1,3 +1,16 @@
+# v3.4.2 (Wed Jul 14 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Добавлен onStart для AssistantPostMessage [#155](https://github.com/sberdevices/assistant-client/pull/155) ([@sasha-tlt](https://github.com/sasha-tlt))
+- fix: Не останавливается озвучка, если слушание выключено [#155](https://github.com/sberdevices/assistant-client/pull/155) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.4.1 (Mon Jul 12 2021)
 
 #### 🐛 Bug Fix
