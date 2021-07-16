@@ -1,3 +1,15 @@
+# v3.4.3 (Fri Jul 16 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Неразрезолвленный доступ к микрофону [#156](https://github.com/sberdevices/assistant-client/pull/156) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.4.2 (Wed Jul 14 2021)
 
 #### 🐛 Bug Fix
