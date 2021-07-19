@@ -1,3 +1,15 @@
+# v3.5.0 (Mon Jul 19 2021)
+
+#### 🚀 Enhancement
+
+- feat: отправка cancel при отмене слушания [#158](https://github.com/sberdevices/assistant-client/pull/158) ([@neolite](https://github.com/neolite))
+
+#### Authors: 1
+
+- Rafkat Galiullin ([@neolite](https://github.com/neolite))
+
+---
+
 # v3.4.3 (Fri Jul 16 2021)
 
 #### 🐛 Bug Fix
