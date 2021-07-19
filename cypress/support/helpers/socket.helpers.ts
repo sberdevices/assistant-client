@@ -1,5 +1,5 @@
 import { appendHeader } from '../../../src/assistant/client/transport';
-import { Message } from '../../../src/proto';
+import { IStatus, Message } from '../../../src/proto';
 import {
     AssistantNavigationCommand,
     AssistantSmartAppCommand,
@@ -26,13 +26,19 @@ export interface Socket {
 export const sendMessage = (
     socket: Socket,
     messageId: number | Long,
-    { systemMessageData, textData }: { systemMessageData?: SystemMessageDataType; textData?: string },
+    {
+        systemMessageData,
+        textData,
+        statusData,
+    }: { systemMessageData?: SystemMessageDataType; textData?: string; statusData?: IStatus },
+    { messageName = MessageNames.ANSWER_TO_USER }: { messageName?: string } = {},
 ) => {
     const message = Message.create({
-        messageName: MessageNames.ANSWER_TO_USER,
+        messageName,
         messageId,
         text: textData ? { data: textData } : undefined,
         systemMessage: systemMessageData != null ? { data: JSON.stringify(systemMessageData) } : undefined,
+        status: statusData,
         last: 1,
         version: 3,
     });
