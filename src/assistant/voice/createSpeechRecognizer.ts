@@ -12,6 +12,7 @@ export const createSpeechRecognizer = (voiceListener: ReturnType<typeof createVo
     const { emit, on } = createNanoEvents<speechRecognizerEvents>();
     let off: () => void;
     let status: 'active' | 'inactive' = 'inactive';
+    let currentMessageId: number;
 
     const stop = () => {
         if (voiceListener.status !== 'stopped') {
@@ -31,6 +32,7 @@ export const createSpeechRecognizer = (voiceListener: ReturnType<typeof createVo
     }) =>
         voiceListener.listen(sendVoice).then(() => {
             status = 'active';
+            currentMessageId = messageId;
             off = onMessage((message: OriginalMessageType) => {
                 if (message.status && message.status.code != null && message.status.code < 0) {
                     off();
@@ -72,6 +74,9 @@ export const createSpeechRecognizer = (voiceListener: ReturnType<typeof createVo
         on,
         get status() {
             return status;
+        },
+        get messageId() {
+            return currentMessageId;
         },
     };
 };
