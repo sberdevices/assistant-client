@@ -6,6 +6,7 @@ import { createVoiceListener } from './createVoiceListener';
 export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoiceListener>) => {
     let off: () => void;
     let status: 'active' | 'inactive' = 'inactive';
+    let currentMessageId: number;
 
     const stop = () => {
         if (voiceListener.status !== 'stopped') {
@@ -30,6 +31,7 @@ export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoi
             )
             .then(() => {
                 status = 'active';
+                currentMessageId = messageId;
                 off = onMessage((message: OriginalMessageType) => {
                     if (message.status && message.status.code != null && message.status.code < 0) {
                         off();
@@ -60,6 +62,9 @@ export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoi
         stop,
         get status() {
             return status;
+        },
+        get messageId() {
+            return currentMessageId;
         },
     };
 };

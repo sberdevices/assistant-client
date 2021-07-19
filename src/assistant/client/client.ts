@@ -49,6 +49,11 @@ export const createClient = (
         return messageId;
     };
 
+    /** отправляет cancel на сообщение */
+    const sendCancel = (messageId: number): void => {
+        protocol.sendCancel({}, true, messageId);
+    };
+
     /** отправляет приветствие */
     const sendOpenAssistant = (
         { isFirstSession }: { isFirstSession: boolean } = { isFirstSession: false },
@@ -170,6 +175,7 @@ export const createClient = (
         sendOpenAssistant,
         sendServerAction,
         sendText,
+        sendCancel,
         on,
         waitForAnswerToUser,
     };
