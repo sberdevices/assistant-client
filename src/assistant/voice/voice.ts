@@ -34,6 +34,7 @@ export const createVoice = (
         autolistenMesId = null;
         if (speechRecognizer.status === 'active') {
             speechRecognizer.stop();
+            client.sendCancel(speechRecognizer.messageId);
             if (!force) {
                 return true;
             }
@@ -41,6 +42,7 @@ export const createVoice = (
 
         if (musicRecognizer.status === 'active') {
             musicRecognizer.stop();
+            client.sendCancel(musicRecognizer.messageId);
             if (!force) {
                 return true;
             }
