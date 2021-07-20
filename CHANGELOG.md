@@ -1,3 +1,16 @@
+# v3.7.1 (Tue Jul 20 2021)
+
+#### 🐛 Bug Fix
+
+- fix: panel [#132](https://github.com/sberdevices/assistant-client/pull/132) ([@sasha-tlt](https://github.com/sasha-tlt))
+- fix: Верстка панели в px по макету [#132](https://github.com/sberdevices/assistant-client/pull/132) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.5.0 (Mon Jul 19 2021)
 
 #### 🚀 Enhancement
