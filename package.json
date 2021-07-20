@@ -1,6 +1,6 @@
 {
     "name": "@sberdevices/assistant-client",
-    "version": "3.7.0",
+    "version": "3.7.1",
     "description": "Модуль взаимодействия с виртуальным ассистентом",
     "main": "dist/index.js",
     "unpkg": "umd/assistant.min.js",
