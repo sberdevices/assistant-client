@@ -148,6 +148,8 @@ export const createProtocol = (
 
         if (status !== 'closed') {
             transport.reconnect(url); // даем время случиться close
+        } else {
+            transport.open(url);
         }
     };
 
