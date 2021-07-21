@@ -45,8 +45,8 @@ describe('Проверяем createAssistantDev', () => {
             socket.binaryType = 'arraybuffer';
             initProtocol(socket);
 
-            socket.on('message', (data: Uint8Array) => {
-                const message = Message.decode(data.slice(4));
+            socket.on('message', (data) => {
+                const message = Message.decode((data as Uint8Array).slice(4));
                 if (message.messageName === 'OPEN_ASSISTANT') {
                     openReceived = true;
                 }
@@ -196,8 +196,8 @@ describe('Проверяем createAssistantDev', () => {
             socket.binaryType = 'arraybuffer';
             initProtocol(socket, { initPhrase: INIT_PHRASE });
 
-            socket.on('message', (mes: Uint8Array) => {
-                const message = Message.decode(mes.slice(4));
+            socket.on('message', (mes) => {
+                const message = Message.decode((mes as Uint8Array).slice(4));
                 if (message.systemMessage?.data && message.systemMessage?.data !== '{}') {
                     const data: SystemMessageDataType = JSON.parse(message.systemMessage.data);
                     const { app_info, server_action, meta } = data;

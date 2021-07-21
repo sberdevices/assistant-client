@@ -46,7 +46,7 @@ describe('Проверяем обновление токена', () => {
 
         server.on('connection', (socket) => {
             socket.on('message', (data) => {
-                const message = Message.decode(data.slice(4));
+                const message = Message.decode((data as Uint8Array).slice(4));
                 if (phase === 1 && message.initialSettings) {
                     // 1. старт, отвечаем что токен невалиден
                     expect(message.token, 'первый токен получен').to.deep.equal(token1);
@@ -75,7 +75,7 @@ describe('Проверяем обновление токена', () => {
 
         server.on('connection', (socket) => {
             socket.on('message', (data) => {
-                const message = Message.decode(data.slice(4));
+                const message = Message.decode((data as Uint8Array).slice(4));
                 if (phase === 1 && message.initialSettings) {
                     // 1. первый старт, считаем токен валидным
                     expect(message.token, 'первый токен получен - валиден').to.deep.equal(token1);
@@ -112,7 +112,7 @@ describe('Проверяем обновление токена', () => {
 
         server.on('connection', (socket) => {
             socket.on('message', (data) => {
-                const message = Message.decode(data.slice(4));
+                const message = Message.decode((data as Uint8Array).slice(4));
                 if (phase === 1 && message.initialSettings) {
                     // 1. первый старт, считаем токен валидным
                     expect(message.token, 'первый токен получен').to.deep.equal(token1);

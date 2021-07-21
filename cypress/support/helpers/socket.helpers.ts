@@ -1,3 +1,5 @@
+import { WebSocket } from 'mock-socket';
+
 import { appendHeader } from '../../../src/assistant/client/transport';
 import { IStatus, Message } from '../../../src/proto';
 import {
@@ -18,13 +20,8 @@ export const APP_INFO: AppInfo = {
     frontendStateId: 'test_app',
 };
 
-export interface Socket {
-    dispatchEvent: (e: { type: string; data: Uint8Array }) => void;
-    on: (event: 'message', cb: (data: Uint8Array) => void) => void;
-}
-
 export const sendMessage = (
-    socket: Socket,
+    socket: WebSocket,
     messageId: number | Long,
     {
         systemMessageData,
@@ -48,12 +45,14 @@ export const sendMessage = (
 
     socket.dispatchEvent({
         type: 'message',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
         data: bufferWithHeader,
     });
 };
 
 export const initProtocol = (
-    socket: Socket,
+    socket: WebSocket,
     {
         initPhrase,
         character = { id: 'sber', name: 'Сбер', gender: 'male', appeal: 'official' },
@@ -64,8 +63,8 @@ export const initProtocol = (
         items?: Array<{ command: AssistantSmartAppCommand | AssistantNavigationCommand }>;
     } = {},
 ) => {
-    socket.on('message', (data: Uint8Array) => {
-        const message = Message.decode(data.slice(4));
+    socket.on('message', (data) => {
+        const message = Message.decode((data as Uint8Array).slice(4));
         if (message.messageName === 'OPEN_ASSISTANT') {
             sendMessage(socket, message.messageId, {
                 systemMessageData: {
