@@ -38,8 +38,8 @@ describe('Проверяем', () => {
                 initPhrase: INIT_PHRASE,
             });
 
-            socket.on('message', (mes: Uint8Array) => {
-                const message = Message.decode(mes.slice(4));
+            socket.on('message', (mes) => {
+                const message = Message.decode((mes as Uint8Array).slice(4));
                 if (message.text && message.text.data === actionText) {
                     action = message;
                 }

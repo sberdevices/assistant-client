@@ -27,7 +27,7 @@ describe('Проверяем приветствие', () => {
             assert.isOk('Соединение после старта');
 
             socket.on('message', (data) => {
-                onMessage(Message.decode(data.slice(4)));
+                onMessage(Message.decode((data as Uint8Array).slice(4)));
             });
         });
 
