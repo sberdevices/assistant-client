@@ -1,3 +1,15 @@
+# v3.7.3 (Thu Jul 22 2021)
+
+#### 🐛 Bug Fix
+
+- fix: остановка слушания при disableListening=true [#160](https://github.com/sberdevices/assistant-client/pull/160) ([@soulko](https://github.com/soulko))
+
+#### Authors: 1
+
+- Anton Kostenko ([@soulko](https://github.com/soulko))
+
+---
+
 # v3.7.2 (Thu Jul 22 2021)
 
 #### 🐛 Bug Fix
