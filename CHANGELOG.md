@@ -1,3 +1,17 @@
+# v3.7.2 (Thu Jul 22 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Обновление настроек должно поднимать соединение [#159](https://github.com/sberdevices/assistant-client/pull/159) ([@sasha-tlt](https://github.com/sasha-tlt))
+- chore: ошибки компилятора [#159](https://github.com/sberdevices/assistant-client/pull/159) ([@sasha-tlt](https://github.com/sasha-tlt))
+- test: Обновление токена [#159](https://github.com/sberdevices/assistant-client/pull/159) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.7.1 (Tue Jul 20 2021)
 
 #### 🐛 Bug Fix
