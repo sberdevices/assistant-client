@@ -187,8 +187,8 @@ export const createAssistant = <A extends AssistantSmartAppData>({
             E extends AssistantSmartAppError['smart_app_error'] = AssistantSmartAppError['smart_app_error']
         >(
             action: {
-                type: string;
-                payload: Record<string, unknown>;
+                action_id: string;
+                parameters?: Record<string, unknown>;
             },
             onData?: ObserverFunc<D>,
             onError?: ObserverFunc<E>,

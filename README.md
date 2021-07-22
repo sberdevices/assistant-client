@@ -116,15 +116,15 @@ assistant.on('data', (command) => {
 const handleOnClick = () => {
     // Отправка сообщения ассистенту с фронтенд.
     // Структура может меняться на усмотрение разработчика, в зависимости от бэкенд
-    assistant.sendData({ action: { type: 'some_action_name', payload: { param: 'some' } } });
+    assistant.sendData({ action: { action_id: 'some_action_name', parameters: { param: 'some' } } });
 };
 
 const handleOnRefreshClick = () => {
     // Отправка сообщения бэкенду с возможностью подписки на ответ.
     // В обработчик assistant.on('data') сообщение не передается
     const unsubscribe = assistant.sendAction(
-        { type: 'some_action_name', payload: { param: 'some' } },
-        (data: { type: string; payload: Record<string, unknown> }) => {
+        { action_id: 'some_action_name', parameters: { param: 'some' } },
+        (data: { action_id: string; parameters: Record<string, unknown> }) => {
             // Обработка данных, переданных от бэкенд
             unsubscribe();
         },
@@ -194,9 +194,9 @@ ____
 
 #### on('data', cb: (data: [AssistantCharacterCommand](#AssistantCharacterCommand) | [AssistantNavigationCommand](#AssistantNavigationCommand) | [AssistantInsetsCommand](#AssistantInsetsCommand) | [AssistantSmartAppError](#AssistantSmartAppError) | [AssistantSmartAppCommand](#AssistantSmartAppCommand)) => {}): void
 
-Осуществляет подписку на событие получения данных с бэкенда. Получает команды из `appInitialData`, если при запуске смартапа не была вызвана команда `getInitialData()`. 
+Осуществляет подписку на событие получения данных с бэкенда. Получает команды из `appInitialData`, если при запуске смартапа не была вызвана команда `getInitialData()`.
 
-#### sendAction({ type: string; payload: Record<string, unknown> }, params?: { name?: string; requestId?: string }) => void
+#### sendAction({ action_id: string; parameters?: Record<string, unknown> }, params?: { name?: string; requestId?: string }) => void
 
 Передает ошибки и обработчики ответа от бэкенда. <br>
 `sendAction` — отправляет server-action и типизирует сообщения data и error.<br>
@@ -208,15 +208,15 @@ ____
 import { AssistantSmartAppCommand } from '@sberdevices/assistant-client';
 
 interface SomeBackendMessage extends AssistantSmartAppCommand['smart_app_data'] {
-  type: 'target_action',
-  payload: {
+  action_id: 'target_action',
+  parameters: {
     data: ['some_data'],
   },
 }
 
-const unsubscribe = assistant.sendAction<SomeBackendMessage>({ type: 'some_action_name', payload: { someParam: 'some_value' } },
-  ({ payload }) => {
-    // обработка payload.data
+const unsubscribe = assistant.sendAction<SomeBackendMessage>({ action_id: 'some_action_name', parameters: { someParam: 'some_value' } },
+  ({ parameters }) => {
+    // обработка parameters.data
     unsubscribe();
   }, (error) => {});
 ```
@@ -232,8 +232,8 @@ const unsubscribe = assistant.sendAction<SomeBackendMessage>({ type: 'some_actio
 ```ts
 ...
 
-const unsubscribe = assistant.sendData({ action: { type: 'some_action_name' } }, (data: command) => {
-  if (data.type === 'smart_app_data' && data.smart_app_data.type === 'target_action') {
+const unsubscribe = assistant.sendData({ action: { action_id: 'some_action_name' } }, (data: command) => {
+  if (data.type === 'smart_app_data' && data.smart_app_data.action_id === 'target_action') {
     unsubsribe();
     ... // обработка команды
   }
@@ -314,9 +314,9 @@ interface AssistantViewItem {
 ```typescript
 interface AssistantServerAction {
   // Тип Server Action
-  type: string;
+  action_id: string;
   // Любые параметры
-  payload?: Record<string, unknown>;
+  parameters?: Record<string, unknown>;
 }
 ```
 
@@ -391,9 +391,9 @@ interface AssistantSmartAppCommand {
   // Тип команды
   type: "smart_app_data";
   smart_app_data: {
-    type: string;
+    action_id: string;
     // Любые данные, которые нужны смартапу
-    payload: Record<string, unknown>;
+    parameters: Record<string, unknown>;
   };
   sdk_meta: {
     requestId: string;
@@ -489,20 +489,20 @@ describe('Мой список дел', () => {
           mock.receiveCommand({
             type: 'smart_app_data',
             action: {
-              type: 'init',
-              notes: [...ITEMS],
+              action_id: 'init',
+              parameters: { notes: [...ITEMS] },
             },
           })
           .then(() =>
             // ожидаем вызов assistantClient.sendData
             mock.waitAction(() =>
-                // эмулируем отметку выполнения пользователем, который должен вызвать sendData({ action: { type: 'done } })
+                // эмулируем отметку выполнения пользователем, который должен вызвать sendData({ action: { action_id: 'done } })
                 window.document.getElementById(`checkbox-note-${selected.id}`).click(),
             ),
           )
           .then(({ action, state }) => {
-            expect(action.type).to.equal('done'); // ожидаем экшен data_note
-            expect(action.payload?.title).to.equal(selected.title); // ожидаем в параметрах title экшена
+            expect(action.action_id).to.equal('done'); // ожидаем экшен data_note
+            expect(action.parameters?.title).to.equal(selected.title); // ожидаем в параметрах title экшена
             expect(state?.item_selector.items).to.deep.equal(ITEMS); // ожидаем отправку списка в стейте
             done();
           });
