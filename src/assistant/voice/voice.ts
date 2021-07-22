@@ -195,7 +195,7 @@ export const createVoice = (
             // вкл/выкл фичи листенинга
             if (typeof disableListening !== 'undefined' && settings.disableListening !== disableListening) {
                 settings.disableListening = disableListening;
-                if (disableListening === false) {
+                if (disableListening === true) {
                     stopListening(true);
                 }
             }
