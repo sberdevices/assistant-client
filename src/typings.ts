@@ -159,8 +159,8 @@ export interface AssistantSmartAppError {
 
 export interface AssistantSmartAppCommand extends AssistantSmartAppData {
     smart_app_data: {
-        type: string;
-        payload?: Record<string, unknown>;
+        action_id: string;
+        parameters?: Record<string, unknown>;
     };
     sdk_meta?: SdkMeta;
 }
