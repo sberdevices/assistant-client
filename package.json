@@ -3,9 +3,10 @@
     "version": "3.7.3",
     "description": "Модуль взаимодействия с виртуальным ассистентом",
     "main": "dist/index.js",
+    "module": "esm/index.js",
     "unpkg": "umd/assistant.min.js",
     "scripts": {
-        "prebuild": "rm -rf ./dist ./umd",
+        "prebuild": "rm -rf ./dist ./esm ./umd",
         "build": "rollup -c",
         "prepublishOnly": "npm run build",
         "release": "auto shipit",
@@ -90,8 +91,10 @@
     },
     "files": [
         "dist",
+        "esm",
         "umd"
     ],
+    "sideEffects": false,
     "auto": {
         "baseBranch": "main",
         "plugins": [
