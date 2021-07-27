@@ -16,6 +16,7 @@ node_modules/
 cypress/videos/
 npm-debug.log
 dist/
+esm/
 umd/
 *.tsbuildinfo
 

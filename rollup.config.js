@@ -46,6 +46,23 @@ export default [
     },
     {
         ...common,
+        input: ['src/createAssistant.ts', 'src/createAssistantDev.ts', 'src/assistant/assistant.ts', 'src/index.ts'],
+        output: {
+            ...common.output,
+            dir: 'esm',
+            format: 'esm',
+        },
+        plugins: [
+            nodeResolve({
+                browser: true,
+                preferBuiltins: true,
+            }),
+            typescript({ outDir: 'esm', declaration: false, declarationMap: false, module: 'esnext' }),
+            ...common.plugins,
+        ],
+    },
+    {
+        ...common,
         output: {
             ...common.output,
             file: pkg.unpkg,

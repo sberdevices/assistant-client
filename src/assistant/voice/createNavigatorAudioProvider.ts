@@ -50,7 +50,7 @@ const downsampleBuffer = (buffer: Float32Array, sampleRate: number, outSampleRat
 };
 
 const TARGET_SAMPLE_RATE = 16000;
-const IS_FIREFOX = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+const IS_FIREFOX = typeof window !== 'undefined' && navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 const createAudioRecorder = (stream: MediaStream, cb: (buffer: ArrayBuffer, last: boolean) => void) => {
     let state: 'inactive' | 'recording' = 'inactive';
