@@ -1,3 +1,15 @@
+# v3.7.4 (Wed Jul 28 2021)
+
+#### 🐛 Bug Fix
+
+- fix: tree shaking и ssr [#163](https://github.com/sberdevices/assistant-client/pull/163) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.7.3 (Thu Jul 22 2021)
 
 #### 🐛 Bug Fix
