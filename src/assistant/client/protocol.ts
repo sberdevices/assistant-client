@@ -153,6 +153,10 @@ export const createProtocol = (
         }
     };
 
+    const updateDevice = (obj: Partial<VpsConfiguration['device']>) => {
+        Object.assign(currentSettings.device, obj);
+    };
+
     const updateSettings = (obj: Partial<VpsConfiguration['settings']>, sendNow = false) => {
         Object.assign(currentSettings.settings, obj);
 
@@ -245,6 +249,7 @@ export const createProtocol = (
         send: sendMessage,
         batch,
         changeConfiguration: updateDefaults,
+        changeDevice: updateDevice,
         changeSettings: updateSettings,
         get currentMessageId() {
             return currentMessageId;
