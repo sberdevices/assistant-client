@@ -1,7 +1,13 @@
 import { createNanoEvents } from '../../../nanoevents';
-import { VoicePlayerSettings } from '../../../typings';
 
 import { createTrackStream } from './trackStream';
+
+export interface VoicePlayerSettings {
+    startVoiceDelay?: number;
+    sampleRate?: number;
+    numberOfChannels?: number;
+    onReady?: () => void;
+}
 
 const createAudioContext = (options?: AudioContextOptions): AudioContext => {
     if (window.AudioContext) {
@@ -87,6 +93,7 @@ export const createVoicePlayer = ({
     startVoiceDelay = 0.2,
     sampleRate,
     numberOfChannels,
+    onReady,
 }: VoicePlayerSettings = {}) => {
     const actx: AudioContext | null = isAudioSupported ? createAudioContext() : null;
     const { on, emit } = createNanoEvents<EventsType>();
@@ -108,12 +115,16 @@ export const createVoicePlayer = ({
             oscillator.connect(actx.destination);
             oscillator.start(0);
             oscillator.stop(0.5);
+
+            onReady && onReady();
         };
 
         // для пк
         document.addEventListener('click', handleClick);
         // для мобильных устройств
         document.addEventListener('touchstart', handleClick);
+    } else {
+        onReady && onReady();
     }
 
     const play = () => {

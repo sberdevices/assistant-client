@@ -421,12 +421,6 @@ export interface RecordSaver {
     save: (record: AssistantRecord) => void;
 }
 
-export interface VoicePlayerSettings {
-    startVoiceDelay?: number;
-    sampleRate?: number;
-    numberOfChannels?: number;
-}
-
 export interface AssistantSettings {
     dubbing?: boolean;
     echo?: number | null;
