@@ -105,6 +105,9 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
     // запущен/не запущен
     let started = false;
 
+    // готов/не готов воспроизводить озвучку
+    let voiceReady = false;
+
     // текущий апп
     let app: { info: AppInfo; getState?: () => Promise<AssistantAppState> } = { info: DEFAULT_APP };
     let settings: AssistantSettings = {
@@ -137,9 +140,21 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
     };
 
     const transport = createTransport();
-    const protocol = createProtocol(transport, configuration);
+    const protocol = createProtocol(transport, {
+        ...configuration,
+        // выключаем озвучку, пока голос не готов
+        settings: { ...configuration.settings, dubbing: !voiceReady ? -1 : configuration.settings.dubbing },
+    });
     const client = createClient(protocol, metaProvider);
-    const voice = createVoice(client, (event) => emit('assistant', event));
+    const voice = createVoice(
+        client,
+        (event) => emit('assistant', event),
+        () => {
+            voiceReady = true;
+            // когда голос готов, возвращаем первоначальное состояние
+            protocol.changeSettings({ dubbing: settings.disableDubbing ? -1 : 1 }, started);
+        },
+    );
 
     /** завершает текущий апп */
     const closeApp = () => {
@@ -330,7 +345,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                 return;
             }
 
-            protocol.changeSettings({ dubbing: settings.disableDubbing ? -1 : 1 }, started);
+            protocol.changeSettings({ dubbing: settings.disableDubbing || !voiceReady ? -1 : 1 }, started);
         },
         get protocol() {
             return protocol;

@@ -12,8 +12,14 @@ export const createVoice = (
         asr?: { text: string; last?: boolean; mid?: OriginalMessageType['messageId'] }; // lasr и mid нужен для отправки исх бабла в чат
         emotion?: EmotionId;
     }) => void,
+    /// пока onReady не вызван, треки не воспроизводятся
+    /// когда случится onReady, очередь треков начнет проигрываться
+    onReady?: () => void,
 ) => {
-    const voicePlayer = createVoicePlayer({ startVoiceDelay: 1 });
+    const voicePlayer = createVoicePlayer({
+        startVoiceDelay: 1,
+        onReady,
+    });
     const listener = createVoiceListener();
     const musicRecognizer = createMusicRecognizer(listener);
     const speechRecognizer = createSpeechRecognizer(listener);
