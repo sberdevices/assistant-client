@@ -1,3 +1,15 @@
+# v3.8.1 (Wed Aug 04 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Не воспроизводить озвучку, если плеер не готов [#166](https://github.com/sberdevices/assistant-client/pull/166) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.8.0 (Wed Aug 04 2021)
 
 #### 🚀 Enhancement
