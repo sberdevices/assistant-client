@@ -1,3 +1,15 @@
+# v3.8.0 (Wed Aug 04 2021)
+
+#### 🚀 Enhancement
+
+- feat: Отправлять additionalInfo [#164](https://github.com/sberdevices/assistant-client/pull/164) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.7.4 (Wed Jul 28 2021)
 
 #### 🐛 Bug Fix
