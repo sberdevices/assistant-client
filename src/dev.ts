@@ -263,6 +263,7 @@ export const initializeAssistantSDK = ({
             (render || renderNativePanel)({
                 ...props,
                 sendText,
+                sendServerAction: assistant.sendServerAction,
                 onListen: assistant.listen,
                 suggestions: suggestions || [],
                 bubbleText,
