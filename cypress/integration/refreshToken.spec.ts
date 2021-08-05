@@ -9,9 +9,11 @@ import { sendMessage } from '../support/helpers/socket.helpers';
 describe('Проверяем обновление токена', () => {
     const token1 = 'token1';
     const token2 = 'token2';
+    let currentToken = token1;
+
     const configuration = {
         settings: {},
-        token: token1,
+        getToken: () => Promise.resolve(currentToken),
         url: 'ws://path',
         userChannel: '',
         userId: '',
@@ -24,12 +26,13 @@ describe('Проверяем обновление токена', () => {
     beforeEach(() => {
         server = new Server(configuration.url);
 
+        currentToken = token1;
         assistantClient = createAssistantClient(configuration);
-        assistantClient.protocol.on('incoming', (mes) => {
-            const { status } = mes;
+        assistantClient.on('status', (status) => {
             // код ошибки валидации токена = -45
-            if (status && status.code === -45) {
-                assistantClient.changeConfiguration({ token: token2 });
+            if (status.code === -45) {
+                currentToken = token2;
+                assistantClient.reconnect();
             }
         });
     });
@@ -133,5 +136,42 @@ describe('Проверяем обновление токена', () => {
         });
 
         assistantClient.sendText(phrase);
+    });
+
+    it('getToken возвращает исключение', (done) => {
+        let phase: 1 | 2 = 1;
+        assistantClient = createAssistantClient({
+            ...configuration,
+            getToken: () => {
+                if (phase === 1) {
+                    throw new Error('unknown error');
+                } else {
+                    return Promise.resolve(token1);
+                }
+            },
+        });
+
+        server.on('connection', (socket) => {
+            socket.on('message', (data) => {
+                if (phase === 1) {
+                    assert.fail('Если токен не был разрезолвлен, сообщения не должны приходить');
+                }
+
+                const message = Message.decode((data as Uint8Array).slice(4));
+                if (phase === 2 && message.initialSettings) {
+                    expect(message.token, ' токен получен').to.deep.equal(token1);
+                    done();
+                }
+            });
+        });
+
+        assistantClient.on('error', (error) => {
+            expect(error.type, 'Получен тип ошибки').to.equal('GET_TOKEN_ERROR');
+            expect(error.message, 'Получен текст ошибки').to.include('unknown error');
+            phase = 2;
+            setTimeout(assistantClient.reconnect, 500);
+        });
+
+        assistantClient.start();
     });
 });

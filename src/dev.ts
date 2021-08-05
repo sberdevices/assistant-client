@@ -129,7 +129,6 @@ export const initializeAssistantSDK = ({
     const assistant = createAssistant({
         url,
         userId,
-        token,
         userChannel,
         locale,
         device,
@@ -142,6 +141,7 @@ export const initializeAssistantSDK = ({
         version: vpsVersion,
         logger: clientLogger,
         getMeta,
+        getToken: () => Promise.resolve(token),
     });
 
     let appInfo: SystemMessageDataType['app_info'] | undefined;

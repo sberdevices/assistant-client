@@ -5,6 +5,7 @@ import { BatchableMethods, createProtocol } from './protocol';
 
 export interface ClientEvents {
     voice: (voice: Uint8Array, original: OriginalMessageType) => void;
+    status: (status: OriginalMessageType['status'], original: OriginalMessageType) => void;
     systemMessage: (systemMessage: SystemMessageDataType, original: OriginalMessageType) => void;
 }
 
@@ -162,6 +163,10 @@ export const createClient = (
 
         if (message.systemMessage?.data) {
             emit('systemMessage', JSON.parse(message.systemMessage.data), message);
+        }
+
+        if (message.status) {
+            emit('status', message.status, message);
         }
     });
 

@@ -374,7 +374,6 @@ export interface OriginalMessageType {
 export type VpsConfiguration = {
     url: string;
     userId: string;
-    token: string;
     userChannel: string;
     locale?: string; // с версии 4 - обязателен
     device?: IDevice;
@@ -385,6 +384,7 @@ export type VpsConfiguration = {
     vpsToken?: string;
     meta?: { [k: string]: string };
     logger?: ClientLogger;
+    getToken: () => Promise<string>;
 };
 
 export interface IncomingMessage {
@@ -406,7 +406,7 @@ export interface AssistantRecord {
 }
 
 export interface ClientLogger {
-    logInit: (params: VpsConfiguration) => void;
+    logInit: (params: Omit<VpsConfiguration, 'getToken'> & { token: string }) => void;
     logIncoming: (message: Message) => void;
     logOutcoming: (message: Message) => void;
 }
