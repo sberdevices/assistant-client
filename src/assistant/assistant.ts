@@ -14,7 +14,7 @@ import {
 } from '../typings';
 
 import { createClient } from './client/client';
-import { createProtocol } from './client/protocol';
+import { createProtocol, ProtocolError } from './client/protocol';
 import { createTransport } from './client/transport';
 import { getAnswerForRequestPermissions, getTime } from './meta';
 import { createVoice } from './voice/voice';
@@ -83,11 +83,15 @@ export type ActionCommandEvent = {
     command: ActionCommand;
 };
 
+export type AssistantError = ProtocolError;
+
 export type AssistantEvents = {
     app: (event: AppEvent) => void;
     assistant: (event: AssistantEvent) => void;
     vps: (event: VpsEvent) => void;
     actionCommand: (event: ActionCommandEvent) => void;
+    status: (status: OriginalMessageType['status']) => void;
+    error: (error: AssistantError) => void;
 };
 
 export interface CreateAssistantDevOptions {
@@ -219,6 +223,20 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         }),
     );
 
+    // обработка ошибок
+    subscriptions.push(
+        protocol.on('error', (error: ProtocolError) => {
+            emit('error', error);
+        }),
+    );
+
+    // оповещение о статусах
+    subscriptions.push(
+        client.on('status', (status) => {
+            emit('status', status);
+        }),
+    );
+
     // обработка входящих команд, и событий аппа
     subscriptions.push(
         client.on('systemMessage', (systemMessage: SystemMessageDataType, originalMessage: OriginalMessageType) => {
@@ -347,6 +365,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
 
             protocol.changeSettings({ dubbing: settings.disableDubbing || !voiceReady ? -1 : 1 }, started);
         },
+        reconnect: protocol.reconnect,
         get protocol() {
             return protocol;
         },

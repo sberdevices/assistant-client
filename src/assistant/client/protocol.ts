@@ -40,21 +40,26 @@ const compileBasePayload = ({
 
 export { BatchableMethods } from './methods';
 
+export interface ProtocolError {
+    type: 'GET_TOKEN_ERROR';
+    message?: string;
+}
+
 export interface ProtocolEvents {
     incoming: (message: OriginalMessageType) => void;
     outcoming: (message: OriginalMessageType) => void;
     ready: () => void;
+    error: (error: ProtocolError) => void;
 }
 
 export const createProtocol = (
     transport: ReturnType<typeof createTransport>,
-    { logger, ...params }: VpsConfiguration,
+    { logger, getToken, ...params }: VpsConfiguration,
 ) => {
-    const configuration = { ...params };
+    const configuration = { ...params, token: '' };
     const {
         url,
         userId,
-        token,
         userChannel,
         locale,
         device,
@@ -65,7 +70,7 @@ export const createProtocol = (
         vpsToken,
         meta,
     } = configuration;
-    const basePayload = compileBasePayload({ userId, token, messageName, vpsToken, userChannel, version });
+    const basePayload = compileBasePayload({ userId, token: '', messageName, vpsToken, userChannel, version });
 
     const { on, emit } = createNanoEvents<ProtocolEvents>();
     const subscriptions: Array<() => void> = [];
@@ -142,15 +147,9 @@ export const createProtocol = (
         return sendLegacyDeviceOriginal(data, ...args);
     }) as typeof sendLegacyDeviceOriginal;
 
-    const updateDefaults = (obj: Partial<typeof basePayload>) => {
+    const updateDefaults = (obj: Omit<Partial<typeof basePayload>, 'token'>) => {
         Object.assign(basePayload, obj);
         Object.assign(configuration, obj);
-
-        if (status !== 'closed') {
-            transport.reconnect(url); // даем время случиться close
-        } else {
-            transport.open(url);
-        }
     };
 
     const updateDevice = (obj: Partial<VpsConfiguration['device']>) => {
@@ -176,7 +175,18 @@ export const createProtocol = (
         }),
     );
     subscriptions.push(
-        transport.on('ready', () => {
+        transport.on('ready', async () => {
+            try {
+                Object.assign(basePayload, { token: await getToken() });
+            } catch (e) {
+                emit('error', {
+                    type: 'GET_TOKEN_ERROR',
+                    message: e?.message,
+                });
+                return;
+            }
+
+            Object.assign(configuration, { token: basePayload.token });
             initMessageId = getMessageId();
             if (version < 3) {
                 if (version === 1 && currentSettings.legacyDevice) {
@@ -251,6 +261,13 @@ export const createProtocol = (
         changeConfiguration: updateDefaults,
         changeDevice: updateDevice,
         changeSettings: updateSettings,
+        reconnect: () => {
+            if (status !== 'closed') {
+                transport.reconnect(url); // даем время случиться close
+            } else {
+                transport.open(url);
+            }
+        },
         get currentMessageId() {
             return currentMessageId;
         },

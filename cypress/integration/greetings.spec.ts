@@ -11,7 +11,7 @@ type ArgumentsType<T> = T extends (...args: infer U) => any ? U : never;
 describe('Проверяем приветствие', () => {
     const configuration = {
         settings: {},
-        token: '',
+        getToken: () => Promise.resolve(''),
         url: 'ws://path',
         userChannel: '',
         userId: '',
