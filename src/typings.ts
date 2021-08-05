@@ -99,6 +99,7 @@ export type AssistantCommands =
     | AssistantCloseAppCommand
     | AssistantNavigationCommand
     | AssistantSmartAppCommand
+    | AssistantVisibilityCommand
     | AssistantPlayerCommand
     | AssistantSystemCommand;
 
@@ -189,6 +190,12 @@ export interface AssistantPlayerCommand {
     player_command: { [key: string]: unknown };
 }
 
+export interface AssistantVisibilityCommand {
+    type: 'visibility';
+    visibility: 'visible' | 'hidden';
+    sdk_meta?: SdkMeta;
+}
+
 export interface AssistantSystemCommand {
     type: 'system';
     system: { command: string; [key: string]: unknown };
@@ -198,6 +205,7 @@ export type AssistantClientCustomizedCommand<T extends AssistantSmartAppData> =
     | AssistantAppContext
     | AssistantCharacterCommand
     | AssistantNavigationCommand
+    | AssistantVisibilityCommand
     | AssistantInsetsCommand
     | AssistantSmartAppError
     | T;
