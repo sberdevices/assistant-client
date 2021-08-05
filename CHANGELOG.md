@@ -1,3 +1,15 @@
+# v3.8.2 (Thu Aug 05 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Доработать саджесты [#171](https://github.com/sberdevices/assistant-client/pull/171) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.8.1 (Wed Aug 04 2021)
 
 #### 🐛 Bug Fix
