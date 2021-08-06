@@ -1,3 +1,15 @@
+# v3.9.0 (Fri Aug 06 2021)
+
+#### 🚀 Enhancement
+
+- feat: Поддержать команду visiblity [#170](https://github.com/sberdevices/assistant-client/pull/170) ([@maderwin](https://github.com/maderwin))
+
+#### Authors: 1
+
+- Artyom Zakharov ([@maderwin](https://github.com/maderwin))
+
+---
+
 # v3.8.2 (Thu Aug 05 2021)
 
 #### 🐛 Bug Fix
