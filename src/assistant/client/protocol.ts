@@ -79,7 +79,7 @@ export const createProtocol = (
     let initMessageId: number; // ид инициализационного сообщения, отправим мессаджи в неинициализированный протокол
     let currentSettings = { device, legacyDevice, settings, locale };
     let currentMessageId = Date.now();
-    let status: 'connecting' | 'ready' | 'closed' = 'closed';
+    let status: 'connecting' | 'connected' | 'ready' | 'closed' = 'closed';
     let destroyed = false;
     let clearReadyTimer: number; // ид таймера установки состояния ready
 
@@ -156,10 +156,10 @@ export const createProtocol = (
         Object.assign(currentSettings.device, obj);
     };
 
-    const updateSettings = (obj: Partial<VpsConfiguration['settings']>, sendNow = false) => {
+    const updateSettings = (obj: Partial<VpsConfiguration['settings']>) => {
         Object.assign(currentSettings.settings, obj);
 
-        if (sendNow) {
+        if (status === 'connected' || status === 'ready') {
             sendSettingsOriginal(obj);
         }
     };
@@ -210,12 +210,14 @@ export const createProtocol = (
                 );
             }
 
+            status = 'connected';
+
             clearTimeout(clearReadyTimer);
 
             /// считаем коннект = ready, если по истечении таймаута сокет не был разорван
             /// т.к бек может разрывать сокет, если с settings что-то не так
             clearReadyTimer = window.setTimeout(() => {
-                if (status !== 'connecting') {
+                if (status !== 'connected') {
                     return;
                 }
 
