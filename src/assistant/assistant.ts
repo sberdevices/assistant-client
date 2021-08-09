@@ -106,9 +106,6 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
     // хеш [messageId]: requestId, где requestId - пользовательский ид экшена
     const requestIdMap: Record<string, string> = {};
 
-    // запущен/не запущен
-    let started = false;
-
     // готов/не готов воспроизводить озвучку
     let voiceReady = false;
 
@@ -156,7 +153,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         () => {
             voiceReady = true;
             // когда голос готов, возвращаем первоначальное состояние
-            protocol.changeSettings({ dubbing: settings.disableDubbing ? -1 : 1 }, started);
+            protocol.changeSettings({ dubbing: settings.disableDubbing ? -1 : 1 });
         },
     );
 
@@ -320,7 +317,6 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         initPhrase?: string;
         isFirstSession?: boolean;
     } = {}): Promise<SystemMessageDataType | undefined> => {
-        started = true;
         if (!disableGreetings) {
             await client.sendOpenAssistant({ isFirstSession });
         }
@@ -348,7 +344,6 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
             voice.stop();
             protocol.clearQueue();
             transport.close();
-            started = false;
         },
         emit,
         on,
@@ -363,7 +358,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                 return;
             }
 
-            protocol.changeSettings({ dubbing: settings.disableDubbing || !voiceReady ? -1 : 1 }, started);
+            protocol.changeSettings({ dubbing: settings.disableDubbing || !voiceReady ? -1 : 1 });
         },
         reconnect: protocol.reconnect,
         get protocol() {
