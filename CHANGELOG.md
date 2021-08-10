@@ -1,3 +1,15 @@
+# v4.0.0 (Tue Aug 10 2021)
+
+#### 💥 Breaking Change
+
+- BREAKING: Запрашивать токен перед соединением [#168](https://github.com/sberdevices/assistant-client/pull/168) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v3.9.0 (Fri Aug 06 2021)
 
 #### 🚀 Enhancement
