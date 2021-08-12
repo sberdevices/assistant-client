@@ -1,3 +1,15 @@
+# v4.0.1 (Thu Aug 12 2021)
+
+#### 🐛 Bug Fix
+
+- fix: changeSettings не должен создавать коннект [#172](https://github.com/sberdevices/assistant-client/pull/172) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.0.0 (Tue Aug 10 2021)
 
 #### 💥 Breaking Change
