@@ -1,8 +1,8 @@
-import { AssistantRecord, RecordSaver } from '../typings';
+import { RecordSaver } from '../typings';
 
 export const createRecordDownloader = (): RecordSaver => {
     return {
-        save: (record: AssistantRecord) => {
+        save: (record: object) => {
             const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(record))}`;
             const anchor = document.createElement('a');
             anchor.setAttribute('href', dataStr);

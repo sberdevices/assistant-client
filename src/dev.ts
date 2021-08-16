@@ -12,11 +12,12 @@ import {
     AssistantAppState,
     AssistantClientCommand,
     AssistantSystemCommand,
+    FakeVpsParams,
 } from './typings';
 import { renderAssistantRecordPanel } from './record';
-import { createCallbackLogger } from './record/callback-logger';
+import { CallbackLoggerRecorderCreator, createCallbackLogger } from './record/callback-logger';
 import { createConsoleLogger } from './record/console-logger';
-import { createLogCallbackRecorder, RecorderCallback } from './record/callback-recorder';
+import { createLogCallbackRecorder } from './record/callback-recorder';
 import { createRecordDownloader } from './record/record-downloader';
 import { createRecoveryStateRepository } from './createRecoveryStateRepository';
 
@@ -35,7 +36,14 @@ const legacyDevice = {
     platformVersion: '1.0',
 };
 
-export type InitializeAssistantSDKParams = {
+export interface RecordParams<R extends CallbackLoggerRecorderCreator = CallbackLoggerRecorderCreator> {
+    // параметры логирования сообщений
+    defaultActive?: boolean;
+    logger?: ClientLogger;
+    recorderCreator?: R;
+}
+
+export type InitializeAssistantSDKParams<R extends CallbackLoggerRecorderCreator = CallbackLoggerRecorderCreator> = {
     initPhrase: string;
     url: string;
     /** канал (влияет на навыки) */
@@ -53,18 +61,15 @@ export type InitializeAssistantSDKParams = {
     sdkVersion?: string;
     /** показать управление записью лога сообщений */
     enableRecord?: boolean;
-    recordParams?: {
-        // параметры логирования сообщений
-        defaultActive?: boolean;
-        logger?: ClientLogger;
-    };
+    recordParams?: RecordParams<R>;
+    fakeVps?: FakeVpsParams;
     settings?: AssistantSettings;
     vpsVersion?: number;
     features?: string;
     capabilities?: string;
 } & CreateAssistantDevOptions;
 
-export const initializeAssistantSDK = ({
+export const initializeAssistantSDK = <R extends CallbackLoggerRecorderCreator = CallbackLoggerRecorderCreator>({
     initPhrase,
     url,
     userChannel,
@@ -85,12 +90,13 @@ export const initializeAssistantSDK = ({
     sdkVersion = SDK_VERSION,
     enableRecord,
     recordParams,
+    fakeVps,
     settings = {},
     vpsVersion = 3,
     features,
     capabilities,
     getMeta,
-}: InitializeAssistantSDKParams) => {
+}: InitializeAssistantSDKParams<R>) => {
     const device = {
         platformType: 'WEBDBG',
         platformVersion: '1.0',
@@ -113,17 +119,12 @@ export const initializeAssistantSDK = ({
 
     const recoveryStateRepository = createRecoveryStateRepository();
     let clientLogger = recordParams?.logger ? recordParams.logger : createConsoleLogger();
-    let loggerCb: RecorderCallback;
-    const recorder = createLogCallbackRecorder(
-        (subscribe: RecorderCallback) => {
-            loggerCb = subscribe;
-        },
-        recordParams?.defaultActive != null ? recordParams.defaultActive : true,
-    );
+    const recorderCreator = recordParams?.recorderCreator || createLogCallbackRecorder;
+    const recorder = recorderCreator(recordParams?.defaultActive != null ? recordParams.defaultActive : true);
     const saver = createRecordDownloader();
 
     if (enableRecord && recordParams?.logger == null) {
-        clientLogger = createCallbackLogger((logEntry) => loggerCb && loggerCb(logEntry));
+        clientLogger = createCallbackLogger(recorder.handler);
     }
 
     const assistant = createAssistant({
@@ -138,6 +139,7 @@ export const initializeAssistantSDK = ({
             dubbing: settings.dubbing === false ? -1 : 1,
             echo: settings.echo || -1,
         },
+        fakeVps,
         version: vpsVersion,
         logger: clientLogger,
         getMeta,

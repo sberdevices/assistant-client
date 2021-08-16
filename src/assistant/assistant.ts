@@ -140,7 +140,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         };
     };
 
-    const transport = createTransport();
+    const transport = createTransport(configuration.fakeVps?.createFakeWS);
     const protocol = createProtocol(transport, {
         ...configuration,
         // выключаем озвучку, пока голос не готов
