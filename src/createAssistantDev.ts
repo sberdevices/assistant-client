@@ -24,6 +24,7 @@ export const createAssistantDev = <A extends AssistantSmartAppData>({
     | 'sdkVersion'
     | 'enableRecord'
     | 'recordParams'
+    | 'fakeVps'
     | 'settings'
     | 'getMeta'
     | 'features'
@@ -98,6 +99,8 @@ export { NativePanelParams } from './NativePanel/NativePanel';
 // export * from './typings';
 export * from './dev';
 export { initializeDebugging } from './debug';
+export * from './record/mock-recorder';
+export * from './record/createMockWsCreator';
 export {
     createAssistantHostMock,
     createAssistantHostMockWithRecord,

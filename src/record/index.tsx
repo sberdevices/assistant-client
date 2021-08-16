@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { render } from 'react-dom';
 
-import { AssistantRecord, LogRecorder, RecordSaver } from '../typings';
+import { RecordSaver } from '../typings';
+
+import { CallbackLoggerEntryRecorder } from './callback-logger';
 
 export const CURRENT_VERSION = '0.1.0';
 
@@ -19,15 +21,15 @@ const RecordPanelStyles = `
 }
 `;
 
-interface AssistantRecordPanelProps {
-    recorder: LogRecorder;
-    onSave: (record: AssistantRecord) => void;
+interface AssistantRecordPanelProps<R extends CallbackLoggerEntryRecorder = CallbackLoggerEntryRecorder> {
+    recorder: R;
+    onSave: (record: object) => void;
 }
 
 const AssistantRecordPanel: React.FC<AssistantRecordPanelProps> = ({ recorder, onSave }: AssistantRecordPanelProps) => {
     const [isRecording, setIsRecording] = useState(true);
-    const [record, setRecord] = useState<AssistantRecord>();
-    const recorderRef = useRef<LogRecorder>();
+    const [record, setRecord] = useState<object>();
+    const recorderRef = useRef<CallbackLoggerEntryRecorder>();
 
     const handleStart = React.useCallback(() => {
         recorderRef.current?.start();
@@ -47,6 +49,14 @@ const AssistantRecordPanel: React.FC<AssistantRecordPanelProps> = ({ recorder, o
             onSave(record);
         }
     }, [onSave, record]);
+
+    const handleCopy = React.useCallback(() => {
+        console.log('record to copy', record);
+
+        if (record) {
+            navigator.clipboard.writeText(JSON.stringify(record, null, 4));
+        }
+    }, [record]);
 
     useEffect(() => {
         recorderRef.current?.stop();
@@ -70,11 +80,17 @@ const AssistantRecordPanel: React.FC<AssistantRecordPanelProps> = ({ recorder, o
             <button onClick={handleSave} type="button" disabled={record == null} className="recordButton">
                 save
             </button>
+            <button onClick={handleCopy} type="button" disabled={record == null} className="recordButton">
+                copy
+            </button>
         </div>
     );
 };
 
-export const renderAssistantRecordPanel = (recorder: LogRecorder, saver: RecordSaver) => {
+export const renderAssistantRecordPanel = <R extends CallbackLoggerEntryRecorder = CallbackLoggerEntryRecorder>(
+    recorder: R,
+    saver: RecordSaver,
+) => {
     const div = document.createElement('div');
     document.body.appendChild(div);
 

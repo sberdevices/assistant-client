@@ -32,6 +32,7 @@
     "dependencies": {
         "@salutejs/types": "0.6.0",
         "axios": "0.21.1",
+        "lodash.clonedeep": "^4.5.0",
         "protobufjs": "6.10.2",
         "uuid": "8.0.0"
     },
@@ -50,6 +51,7 @@
         "@rollup/plugin-node-resolve": "^10.0.0",
         "@rollup/plugin-typescript": "^6.1.0",
         "@types/jest": "26.0.14",
+        "@types/lodash.clonedeep": "^4.5.6",
         "@types/mocha": "8.0.3",
         "@types/react": "16.9.35",
         "@types/react-dom": "16.9.8",

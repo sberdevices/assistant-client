@@ -1,5 +1,6 @@
 import { createNanoEvents } from '../../nanoevents';
 import { Message } from '../../proto';
+import { WSCreator } from '../../typings';
 
 export const appendHeader = (buffer: Uint8Array) => {
     // Добавляем 4 байта в начало с длинной сообщения
@@ -21,7 +22,9 @@ export interface TransportEvents {
     message: (message: Message) => void;
 }
 
-export const createTransport = () => {
+const defaultWSCreator: WSCreator = (url: string) => new WebSocket(url);
+
+export const createTransport = (createWS: WSCreator = defaultWSCreator) => {
     const { on, emit } = createNanoEvents<TransportEvents>();
 
     let status: 'connecting' | 'ready' | 'closed' = 'closed';
@@ -57,7 +60,7 @@ export const createTransport = () => {
         status = 'connecting';
         emit('connecting');
         // TODO: нужен таймаут для подключения
-        ws = new WebSocket(vpsUrl);
+        ws = createWS(vpsUrl);
 
         ws.binaryType = 'arraybuffer';
         ws.addEventListener('open', () => {

@@ -11,6 +11,10 @@ import {
 } from '@salutejs/types';
 
 import { IDevice, ILegacyDevice, IMessage, ISettings, Message } from './proto';
+import { CallbackLoggerEntry, CallbackLoggerHandler } from './record/callback-logger';
+import { Recorder } from './record/recorder';
+
+export { Message } from './proto';
 
 export {
     Suggestions,
@@ -115,14 +119,16 @@ export interface AssistantCharacterCommand {
     sdk_meta: SdkMeta;
 }
 
+export interface Insets {
+    left: number; // px
+    top: number; // px
+    right: number; // px
+    bottom: number; // px
+}
+
 export interface AssistantInsetsCommand {
     type: 'insets';
-    insets: {
-        left: number; // px
-        top: number; // px
-        right: number; // px
-        bottom: number; // px
-    };
+    insets: Insets;
     sdk_meta: SdkMeta;
 }
 
@@ -167,22 +173,16 @@ export interface AssistantSmartAppCommand extends AssistantSmartAppData {
     sdk_meta?: SdkMeta;
 }
 
+export interface AppContext {
+    app_info: AppInfo;
+    device_id: string;
+    platform: string;
+    sdk_version: string;
+}
+
 export interface AssistantAppContext {
     type: 'app_context';
-    app_context: {
-        app_info: {
-            projectId: string;
-            applicationId: string;
-            appversionId: string;
-            systemName: string;
-            frontendEndpoint: string;
-            frontendType: string;
-            frontendStateId: string;
-        };
-        device_id: string;
-        platform: string;
-        sdk_version: string;
-    };
+    app_context: AppContext;
     sdk_meta?: SdkMeta;
 }
 
@@ -381,6 +381,14 @@ export interface OriginalMessageType {
     meta?: { [k: string]: string } | null;
 }
 
+export interface WSCreator {
+    (url: string): WebSocket;
+}
+
+export interface FakeVpsParams {
+    createFakeWS: WSCreator;
+}
+
 export type VpsConfiguration = {
     url: string;
     userId: string;
@@ -388,6 +396,7 @@ export type VpsConfiguration = {
     locale?: string; // с версии 4 - обязателен
     device?: IDevice;
     settings: ISettings; // version >= 2
+    fakeVps?: FakeVpsParams;
     legacyDevice?: ILegacyDevice; // для версии 1 - нужен legacyDevice
     version: VpsVersion;
     messageName?: string;
@@ -409,26 +418,31 @@ export interface OutcomingMessage {
     message?: { data: { server_action?: any; [key: string]: any }; name: string; sdk_meta?: SdkMeta };
 }
 
+export type ClientLoggerLogInitEntry = Omit<VpsConfiguration, 'getToken'> & { token: string };
+
 export interface AssistantRecord {
-    parameters?: VpsConfiguration;
+    parameters?: ClientLoggerLogInitEntry;
     entries: Array<IncomingMessage | OutcomingMessage>;
     version: string;
 }
 
 export interface ClientLogger {
-    logInit: (params: Omit<VpsConfiguration, 'getToken'> & { token: string }) => void;
+    logInit: (params: ClientLoggerLogInitEntry) => void;
     logIncoming: (message: Message) => void;
     logOutcoming: (message: Message) => void;
 }
 
-export interface LogRecorder {
-    getRecord: () => AssistantRecord;
+export type LogCallbackRecorderRecordGetter = () => AssistantRecord;
+
+export interface LogCallbackRecorder extends Recorder<AssistantRecord, CallbackLoggerEntry> {
+    handler: CallbackLoggerHandler;
+    getRecord: LogCallbackRecorderRecordGetter;
     start: () => void;
     stop: () => void;
 }
 
 export interface RecordSaver {
-    save: (record: AssistantRecord) => void;
+    save: (record: object) => void;
 }
 
 export interface AssistantSettings {
