@@ -198,10 +198,8 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         appInfo: AppInfo,
         items: PermissionType[],
     ) => {
-        client.sendData({
-            data: await getAnswerForRequestPermissions(requestMessageId, appInfo, items),
-            messageName: 'SERVER_ACTION',
-        });
+        const data = await getAnswerForRequestPermissions(requestMessageId, appInfo, items);
+        client.sendData(data, 'SERVER_ACTION');
     };
 
     subscriptions.push(protocol.on('ready', () => emit('vps', { type: 'ready' })));
