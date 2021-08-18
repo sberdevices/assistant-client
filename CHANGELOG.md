@@ -1,3 +1,15 @@
+# v4.0.2 (Wed Aug 18 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Отправка systemMessage после запроса на пермишены [#175](https://github.com/sberdevices/assistant-client/pull/175) (ankostenko@sberbank.ru)
+
+#### Authors: 1
+
+- Anton Kostenko (ankostenko@sberbank.ru)
+
+---
+
 # v4.0.1 (Thu Aug 12 2021)
 
 #### 🐛 Bug Fix
