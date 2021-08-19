@@ -1,3 +1,15 @@
+# v4.0.4 (Thu Aug 19 2021)
+
+#### 🐛 Bug Fix
+
+- fix: ошибка при оффлайне [#176](https://github.com/sberdevices/assistant-client/pull/176) ([@soulko](https://github.com/soulko))
+
+#### Authors: 1
+
+- Anton Kostenko ([@soulko](https://github.com/soulko))
+
+---
+
 # v4.0.3 (Thu Aug 19 2021)
 
 #### 🐛 Bug Fix
