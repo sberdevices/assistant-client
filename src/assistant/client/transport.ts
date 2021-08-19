@@ -17,7 +17,7 @@ export interface TransportEvents {
     connecting: () => void;
     ready: () => void;
     close: () => void;
-    error: (error: Event) => void;
+    error: (error?: Event) => void;
     message: (message: Message) => void;
 }
 
@@ -38,6 +38,11 @@ export const createTransport = () => {
     };
 
     const send = (message: Message) => {
+        if (!navigator.onLine) {
+            close();
+            emit('error');
+            return;
+        }
         const buffer = Message.encode(message).finish();
         const bufferWithHeader = appendHeader(buffer);
 
