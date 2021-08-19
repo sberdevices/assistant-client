@@ -1,3 +1,15 @@
+# v4.0.3 (Thu Aug 19 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Не отсылается initPhrase, если userId не меняется [#178](https://github.com/sberdevices/assistant-client/pull/178) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.0.2 (Wed Aug 18 2021)
 
 #### 🐛 Bug Fix
