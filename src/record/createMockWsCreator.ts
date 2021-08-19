@@ -3,10 +3,10 @@ import { createNanoEvents } from '../nanoevents';
 import { Message } from '../proto';
 import { WSCreator } from '../typings';
 
-import { createMockDecoder, MockRecorderRecord } from './mock-recorder';
+import { createAnswerFromMockByMessageGetter, MockRecorderRecord } from './mock-recorder';
 
 export const createMockWSCreator = (recordMock: MockRecorderRecord, timeout = 1000): WSCreator => (url) => {
-    const mockDecoder = createMockDecoder(recordMock);
+    const getAnswerFromMockByMessage = createAnswerFromMockByMessageGetter(recordMock);
     const { on, emit } = createNanoEvents();
 
     const send: WebSocket['send'] = (dataToSend) => {
@@ -17,7 +17,7 @@ export const createMockWSCreator = (recordMock: MockRecorderRecord, timeout = 10
         }
 
         const messageToSend = Message.decode(new Uint8Array(dataToSend).slice(4));
-        const responseMessageList = mockDecoder.get(messageToSend);
+        const responseMessageList = getAnswerFromMockByMessage(messageToSend);
 
         if (!responseMessageList) {
             console.error('Не удалось получить ответ для сообщения: ', messageToSend);
