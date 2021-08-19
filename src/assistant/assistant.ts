@@ -322,7 +322,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         if (initPhrase) {
             return client
                 .sendText(initPhrase)
-                .then((messageId) => (messageId ? client.waitForAnswerToUser(messageId) : undefined));
+                .then((messageId) => (messageId ? client.waitForAnswer(messageId) : undefined));
         }
 
         return undefined;

@@ -21,12 +21,13 @@ export const createClient = (
     const { on, emit } = createNanoEvents<ClientEvents>();
 
     /** ждет ответ бека и возвращает данные из этого ответа */
-    const waitForAnswerToUser = (messageId: number | Long): Promise<SystemMessageDataType> =>
+    const waitForAnswer = (messageId: number | Long): Promise<SystemMessageDataType> =>
         new Promise((resolve) => {
             const off = on('systemMessage', (systemMessageData, originalMessage) => {
                 if (
                     originalMessage.messageId === messageId &&
-                    originalMessage.messageName === MessageNames.ANSWER_TO_USER
+                    (originalMessage.messageName === MessageNames.ANSWER_TO_USER ||
+                        originalMessage.messageName === MessageNames.DO_NOTHING)
                 ) {
                     off();
                     resolve(systemMessageData);
@@ -61,7 +62,7 @@ export const createClient = (
     ): Promise<SystemMessageDataType> => {
         // eslint-disable-next-line @typescript-eslint/camelcase
         const data = isFirstSession ? { is_first_session: true } : {};
-        return waitForAnswerToUser(sendData(data, 'OPEN_ASSISTANT'));
+        return waitForAnswer(sendData(data, 'OPEN_ASSISTANT'));
     };
 
     /** вызывает sendSystemMessage, куда подкладывает мету */
@@ -182,6 +183,6 @@ export const createClient = (
         sendText,
         sendCancel,
         on,
-        waitForAnswerToUser,
+        waitForAnswer,
     };
 };
