@@ -80,26 +80,20 @@ const serializeMessage = (message: Message) => {
     return message;
 };
 
-export const createMockDecoder = (record: MockRecorderRecord) => {
-    const get = (message: Message) => {
-        const requestKey = getRequestKey(message);
+export const createAnswerFromMockByMessageGetter = (record: MockRecorderRecord) => (message: Message) => {
+    const requestKey = getRequestKey(message);
 
-        if (!requestKey) {
-            return undefined;
-        }
+    if (!requestKey) {
+        return undefined;
+    }
 
-        const messagesFromMock = record.requestKeyToMessages[requestKey];
+    const messagesFromMock = record.requestKeyToMessages[requestKey];
 
-        if (!messagesFromMock) {
-            return undefined;
-        }
+    if (!messagesFromMock) {
+        return undefined;
+    }
 
-        return messagesFromMock.map((messageFromMock) => serializeMessage(cloneDeep(messageFromMock)));
-    };
-
-    return {
-        get,
-    };
+    return messagesFromMock.map((messageFromMock) => serializeMessage(cloneDeep(messageFromMock)));
 };
 
 export const createMockRecorder: MockRecorderCreator = (defaultActive = true) => {
