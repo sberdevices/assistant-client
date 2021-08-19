@@ -1,6 +1,6 @@
 {
     "name": "@sberdevices/assistant-client",
-    "version": "4.0.3",
+    "version": "4.0.4",
     "description": "Модуль взаимодействия с виртуальным ассистентом",
     "main": "dist/index.js",
     "module": "esm/index.js",
