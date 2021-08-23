@@ -225,7 +225,8 @@ export interface AssistantHost {
     ready: () => void;
     sendData: (action: string, message: string | null) => void;
     sendDataContainer: (container: string) => void;
-    setSuggest: (suggest: string) => void;
+    setSuggests: (suggest: string) => void;
+    setHints: (hints: string) => void;
 }
 
 export interface AssistantWindow {
@@ -454,7 +455,11 @@ export type AssistantPostMessage =
           payload: string;
       }
     | {
-          type: 'setSuggest';
+          type: 'setSuggests';
+          payload: string;
+      }
+    | {
+          type: 'setHints';
           payload: string;
       }
     | {
