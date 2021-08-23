@@ -240,7 +240,8 @@ export const initializeAssistantSDK = ({
             const { data, message_name: messageName, requestId } = JSON.parse(container);
             assistant.sendServerAction(data, messageName || 'SERVER_ACTION', requestId);
         },
-        setSuggest() {},
+        setSuggests() {},
+        setHints() {},
     };
 
     const subscribeToListenerStatus = (cb: (event: 'listen' | 'stopped') => void): (() => void) =>

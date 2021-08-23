@@ -9,7 +9,8 @@ describe('Проверяем createAssistant', () => {
         window.AssistantHost = {
             close: cy.stub(),
             ready: cy.stub(),
-            setSuggest: cy.stub(),
+            setSuggests: cy.stub(),
+            setHints: cy.stub(),
         };
     });
 
@@ -179,11 +180,18 @@ describe('Проверяем createAssistant', () => {
         expect(window.AssistantHost.close).to.calledOnce;
     });
 
-    it('Проверяем проксирование setSuggest', () => {
+    it('Проверяем проксирование setSuggests', () => {
         const suggest = 'test_suggest';
         const assistant = initAssistant();
-        assistant.setSuggest(suggest);
-        expect(window.AssistantHost.setSuggest).to.calledWith(suggest);
+        assistant.setSuggests(suggest);
+        expect(window.AssistantHost.setSuggests).to.calledWith(suggest);
+    });
+
+    it('Проверяем проксирование setHints', () => {
+        const hints = 'test_hints';
+        const assistant = initAssistant();
+        assistant.setHints(hints);
+        expect(window.AssistantHost.setHints).to.calledWith(hints);
     });
 
     it("Проверяем фильтрацию system.command = 'back' - не должна попадать в onData", () => {

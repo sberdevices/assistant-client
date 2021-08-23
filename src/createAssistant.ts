@@ -53,8 +53,11 @@ if (typeof window !== 'undefined' && inIframe()) {
         sendData(json: string) {
             postMessage({ type: 'sendData', payload: json });
         },
-        setSuggest(suggests: string) {
-            postMessage({ type: 'setSuggest', payload: suggests });
+        setSuggests(suggests: string) {
+            postMessage({ type: 'setSuggests', payload: suggests });
+        },
+        setHints(hints: string) {
+            postMessage({ type: 'setHints', payload: hints });
         },
         ready() {
             postMessage({ type: 'ready' });
@@ -279,7 +282,8 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         setGetRecoveryState: (nextGetRecoveryState?: () => unknown) => {
             currentGetRecoveryState = nextGetRecoveryState;
         },
-        setSuggest: (suggest: string) => window.AssistantHost?.setSuggest(suggest),
+        setSuggests: (suggest: string) => window.AssistantHost?.setSuggests(suggest),
+        setHints: (hints: string) => window.AssistantHost?.setHints(hints),
     };
 };
 

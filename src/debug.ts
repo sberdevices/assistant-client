@@ -167,7 +167,8 @@ export function initializeDebugging(config: IntitializeProps = defaultConfig) {
                 name: message_name || undefined,
             });
         },
-        setSuggest() {},
+        setSuggests() {},
+        setHints() {},
     };
 
     window.__dangerouslyGetAssistantAppState = () => ({ ...currentAppState });

@@ -70,7 +70,10 @@ export const createAssistantHostMock = ({ context = window }: { context?: Window
 
             handleAction(action, name, requestId);
         },
-        setSuggest: () => {
+        setSuggests: () => {
+            throw new Error('Not implemented method');
+        },
+        setHints: () => {
             throw new Error('Not implemented method');
         },
     };
