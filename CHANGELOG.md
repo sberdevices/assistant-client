@@ -1,3 +1,15 @@
+# v4.1.0 (Mon Aug 23 2021)
+
+#### 🚀 Enhancement
+
+- feat: Добавить методы setSuggests и setHints [#180](https://github.com/sberdevices/assistant-client/pull/180) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.0.4 (Thu Aug 19 2021)
 
 #### 🐛 Bug Fix
