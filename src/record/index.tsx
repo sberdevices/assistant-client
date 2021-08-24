@@ -51,6 +51,7 @@ const AssistantRecordPanel: React.FC<AssistantRecordPanelProps> = ({ recorder, o
     }, [onSave, record]);
 
     const handleCopy = React.useCallback(() => {
+        // eslint-disable-next-line no-console
         console.log('record to copy', record);
 
         if (record) {
