@@ -50,6 +50,7 @@ const getRequestKey = (message: Message) => {
         }
     }
 
+    // eslint-disable-next-line no-console
     console.error('Не получается определить requestKey для запроса', message);
 
     return undefined;
@@ -127,11 +128,13 @@ export const createMockRecorder: MockRecorderCreator = (defaultActive = true) =>
                 const requestKey = getRequestKey(message);
 
                 if (!requestKey) {
+                    // eslint-disable-next-line no-console
                     console.error('Не удалось вычислить requestKey для сообщения:', message);
 
                     return;
                 }
 
+                // eslint-disable-next-line no-console
                 console.log(`recorder outcoming message with id: ${mid} to requestKey: ${requestKey}`);
 
                 updateRecord((record) => {
@@ -154,6 +157,7 @@ export const createMockRecorder: MockRecorderCreator = (defaultActive = true) =>
                     const requestKey = record.midToRequestKey[mid];
 
                     if (!requestKey) {
+                        // eslint-disable-next-line no-console
                         console.error(`Не удалось получить requestKey по mid=${mid}`);
 
                         return;
@@ -161,6 +165,7 @@ export const createMockRecorder: MockRecorderCreator = (defaultActive = true) =>
 
                     const normalizedMessage = normalizeMessage(message);
 
+                    // eslint-disable-next-line no-console
                     console.log(`recorder incoming message with id: ${mid} and requestKey: ${requestKey}`);
 
                     const messagesFromMock = record.requestKeyToMessages[requestKey];
@@ -171,6 +176,7 @@ export const createMockRecorder: MockRecorderCreator = (defaultActive = true) =>
                         record.requestKeyToMessages[requestKey] = [normalizedMessage];
                     }
 
+                    // eslint-disable-next-line no-console
                     console.log('message', normalizedMessage);
                 });
 
