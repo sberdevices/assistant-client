@@ -1,32 +1,27 @@
-export type RecorderEntry = {};
-export interface RecorderHandler<M extends RecorderEntry> {
-    (message: M): void;
-}
+import { ClientLogger } from '../typings';
+
 export interface RecorderUpdater<R extends object> {
     (updateCallback: (record: R) => void): void;
 }
-export interface RecorderHandlerPreparer<M extends RecorderEntry> {
-    (handler: RecorderHandler<M>): RecorderHandler<M>;
+export interface RecorderHandlerPreparer {
+    (handler: ClientLogger): ClientLogger;
 }
-export interface Recorder<R extends object = {}, M extends RecorderEntry = {}> {
+export interface Recorder<R extends object = {}> {
     stop: () => void;
     start: () => void;
-    handler: RecorderHandler<M>;
+    handler: ClientLogger;
     getRecord: () => R;
 }
-export interface BaseRecorder<R extends object, M extends RecorderEntry> extends Recorder<R, M> {
-    prepareHandler: RecorderHandlerPreparer<M>;
+export interface BaseRecorder<R extends object> extends Recorder<R> {
+    prepareHandler: RecorderHandlerPreparer;
     updateRecord: RecorderUpdater<R>;
 }
 
-export interface BaseRecorderCreator<R extends object = {}, M extends RecorderEntry = {}> {
-    (defaultActive?: boolean): Recorder<R, M>;
+export interface BaseRecorderCreator<R extends object = {}> {
+    (defaultActive?: boolean): Recorder<R>;
 }
 
-export const createBaseRecorder = <R extends object, M extends object>(
-    isActive = true,
-    getDefaultRecord: () => R,
-): BaseRecorder<R, M> => {
+export const createBaseRecorder = <R extends object>(isActive = true, getDefaultRecord: () => R): BaseRecorder<R> => {
     let record = getDefaultRecord();
 
     const start = () => {
@@ -44,7 +39,7 @@ export const createBaseRecorder = <R extends object, M extends object>(
 
     const getRecord = () => record;
 
-    const prepareHandler: RecorderHandlerPreparer<M> = (handlerToPrepare) => (...args) => {
+    const prepareHandler: RecorderHandlerPreparer = (handlerToPrepare) => (...args) => {
         if (isActive === false) {
             return;
         }

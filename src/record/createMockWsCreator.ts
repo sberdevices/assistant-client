@@ -11,6 +11,7 @@ export const createMockWSCreator = (recordMock: MockRecorderRecord, timeout = 10
 
     const send: WebSocket['send'] = (dataToSend) => {
         if (!(dataToSend instanceof Uint8Array)) {
+            // eslint-disable-next-line no-console
             console.error(new Error('Неверный тип данных на входе ws.send()'));
 
             return;
@@ -20,12 +21,14 @@ export const createMockWSCreator = (recordMock: MockRecorderRecord, timeout = 10
         const responseMessageList = getAnswerFromMockByMessage(messageToSend);
 
         if (!responseMessageList) {
+            // eslint-disable-next-line no-console
             console.error('Не удалось получить ответ для сообщения: ', messageToSend);
 
             return;
         }
 
         if (responseMessageList.length === 0) {
+            // eslint-disable-next-line no-console
             console.error('Пустой ответ для сообщения: ', messageToSend);
 
             return;

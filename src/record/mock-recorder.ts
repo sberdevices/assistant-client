@@ -1,10 +1,9 @@
 import cloneDeep from 'lodash.clonedeep';
 
-import { SystemMessageDataType } from '../typings';
+import { ClientLogger, SystemMessageDataType } from '../typings';
 import { Message, SystemMessage } from '../proto';
 
 import { createBaseRecorder, Recorder } from './recorder';
-import { CallbackLoggerEntry, CallbackLoggerHandler, CallbackLoggerRecorderCreator } from './callback-logger';
 
 export interface MockRecorderRecord {
     midToRequestKey: Record<string, string | undefined>;
@@ -12,8 +11,8 @@ export interface MockRecorderRecord {
 }
 
 type MockRecorderRecordGetter = () => MockRecorderRecord;
-interface MockRecorder extends Recorder<MockRecorderRecord, CallbackLoggerEntry> {
-    handler: CallbackLoggerHandler;
+interface MockRecorder extends Recorder<MockRecorderRecord> {
+    handler: ClientLogger;
     getRecord: MockRecorderRecordGetter;
     start: () => void;
     stop: () => void;
@@ -24,9 +23,7 @@ const getDefaultRecord = (): MockRecorderRecord => ({
     requestKeyToMessages: {},
 });
 
-export interface MockRecorderCreator extends CallbackLoggerRecorderCreator<MockRecorderRecord> {
-    (defaultActive?: boolean): MockRecorder;
-}
+export type MockRecorderCreator = (defaultActive?: boolean) => MockRecorder;
 
 const getMid = (message: Message) => String(message.messageId);
 
@@ -98,8 +95,7 @@ export const createAnswerFromMockByMessageGetter = (record: MockRecorderRecord) 
 
 export const createMockRecorder: MockRecorderCreator = (defaultActive = true) => {
     const { prepareHandler, start, stop, getRecord: baseGetRecord, updateRecord } = createBaseRecorder<
-        MockRecorderRecord,
-        CallbackLoggerEntry
+        MockRecorderRecord
     >(defaultActive, getDefaultRecord);
 
     const getRecord = (): MockRecorderRecord => {

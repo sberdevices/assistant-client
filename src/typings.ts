@@ -11,8 +11,6 @@ import {
 } from '@salutejs/types';
 
 import { IDevice, ILegacyDevice, IMessage, ISettings, Message } from './proto';
-import { CallbackLoggerEntry, CallbackLoggerHandler } from './record/callback-logger';
-import { Recorder } from './record/recorder';
 
 export { Message } from './proto';
 
@@ -418,27 +416,20 @@ export interface OutcomingMessage {
     message?: { data: { server_action?: any; [key: string]: any }; name: string; sdk_meta?: SdkMeta };
 }
 
-export type ClientLoggerLogInitEntry = Omit<VpsConfiguration, 'getToken'> & { token: string };
-
-export interface AssistantRecord {
-    parameters?: ClientLoggerLogInitEntry;
-    entries: Array<IncomingMessage | OutcomingMessage>;
-    version: string;
-}
+export type ClientLoggerInitEntryData = Omit<VpsConfiguration, 'getToken' | 'logger'> & { token: string };
+export type ClientLoggerInitEntry = { type: 'init'; params: ClientLoggerInitEntryData };
+export type ClientLoggerIncomingEntry = { type: 'incoming'; message: Message };
+export type ClientLoggerOutcomingEntry = { type: 'outcoming'; message: Message };
+export type ClientLoggerEntry = ClientLoggerInitEntry | ClientLoggerIncomingEntry | ClientLoggerOutcomingEntry;
 
 export interface ClientLogger {
-    logInit: (params: ClientLoggerLogInitEntry) => void;
-    logIncoming: (message: Message) => void;
-    logOutcoming: (message: Message) => void;
+    (entry: ClientLoggerEntry): void;
 }
 
-export type LogCallbackRecorderRecordGetter = () => AssistantRecord;
-
-export interface LogCallbackRecorder extends Recorder<AssistantRecord, CallbackLoggerEntry> {
-    handler: CallbackLoggerHandler;
-    getRecord: LogCallbackRecorderRecordGetter;
-    start: () => void;
-    stop: () => void;
+export interface AssistantRecord {
+    parameters?: ClientLoggerInitEntryData;
+    entries: Array<IncomingMessage | OutcomingMessage>;
+    version: string;
 }
 
 export interface RecordSaver {

@@ -1,11 +1,10 @@
-import { AssistantRecord } from '../typings';
+import { AssistantRecord, ClientLogger } from '../typings';
 
 import { createBaseRecorder, Recorder } from './recorder';
-import { CallbackLoggerEntry, CallbackLoggerHandler, CallbackLoggerRecorderCreator } from './callback-logger';
 
 export type LogCallbackRecorderRecordGetter = () => AssistantRecord;
-export interface LogCallbackRecorder extends Recorder<AssistantRecord, CallbackLoggerEntry> {
-    handler: CallbackLoggerHandler;
+export interface LogCallbackRecorder extends Recorder<AssistantRecord> {
+    handler: ClientLogger;
     getRecord: LogCallbackRecorderRecordGetter;
     start: () => void;
     stop: () => void;
@@ -15,19 +14,19 @@ const CURRENT_VERSION = '0.1.0';
 
 const getDefaultRecord = (): AssistantRecord => ({ entries: [], version: CURRENT_VERSION });
 
-export interface LogCallbackRecorderCreator extends CallbackLoggerRecorderCreator<AssistantRecord> {
-    (defaultActive: boolean): LogCallbackRecorder;
-}
+export type LogCallbackRecorderCreator = (defaultActive: boolean) => LogCallbackRecorder;
 export const createLogCallbackRecorder: LogCallbackRecorderCreator = (defaultActive = true) => {
-    const { stop, start, updateRecord, getRecord, prepareHandler } = createBaseRecorder<
-        AssistantRecord,
-        CallbackLoggerEntry
-    >(defaultActive, getDefaultRecord);
+    const { stop, start, updateRecord, getRecord, prepareHandler } = createBaseRecorder<AssistantRecord>(
+        defaultActive,
+        getDefaultRecord,
+    );
 
     const handler = prepareHandler((entry) => {
         switch (entry.type) {
             case 'incoming':
                 updateRecord((record) => {
+                    // ифак внутри функции для того чтобы TS не волновался
+                    // если написать снаружи вызова, то он не увидит эту проверку
                     if (entry.message.systemMessage?.data) {
                         record.entries.push({
                             type: entry.type,
@@ -68,7 +67,7 @@ export const createLogCallbackRecorder: LogCallbackRecorderCreator = (defaultAct
                 break;
             default:
                 updateRecord((record) => {
-                    record.parameters = entry.parameters;
+                    record.parameters = entry.params;
                 });
 
                 break;

@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 
 import { RecordSaver } from '../typings';
 
-import { CallbackLoggerEntryRecorder } from './callback-logger';
+import { Recorder } from './recorder';
 
 export const CURRENT_VERSION = '0.1.0';
 
@@ -21,15 +21,15 @@ const RecordPanelStyles = `
 }
 `;
 
-interface AssistantRecordPanelProps<R extends CallbackLoggerEntryRecorder = CallbackLoggerEntryRecorder> {
+interface AssistantRecordPanelProps<R extends Recorder = Recorder> {
     recorder: R;
     onSave: (record: object) => void;
 }
 
-const AssistantRecordPanel: React.FC<AssistantRecordPanelProps> = ({ recorder, onSave }: AssistantRecordPanelProps) => {
+const AssistantRecordPanel: React.FC<AssistantRecordPanelProps> = ({ recorder, onSave }) => {
     const [isRecording, setIsRecording] = useState(true);
     const [record, setRecord] = useState<object>();
-    const recorderRef = useRef<CallbackLoggerEntryRecorder>();
+    const recorderRef = useRef<AssistantRecordPanelProps['recorder']>();
 
     const handleStart = React.useCallback(() => {
         recorderRef.current?.start();
@@ -87,10 +87,7 @@ const AssistantRecordPanel: React.FC<AssistantRecordPanelProps> = ({ recorder, o
     );
 };
 
-export const renderAssistantRecordPanel = <R extends CallbackLoggerEntryRecorder = CallbackLoggerEntryRecorder>(
-    recorder: R,
-    saver: RecordSaver,
-) => {
+export const renderAssistantRecordPanel = <R extends Recorder = Recorder>(recorder: R, saver: RecordSaver) => {
     const div = document.createElement('div');
     document.body.appendChild(div);
 
