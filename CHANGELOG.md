@@ -1,3 +1,15 @@
+# v4.2.0 (Tue Aug 24 2021)
+
+#### 🚀 Enhancement
+
+- feat: вынес метод для voice.stop ([@neolite](https://github.com/neolite))
+
+#### Authors: 1
+
+- Rafkat Galiullin ([@neolite](https://github.com/neolite))
+
+---
+
 # v4.1.0 (Mon Aug 23 2021)
 
 #### 🚀 Enhancement
