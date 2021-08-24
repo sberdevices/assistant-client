@@ -343,6 +343,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
             protocol.clearQueue();
             transport.close();
         },
+        stopVoice: voice.stop,
         emit,
         on,
         changeConfiguration: protocol.changeConfiguration,
