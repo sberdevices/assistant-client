@@ -90,7 +90,7 @@ export const createProtocol = (
     const send = (message: IMessage) => {
         const newMessage = Message.create({ ...basePayload, ...message });
 
-        logger?.logOutcoming(newMessage);
+        logger?.({ type: 'outcoming', message: newMessage });
 
         transport.send(newMessage);
 
@@ -233,12 +233,13 @@ export const createProtocol = (
                 emit('ready');
             }, 500);
 
-            logger?.logInit({ ...configuration, ...currentSettings });
+            logger?.({ type: 'init', params: { ...configuration, ...currentSettings } });
         }),
     );
     subscriptions.push(
         transport.on('message', (message: Message) => {
-            logger?.logIncoming(message);
+            logger?.({ type: 'incoming', message });
+
             emit('incoming', message);
         }),
     );
