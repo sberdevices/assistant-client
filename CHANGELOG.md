@@ -1,3 +1,21 @@
+# v4.3.0 (Wed Aug 25 2021)
+
+#### 🚀 Enhancement
+
+- fix: запретил линтеру ругаться на console в некоторых местах [#173](https://github.com/sberdevices/assistant-client/pull/173) (avstarikovich@sberbank.ru)
+- feat: запилил рекордер моков для эмуляции vps [#173](https://github.com/sberdevices/assistant-client/pull/173) (avstarikovich@sberbank.ru)
+
+#### 🐛 Bug Fix
+
+- fix: отрефакторил механизм логирования и записи [#173](https://github.com/sberdevices/assistant-client/pull/173) (avstarikovich@sberbank.ru)
+- fix: убрал лишнюю абстракцию mockDecoder'a [#173](https://github.com/sberdevices/assistant-client/pull/173) (avstarikovich@sberbank.ru)
+
+#### Authors: 1
+
+- Старикович Антон (avstarikovich@sberbank.ru)
+
+---
+
 # v4.2.0 (Tue Aug 24 2021)
 
 #### 🚀 Enhancement
