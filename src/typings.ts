@@ -235,6 +235,7 @@ export interface AssistantWindow {
     appInitialData: Array<AssistantClientCommand>;
     appRecoveryState: unknown;
 
+    __dangerouslySendText?: (text: string) => void;
     __dangerouslySendDataMessage?: (data: {}, name: string) => void;
     __dangerouslySendVoiceMessage?: (message: string) => void;
     __dangerouslyGetAssistantAppState?: () => AssistantAppState;

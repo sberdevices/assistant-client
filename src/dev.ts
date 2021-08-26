@@ -153,6 +153,7 @@ export const initializeAssistantSDK = ({
     const sendText = (text: string) => {
         assistant.sendText(text);
     };
+    window.__dangerouslySendText = sendText;
 
     const emitOnData = (command: AssistantClientCommand) => {
         if (clientReady && assistantReady && window.AssistantClient?.onData) {
