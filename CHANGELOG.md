@@ -1,3 +1,15 @@
+# v4.3.1 (Tue Aug 31 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Не работает подписки sendAction в браузере [#184](https://github.com/sberdevices/assistant-client/pull/184) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.3.0 (Wed Aug 25 2021)
 
 #### 🚀 Enhancement
