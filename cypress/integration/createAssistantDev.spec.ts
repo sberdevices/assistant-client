@@ -235,6 +235,53 @@ describe('Проверяем createAssistantDev', () => {
         });
     });
 
+    it('Проверяем подписку sendAction - ожидаем срабатывание подписки', (done) => {
+        const smartAppData = { type: 'test_data' };
+
+        server.on('connection', (socket) => {
+            socket.binaryType = 'arraybuffer';
+            initProtocol(socket, { initPhrase: INIT_PHRASE });
+
+            socket.on('message', (mes) => {
+                const message = Message.decode((mes as Uint8Array).slice(4));
+
+                if (message.systemMessage?.data && message.systemMessage?.data !== '{}') {
+                    const { server_action }: SystemMessageDataType = JSON.parse(message.systemMessage.data);
+
+                    if (server_action?.type !== 'test_action') {
+                        return;
+                    }
+
+                    socket.send(
+                        createAnswerBuffer({
+                            messageId: message.messageId,
+                            systemMessageData: JSON.stringify({
+                                items: [{ command: { type: 'smart_app_data', smart_app_data: smartAppData } }],
+                                app_info: APP_INFO,
+                            }),
+                            last: message.last,
+                        }),
+                    );
+                }
+            });
+        });
+
+        const assistant = createAssistantDev({
+            getState: () => ({}),
+            url: SOCKET_URL,
+            userChannel: USER_CHANNEL,
+            surface: SURFACE,
+            initPhrase: INIT_PHRASE,
+        });
+
+        assistant.on('start', () => {
+            assistant.sendAction({ type: 'test_action', payload: {} }, (data) => {
+                expect(data).to.be.deep.eq(smartAppData);
+                done();
+            });
+        });
+    });
+
     it('Проверяем оповещение подписчиков при получении команд от ассистента', (done) => {
         const data: AssistantSmartAppCommand = { type: 'smart_app_data', smart_app_data: { type: 'TEST_COMMAND' } };
         const navigation: AssistantNavigationCommand = { type: 'navigation', navigation: { command: 'DOWN' } };

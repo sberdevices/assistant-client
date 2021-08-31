@@ -88,7 +88,7 @@ export const createClient = (
         appInfo: AppInfo,
         messageName = 'SERVER_ACTION',
     ): Promise<number | Long | undefined> => {
-        let messageId: number | undefined;
+        const messageId = protocol.getMessageId();
 
         // мету и server_action отправляем в одном systemMessage
         await sendMeta(({ data }) => {
