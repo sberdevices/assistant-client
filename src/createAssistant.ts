@@ -99,13 +99,17 @@ if (typeof window !== 'undefined' && inIframe()) {
     });
 }
 
+export interface CreateAssistantParams {
+    getState: () => AssistantAppState;
+    getRecoveryState?: () => unknown;
+    ready?: boolean;
+}
+
 export const createAssistant = <A extends AssistantSmartAppData>({
     getState,
     getRecoveryState,
-}: {
-    getState: () => AssistantAppState;
-    getRecoveryState?: () => unknown;
-}) => {
+    ready = true,
+}: CreateAssistantParams) => {
     let initialDataConsumed = false;
     let currentGetState = getState;
     let currentGetRecoveryState = getRecoveryState;
@@ -199,7 +203,10 @@ export const createAssistant = <A extends AssistantSmartAppData>({
             }
         },
     };
-    setTimeout(() => window.AssistantHost?.ready()); // таймаут для подписки на start
+
+    if (ready) {
+        setTimeout(() => window.AssistantHost?.ready()); // таймаут для подписки на start
+    }
 
     const sendData = (
         { action, name, requestId }: SendDataParams,
@@ -284,6 +291,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         },
         setSuggests: (suggest: string) => window.AssistantHost?.setSuggests(suggest),
         setHints: (hints: string) => window.AssistantHost?.setHints(hints),
+        ready: () => window.AssistantHost?.ready(),
     };
 };
 

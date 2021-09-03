@@ -1,39 +1,38 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
-import { AssistantAppState, AssistantSettings, AssistantSmartAppData } from './typings';
+import { AssistantSettings, AssistantSmartAppData } from './typings';
 import { initializeAssistantSDK, InitializeAssistantSDKParams } from './dev';
-import { createAssistant } from './createAssistant';
+import { createAssistant, CreateAssistantParams } from './createAssistant';
 
 export const createAssistantDev = <A extends AssistantSmartAppData>({
     getState,
     getRecoveryState,
+    ready,
     ...sdkParams
-}: {
-    getState: () => AssistantAppState;
-    getRecoveryState?: () => Record<string, unknown> | undefined;
-} & Pick<
-    InitializeAssistantSDKParams,
-    | 'initPhrase'
-    | 'url'
-    | 'userChannel'
-    | 'surface'
-    | 'userId'
-    | 'token'
-    | 'surfaceVersion'
-    | 'nativePanel'
-    | 'sdkVersion'
-    | 'enableRecord'
-    | 'recordParams'
-    | 'fakeVps'
-    | 'settings'
-    | 'getMeta'
-    | 'features'
->) => {
+}: CreateAssistantParams &
+    Pick<
+        InitializeAssistantSDKParams,
+        | 'initPhrase'
+        | 'url'
+        | 'userChannel'
+        | 'surface'
+        | 'userId'
+        | 'token'
+        | 'surfaceVersion'
+        | 'nativePanel'
+        | 'sdkVersion'
+        | 'enableRecord'
+        | 'recordParams'
+        | 'fakeVps'
+        | 'settings'
+        | 'getMeta'
+        | 'features'
+    >) => {
     initializeAssistantSDK({
         ...sdkParams,
     });
 
-    return createAssistant<A>({ getState, getRecoveryState });
+    return createAssistant<A>({ getState, getRecoveryState, ready });
 };
 
 const parseJwt = (token: string) => {
@@ -54,14 +53,14 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
     token,
     getState,
     getRecoveryState,
+    ready,
     settings = {},
     ...sdkParams
 }: {
     token: string;
-    getState: () => AssistantAppState;
-    getRecoveryState?: () => Record<string, unknown> | undefined;
     settings?: Pick<AssistantSettings, 'dubbing'>;
-} & Pick<InitializeAssistantSDKParams, 'initPhrase' | 'enableRecord' | 'recordParams' | 'getMeta'>) => {
+} & CreateAssistantParams &
+    Pick<InitializeAssistantSDKParams, 'initPhrase' | 'enableRecord' | 'recordParams' | 'getMeta'>) => {
     try {
         const { exp } = parseJwt(token);
         if (exp * 1000 <= Date.now()) {
@@ -87,6 +86,7 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
         },
         getState,
         getRecoveryState,
+        ready,
         url: 'wss://nlp2vps.online.sberbank.ru:443/vps/',
         surface: 'SBERBOX',
         userChannel: 'B2C',
