@@ -3,7 +3,7 @@
   "version": "0.2.1",
   "private": true,
   "dependencies": {
-    "@sberdevices/assistant-client": "^2.4.1",
+    "@sberdevices/assistant-client": "^4.3.1",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "react": "^17.0.1",
@@ -48,7 +48,7 @@
     "@types/react": "^16.14.2",
     "@types/react-dom": "^16.9.10",
     "cypress": "^6.1.0",
-    "react-scripts": "^3.4.4",
+    "react-scripts": "^4.0.3",
     "start-server-and-test": "^1.11.6"
   }
 }
