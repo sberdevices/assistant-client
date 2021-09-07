@@ -19,6 +19,7 @@ dist/
 esm/
 umd/
 *.tsbuildinfo
+build/
 
 # cypress
 cypress/screenshots/
