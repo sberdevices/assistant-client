@@ -223,6 +223,7 @@ export interface AssistantHost {
     ready: () => void;
     sendData: (action: string, message: string | null) => void;
     sendDataContainer: (container: string) => void;
+    setInteractableSwipeMode?: (params: string) => void;
     setSuggests: (suggest: string) => void;
     setHints: (hints: string) => void;
 }
@@ -457,6 +458,10 @@ export type AssistantPostMessage =
       }
     | {
           type: 'sendData';
+          payload: string;
+      }
+    | {
+          type: 'setInteractableSwipeMode';
           payload: string;
       }
     | {
