@@ -29,6 +29,12 @@ export {
     PermissionStatus,
 } from '@salutejs/types';
 
+export type ThemeColorName = 'dark' | 'light';
+
+export type Theme = {
+    name: ThemeColorName;
+};
+
 export type CharacterId = 'sber' | 'eva' | 'joy';
 
 export type Character = SaluteCharacter & {
@@ -98,6 +104,7 @@ export type AssistantServerAction =
 
 export type AssistantCommands =
     | ActionCommand
+    | AssistantThemeCommand
     | AssistantCharacterCommand
     | AssistantCloseAppCommand
     | AssistantNavigationCommand
@@ -109,6 +116,12 @@ export type AssistantCommands =
 export interface SdkMeta {
     mid?: string;
     requestId?: string;
+}
+
+export interface AssistantThemeCommand {
+    type: 'theme';
+    theme: Theme;
+    sdk_meta?: SdkMeta;
 }
 
 export interface AssistantCharacterCommand {
@@ -202,6 +215,7 @@ export interface AssistantSystemCommand {
 
 export type AssistantClientCustomizedCommand<T extends AssistantSmartAppData> =
     | AssistantAppContext
+    | AssistantThemeCommand
     | AssistantCharacterCommand
     | AssistantNavigationCommand
     | AssistantVisibilityCommand
