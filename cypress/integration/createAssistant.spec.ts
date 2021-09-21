@@ -4,6 +4,8 @@ import { createAssistant } from '../../src/index';
 /* eslint-disable @typescript-eslint/camelcase */
 
 describe('Проверяем createAssistant', () => {
+    let initialData;
+
     beforeEach(() => {
         window.appInitialData = [];
         window.AssistantHost = {
@@ -12,6 +14,11 @@ describe('Проверяем createAssistant', () => {
             setSuggests: cy.stub(),
             setHints: cy.stub(),
         };
+        initialData = [
+            { type: 'character', character: { id: 'sber' }, sdk_meta: { mid: '-1' } },
+            { type: 'insets', insets: { left: 0, top: 0, right: 0, bottom: 144 }, sdk_meta: { mid: '-1' } },
+            { type: 'smart_app_data', smart_app_data: { command: 'TEST_COMMAND' }, sdk_meta: { mid: '123456' } },
+        ];
     });
 
     afterEach(() => {
@@ -26,11 +33,6 @@ describe('Проверяем createAssistant', () => {
     const getState = () => state;
     const getRecoveryState = () => recoveryState;
     const initAssistant = () => createAssistant({ getState, getRecoveryState });
-    const initialData = [
-        { type: 'character', character: { id: 'sber' }, sdk_meta: { mid: '-1' } },
-        { type: 'insets', insets: { left: 0, top: 0, right: 0, bottom: 144 }, sdk_meta: { mid: '-1' } },
-        { type: 'smart_app_data', smart_app_data: { command: 'TEST_COMMAND' }, sdk_meta: { mid: '123456' } },
-    ];
 
     const expectSendData = (
         assistant: ReturnType<typeof createAssistant>,
@@ -236,5 +238,27 @@ describe('Проверяем createAssistant', () => {
         initialData.forEach((command) => window.AssistantClient.onData(command));
 
         expect(onData).to.not.called;
+    });
+
+    it('appInitialData может меняться после инициализации', () => {
+        const firstInitialData = initialData.slice(0, 2);
+        window.appInitialData = [...firstInitialData];
+
+        const onData = cy.stub();
+        const assistant = initAssistant();
+
+        assistant.on('data', onData);
+
+        setTimeout(() => {
+            window.appInitialData.push(initialData[2]);
+
+            window.AssistantClient.onStart();
+
+            initialData.forEach((command) => {
+                expect(onData).to.calledWith(command);
+            });
+
+            expect(onData).to.callCount(initialData.length);
+        }, 1);
     });
 });
