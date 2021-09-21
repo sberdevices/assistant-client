@@ -237,4 +237,26 @@ describe('Проверяем createAssistant', () => {
 
         expect(onData).to.not.called;
     });
+
+    it('appInitialData может меняться после инициализации', () => {
+        const firstInitialData = initialData.slice(0, 2);
+        window.appInitialData = [...firstInitialData];
+
+        const onData = cy.stub();
+        const assistant = initAssistant();
+
+        assistant.on('data', onData);
+
+        setTimeout(() => {
+            window.appInitialData.push(initialData[2]);
+
+            window.AssistantClient.onStart();
+
+            initialData.forEach((command) => {
+                expect(onData).to.calledWith(command);
+            });
+
+            expect(onData).to.callCount(initialData.length);
+        }, 1);
+    });
 });

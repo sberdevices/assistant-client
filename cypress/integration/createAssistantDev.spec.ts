@@ -27,7 +27,6 @@ describe('Проверяем createAssistantDev', () => {
     beforeEach(() => {
         cy.stub(window, 'WebSocket').callsFake((url) => new WebSocket(url));
         server = new Server(SOCKET_URL);
-        window.appInitialData = [{ type: 'character', character: { id: 'sber' } }];
     });
 
     afterEach(() => {
@@ -166,7 +165,6 @@ describe('Проверяем createAssistantDev', () => {
             }
 
             if (status.character && status.insets && status.data) {
-                expect(assistant.getInitialData()).to.deep.equal([]);
                 done();
             }
         });
