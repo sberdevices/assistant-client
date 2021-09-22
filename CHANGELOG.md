@@ -1,3 +1,20 @@
+# v4.4.0 (Wed Sep 22 2021)
+
+#### 🚀 Enhancement
+
+- feat: Добавлен тип AssistantThemeCommand [#195](https://github.com/sberdevices/assistant-client/pull/195) ([@evgeniysemin](https://github.com/evgeniysemin))
+
+#### 🐛 Bug Fix
+
+- chore: Починил запуск todo-canvas-app [#188](https://github.com/sberdevices/assistant-client/pull/188) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 2
+
+- [@evgeniysemin](https://github.com/evgeniysemin)
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.3.1 (Tue Aug 31 2021)
 
 #### 🐛 Bug Fix
