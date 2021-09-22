@@ -156,8 +156,8 @@ export const initializeAssistantSDK = ({
     let assistantReady = false; // флаг готовности контекста ассистента
     let character: CharacterId;
 
-    const sendText = (text: string) => {
-        assistant.sendText(text);
+    const sendText = (messasge: string) => {
+        assistant.sendText(messasge);
     };
 
     const emitOnData = (command: AssistantClientCommand) => {
@@ -248,6 +248,7 @@ export const initializeAssistantSDK = ({
         },
         setSuggests() {},
         setHints() {},
+        sendText,
     };
 
     const subscribeToListenerStatus = (cb: (event: 'listen' | 'stopped') => void): (() => void) =>

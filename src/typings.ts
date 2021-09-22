@@ -237,6 +237,7 @@ export interface AssistantHost {
     ready: () => void;
     sendData: (action: string, message: string | null) => void;
     sendDataContainer: (container: string) => void;
+    sendText: (message: string) => void;
     setSuggests: (suggest: string) => void;
     setHints: (hints: string) => void;
 }

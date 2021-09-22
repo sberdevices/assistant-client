@@ -315,6 +315,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         },
         setSuggests: (suggest: string) => window.AssistantHost?.setSuggests(suggest),
         setHints: (hints: string) => window.AssistantHost?.setHints(hints),
+        sendText: (message: string) => window.AssistantHost?.sendText(message),
         ready: () => window.AssistantHost?.ready(),
     };
 };
