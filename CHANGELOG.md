@@ -1,3 +1,15 @@
+# v4.5.0 (Wed Sep 22 2021)
+
+#### 🚀 Enhancement
+
+- feat: Приложение может управлять ready [#186](https://github.com/sberdevices/assistant-client/pull/186) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.4.0 (Wed Sep 22 2021)
 
 #### 🚀 Enhancement
