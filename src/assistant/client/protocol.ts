@@ -5,6 +5,14 @@ import { VpsConfiguration, OriginalMessageType, VpsVersion } from '../../typings
 import { createClientMethods } from './methods';
 import { createTransport } from './transport';
 
+const safeJSONParse = <T>(str: string, defaultValue: T): T => {
+    try {
+        return JSON.parse(str) as T;
+    } catch (err) {
+        return defaultValue;
+    }
+};
+
 const compileBasePayload = ({
     userId,
     token,
@@ -153,7 +161,21 @@ export const createProtocol = (
     };
 
     const updateDevice = (obj: Partial<VpsConfiguration['device']>) => {
-        Object.assign(currentSettings.device, obj);
+        if (obj) {
+            const { additionalInfo, ...deviceOptions } = obj;
+            const oldInfo = currentSettings.device?.additionalInfo
+                ? safeJSONParse(currentSettings.device?.additionalInfo, {})
+                : {};
+            const newInfo = additionalInfo ? safeJSONParse(additionalInfo, {}) : {};
+            currentSettings.device = {
+                ...currentSettings.device,
+                ...deviceOptions,
+                additionalInfo: JSON.stringify({
+                    ...oldInfo,
+                    ...newInfo,
+                }),
+            };
+        }
     };
 
     const updateSettings = (obj: Partial<VpsConfiguration['settings']>) => {
