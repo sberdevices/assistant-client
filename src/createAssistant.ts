@@ -30,6 +30,13 @@ export interface SendDataParams {
     requestId?: string;
 }
 
+export interface InteractableSwipeMode {
+    // default = scrollableContentAndHeader
+    swipeMode: 'disabled' | 'onlyByHeader' | 'scrollableContentAndHeader';
+    // default = 48
+    swipeHeaderHeight: number;
+}
+
 function inIframe() {
     try {
         return window.self !== window.top;
@@ -55,6 +62,9 @@ if (typeof window !== 'undefined' && inIframe()) {
         },
         setSuggests(suggests: string) {
             postMessage({ type: 'setSuggests', payload: suggests });
+        },
+        setInteractableSwipeMode(mode: string) {
+            postMessage({ type: 'setInteractableSwipeMode', payload: mode });
         },
         setHints(hints: string) {
             postMessage({ type: 'setHints', payload: hints });
@@ -288,6 +298,13 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         },
         setGetRecoveryState: (nextGetRecoveryState?: () => unknown) => {
             currentGetRecoveryState = nextGetRecoveryState;
+        },
+        setInteractableSwipeMode: (mode: InteractableSwipeMode) => {
+            if (!window.AssistantHost?.setInteractableSwipeMode) {
+                throw new Error('Method not supported');
+            }
+
+            window.AssistantHost.setInteractableSwipeMode(JSON.stringify(mode));
         },
         setSuggests: (suggest: string) => window.AssistantHost?.setSuggests(suggest),
         setHints: (hints: string) => window.AssistantHost?.setHints(hints),
