@@ -5,6 +5,7 @@ import { createMusicRecognizer } from './createMusicRecognizer';
 import { createSpeechRecognizer } from './createSpeechRecognizer';
 import { createVoiceListener } from './createVoiceListener';
 import { createVoicePlayer } from './player/voicePlayer';
+import { createAudioContext, isAudioSupported } from './audioContext';
 
 export const createVoice = (
     client: ReturnType<typeof createClient>,
@@ -16,10 +17,7 @@ export const createVoice = (
     /// когда случится onReady, очередь треков начнет проигрываться
     onReady?: () => void,
 ) => {
-    const voicePlayer = createVoicePlayer({
-        startVoiceDelay: 1,
-        onReady,
-    });
+    let voicePlayer: ReturnType<typeof createVoicePlayer>;
     const listener = createVoiceListener();
     const musicRecognizer = createMusicRecognizer(listener);
     const speechRecognizer = createSpeechRecognizer(listener);
@@ -61,7 +59,7 @@ export const createVoice = (
     const stop = () => {
         // здесь важен порядок остановки голоса
         stopListening(true);
-        voicePlayer.stop();
+        voicePlayer?.stop();
     };
 
     /** Активирует слушание голоса
@@ -73,7 +71,7 @@ export const createVoice = (
         }
 
         if (isPlaying) {
-            voicePlayer.stop();
+            voicePlayer?.stop();
             return;
         }
 
@@ -102,7 +100,7 @@ export const createVoice = (
         }
 
         if (isPlaying) {
-            voicePlayer.stop();
+            voicePlayer?.stop();
         }
 
         if (settings.disableListening) {
@@ -121,6 +119,34 @@ export const createVoice = (
         }
     };
 
+    if (isAudioSupported) {
+        createAudioContext((context) => {
+            voicePlayer = createVoicePlayer(context, { startVoiceDelay: 1 });
+
+            // начало проигрывания озвучки
+            subscriptions.push(
+                voicePlayer.on('play', () => {
+                    isPlaying = true;
+                    emit({ emotion: 'talk' });
+                }),
+            );
+
+            // окончание проигрывания озвучки
+            subscriptions.push(
+                voicePlayer.on('end', (mesId: string) => {
+                    isPlaying = false;
+                    emit({ emotion: 'idle' });
+
+                    if (mesId === autolistenMesId) {
+                        listen();
+                    }
+                }),
+            );
+
+            onReady && onReady();
+        });
+    }
+
     // обработка входящей озвучки
     subscriptions.push(
         client.on('voice', (data, message) => {
@@ -128,27 +154,7 @@ export const createVoice = (
                 return;
             }
 
-            voicePlayer.append(data, message.messageId.toString(), message.last === 1);
-        }),
-    );
-
-    // начало проигрывания озвучки
-    subscriptions.push(
-        voicePlayer.on('play', () => {
-            isPlaying = true;
-            emit({ emotion: 'talk' });
-        }),
-    );
-
-    // окончание проигрывания озвучки
-    subscriptions.push(
-        voicePlayer.on('end', (mesId: string) => {
-            isPlaying = false;
-            emit({ emotion: 'idle' });
-
-            if (mesId === autolistenMesId) {
-                listen();
-            }
+            voicePlayer?.append(data, message.messageId.toString(), message.last === 1);
         }),
     );
 
@@ -169,10 +175,10 @@ export const createVoice = (
     subscriptions.push(
         listener.on('status', (status: 'listen' | 'started' | 'stopped') => {
             if (status === 'listen') {
-                voicePlayer.active = false;
+                voicePlayer?.setActive(false);
                 emit({ emotion: 'listen' });
             } else if (status === 'stopped') {
-                voicePlayer.active = !settings.disableDubbing;
+                voicePlayer?.setActive(!settings.disableDubbing);
                 emit({ asr: { text: '' }, emotion: 'idle' });
             }
         }),
@@ -198,7 +204,7 @@ export const createVoice = (
     return {
         destroy: () => {
             stopListening(true);
-            voicePlayer.active = false;
+            voicePlayer?.setActive(false);
             subscriptions.splice(0, subscriptions.length).map((unsubscribe) => unsubscribe());
         },
         change: (newSettings: { disableDubbing?: boolean; disableListening?: boolean }) => {
@@ -218,7 +224,7 @@ export const createVoice = (
             // вкл/выкл фичи озвучки
             if (typeof disableDubbing !== 'undefined' && settings.disableDubbing !== disableDubbing) {
                 settings.disableDubbing = disableDubbing;
-                voicePlayer.active = !disableDubbing;
+                voicePlayer?.setActive(!disableDubbing);
             }
 
             Object.assign(settings, newSettings);
