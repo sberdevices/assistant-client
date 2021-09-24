@@ -6,23 +6,7 @@ export interface VoicePlayerSettings {
     startVoiceDelay?: number;
     sampleRate?: number;
     numberOfChannels?: number;
-    onReady?: () => void;
 }
-
-const createAudioContext = (options?: AudioContextOptions): AudioContext => {
-    if (window.AudioContext) {
-        return new AudioContext(options);
-    }
-
-    if (window.webkitAudioContext) {
-        // eslint-disable-next-line new-cap
-        return new window.webkitAudioContext();
-    }
-
-    throw new Error('Audio not supported');
-};
-
-const isAudioSupported = typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext);
 
 /** Создает коллекцию треков  */
 const createTrackQueue = <T extends unknown>() => {
@@ -89,43 +73,15 @@ export type EventsType = {
     end: (trackId: string) => void;
 };
 
-export const createVoicePlayer = ({
-    startVoiceDelay = 0.2,
-    sampleRate,
-    numberOfChannels,
-    onReady,
-}: VoicePlayerSettings = {}) => {
-    const actx: AudioContext | null = isAudioSupported ? createAudioContext() : null;
+export const createVoicePlayer = (
+    actx: AudioContext,
+    { startVoiceDelay = 0.2, sampleRate, numberOfChannels }: VoicePlayerSettings = {},
+) => {
     const { on, emit } = createNanoEvents<EventsType>();
     const tracks = createTrackQueue<ReturnType<typeof createTrackStream>>();
     // true - воспроизводим все треки в очереди (новые в том числе), false - скипаем всю очередь (новые в т.ч.)
     let active = true;
     let cursor = 0;
-
-    // если safari - нужно активировать аудиоконтекст по событию ввода
-    if (actx && navigator.vendor.search('Apple') >= 0) {
-        const handleClick = () => {
-            document.removeEventListener('click', handleClick);
-            document.removeEventListener('touchstart', handleClick);
-
-            /// нужно что-то проиграть, чтобы сафари разрешил воспроизводить звуки в любой момент в этом контексте
-            /// проигрываем тишину
-            const oscillator = actx.createOscillator();
-            oscillator.frequency.value = 0;
-            oscillator.connect(actx.destination);
-            oscillator.start(0);
-            oscillator.stop(0.5);
-
-            onReady && onReady();
-        };
-
-        // для пк
-        document.addEventListener('click', handleClick);
-        // для мобильных устройств
-        document.addEventListener('touchstart', handleClick);
-    } else {
-        onReady && onReady();
-    }
 
     const play = () => {
         if (cursor >= tracks.length) {
@@ -152,10 +108,6 @@ export const createVoicePlayer = ({
     const append = (data: Uint8Array, trackId: string, last = false) => {
         let current = tracks.has(trackId) ? tracks.get(trackId) : undefined;
         if (current == null) {
-            if (actx == null) {
-                // считаем что аудио неподдерживается, игнорируем вызов
-                return;
-            }
             current = createTrackStream(actx, {
                 sampleRate,
                 numberOfChannels,
@@ -192,10 +144,7 @@ export const createVoicePlayer = ({
 
     return {
         append,
-        get active() {
-            return active;
-        },
-        set active(value: boolean) {
+        setActive(value: boolean) {
             active = value;
             if (value) {
                 play();
