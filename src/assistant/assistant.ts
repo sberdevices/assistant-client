@@ -11,6 +11,7 @@ import {
     OriginalMessageType,
     PermissionType,
     SystemMessageDataType,
+    CharacterId,
 } from '../typings';
 
 import { createClient } from './client/client';
@@ -69,6 +70,7 @@ export type AppEvent =
 
 export type AssistantEvent = {
     asr?: { text: string; last?: boolean; mid?: OriginalMessageType['messageId'] }; // last и mid нужен для отправки исх бабла в чат
+    character?: CharacterId;
     emotion?: EmotionId;
 };
 
@@ -236,7 +238,11 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
     subscriptions.push(
         client.on('systemMessage', (systemMessage: SystemMessageDataType, originalMessage: OriginalMessageType) => {
             if (originalMessage.messageName === 'ANSWER_TO_USER') {
-                const { activate_app_info, items, app_info: mesAppInfo } = systemMessage;
+                const { activate_app_info, items, app_info: mesAppInfo, character } = systemMessage;
+
+                if (character) {
+                    emit('assistant', { character: character.id });
+                }
 
                 if (mesAppInfo && activate_app_info) {
                     emit('app', { type: 'run', app: mesAppInfo });
