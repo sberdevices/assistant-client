@@ -1,3 +1,15 @@
+# v4.5.1 (Tue Sep 28 2021)
+
+#### 🐛 Bug Fix
+
+- fix: merge additionaInfo in updateDevice [#185](https://github.com/sberdevices/assistant-client/pull/185) ([@soulko](https://github.com/soulko))
+
+#### Authors: 1
+
+- Anton Kostenko ([@soulko](https://github.com/soulko))
+
+---
+
 # v4.5.0 (Wed Sep 22 2021)
 
 #### 🚀 Enhancement
