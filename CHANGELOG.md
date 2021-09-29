@@ -1,3 +1,19 @@
+# v4.6.0 (Wed Sep 29 2021)
+
+#### 🚀 Enhancement
+
+- feat: Добавлен метод sendText для AssistantHost [#196](https://github.com/sberdevices/assistant-client/pull/196) ([@evgeniysemin](https://github.com/evgeniysemin))
+
+#### 🐛 Bug Fix
+
+- fix: AppInitialData не прокидывается в onData в Салют [#193](https://github.com/sberdevices/assistant-client/pull/193) ([@evgeniysemin](https://github.com/evgeniysemin))
+
+#### Authors: 1
+
+- [@evgeniysemin](https://github.com/evgeniysemin)
+
+---
+
 # v4.5.1 (Tue Sep 28 2021)
 
 #### 🐛 Bug Fix
