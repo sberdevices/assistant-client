@@ -65,7 +65,7 @@ export const createVoice = (
     /** Активирует слушание голоса
      * если было активно слушание или проигрывание - останавливает, слушание в этом случае не активируется
      */
-    const listen = () => {
+    const listen = async (): Promise<void> => {
         if (stopListening()) {
             return;
         }
@@ -81,7 +81,7 @@ export const createVoice = (
 
         // повторные вызовы не пройдут, пока пользователь не разрешит/запретит аудио
         if (listener.status === 'stopped') {
-            client.createVoiceStream(({ sendVoice, messageId, onMessage }) =>
+            return client.createVoiceStream(({ sendVoice, messageId, onMessage }) =>
                 speechRecognizer.start({
                     sendVoice,
                     messageId,
