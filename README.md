@@ -67,10 +67,7 @@ Assitant Client доступен для подключения через `<scri
 ```html
 <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-// Только для среды development (createAssistantDev, createSmartappDebugger)
-<script src="https://unpkg.com/@sberdevices/assistant-client@2.1.0/umd/assistant.development.min.js"></script>
-// Только для среды production
-<script src="https://unpkg.com/@sberdevices/assistant-client@2.1.0/umd/assistant.production.min.js"></script>
+<script src="https://unpkg.com/@sberdevices/assistant-client@2.1.0/umd/assistant.min.js"></script>
 ```
 
 
