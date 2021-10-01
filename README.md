@@ -44,7 +44,7 @@ ____
 
 1. Завести аккаунт в [SmartApp Studio](https://smartapp-studio.sberdevices.ru/).
 2. Создать смартап типа [Сanvas App](https://smartapp-code.sberdevices.ru/documentation/#/docs/ru/methodology/research/canvasapp).
-3. Получить токен. Для этого необходимо перейти в *Настройки профиля* > пункт *Auth Token* > опция *Скопировать ключ*. 
+3. Получить токен. Для этого необходимо перейти в *Настройки профиля* > пункт *Auth Token* > опция *Скопировать ключ*.
 4. Передать полученный токен в методе `createSmartappDebugger` в параметре `token`.
 
 
@@ -67,7 +67,10 @@ Assitant Client доступен для подключения через `<scri
 ```html
 <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@sberdevices/assistant-client@2.1.0/umd/assistant.min.js"></script>
+// Только для среды development (createAssistantDev, createSmartappDebugger)
+<script src="https://unpkg.com/@sberdevices/assistant-client@2.1.0/umd/assistant.development.min.js"></script>
+// Только для среды production
+<script src="https://unpkg.com/@sberdevices/assistant-client@2.1.0/umd/assistant.production.min.js"></script>
 ```
 
 
@@ -181,8 +184,8 @@ ____
 
 #### getInitialData(): [AssistantCommands](#AssistantCommands)[]
 
-Возвращает данные, полученные при инициализации смартапа. Передает в Assistant Client текущего ассистента, а не ассистента, выставленного по умолчанию. 
-Если при запуске смартапа не вызвать команду `getInitialData()`, то команды из `appInitialData` будут отправляться в `on('data')`. 
+Возвращает данные, полученные при инициализации смартапа. Передает в Assistant Client текущего ассистента, а не ассистента, выставленного по умолчанию.
+Если при запуске смартапа не вызвать команду `getInitialData()`, то команды из `appInitialData` будут отправляться в `on('data')`.
 
 #### getRecoveryState(): unknown
 
@@ -194,7 +197,7 @@ ____
 
 #### on('data', cb: (data: [AssistantCharacterCommand](#AssistantCharacterCommand) | [AssistantNavigationCommand](#AssistantNavigationCommand) | [AssistantInsetsCommand](#AssistantInsetsCommand) | [AssistantSmartAppError](#AssistantSmartAppError) | [AssistantSmartAppCommand](#AssistantSmartAppCommand)) => {}): void
 
-Осуществляет подписку на событие получения данных с бэкенда. Получает команды из `appInitialData`, если при запуске смартапа не была вызвана команда `getInitialData()`. 
+Осуществляет подписку на событие получения данных с бэкенда. Получает команды из `appInitialData`, если при запуске смартапа не была вызвана команда `getInitialData()`.
 
 #### sendAction({ type: string; payload: Record<string, unknown> }, params?: { name?: string; requestId?: string }) => void
 
@@ -525,7 +528,7 @@ const initializeAssistant = (getState: AssistantAppState) => {
             getState,
         });
     }
-    
+
     if (window.cypress) {
       window.appInitialData = [];
     }

@@ -4,7 +4,8 @@
     "description": "Модуль взаимодействия с виртуальным ассистентом",
     "main": "dist/index.js",
     "module": "esm/index.js",
-    "unpkg": "umd/assistant.min.js",
+    "unpkgdev": "umd/assistant.development.min.js",
+    "unpkg": "umd/assistant.production.min.js",
     "scripts": {
         "prebuild": "rm -rf ./dist ./esm ./umd",
         "build": "rollup -c",
