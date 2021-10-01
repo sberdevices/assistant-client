@@ -27,6 +27,26 @@ const common = {
     ],
 };
 
+const getUmdConfig = (fileName, input) => ({
+    ...common,
+    input: input ? input : common.input,
+    output: {
+        ...common.output,
+        file: fileName,
+        format: 'umd',
+        name: 'assistant',
+        plugins: [terser()],
+    },
+    plugins: [
+        nodeResolve({
+            browser: true,
+            preferBuiltins: true,
+        }),
+        typescript({ tsconfig: 'tsconfig.json', declaration: false, declarationMap: false }),
+        ...common.plugins,
+    ],
+});
+
 export default [
     {
         ...common,
@@ -62,40 +82,9 @@ export default [
         ],
     },
     {
-        ...common,
-        output: {
-            ...common.output,
-            file: pkg.unpkgdev,
-            format: 'umd',
-            name: 'assistant',
-            plugins: [terser()],
-        },
-        plugins: [
-            nodeResolve({
-                browser: true,
-                preferBuiltins: true,
-            }),
-            typescript({ tsconfig: 'tsconfig.json', declaration: false, declarationMap: false }),
-            ...common.plugins,
-        ],
+        ...getUmdConfig(pkg.unpkgdev),
     },
     {
-        ...common,
-        input: 'src/createAssistant.ts',
-        output: {
-            ...common.output,
-            file: pkg.unpkg,
-            format: 'umd',
-            name: 'assistant.prod',
-            plugins: [terser()],
-        },
-        plugins: [
-            nodeResolve({
-                browser: true,
-                preferBuiltins: true,
-            }),
-            typescript({ tsconfig: 'tsconfig.json', declaration: false, declarationMap: false }),
-            ...common.plugins,
-        ],
-    }
+        ...getUmdConfig(pkg.unpkg, 'src/createAssistant.ts'),
+    },
 ];

@@ -61,16 +61,6 @@ ____
 $ npm i @sberdevices/assistant-client
 ```
 
-#### Альтернативное подключение
-
-Assitant Client доступен для подключения через `<script>`. В этом случае обязательно подключение react. Версии react и assistant сlient можно поменять в src.
-```html
-<script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@sberdevices/assistant-client@2.1.0/umd/assistant.min.js"></script>
-```
-
-
 ### Пример использования
 
 ```typescript
@@ -132,6 +122,38 @@ const handleOnRefreshClick = () => {
             // Обработка ошибки, переданной от бэкенд
         });
 }
+```
+
+### Альтернативное подключение
+
+Assitant Client доступен для подключения через `<script>`.
+Версию assistant сlient можно поменять в src. Доступ к API осуществляется через глобальную переменную `assistant`.
+
+Пример, для разработки и отладки в браузере (в этом случае обязательно подключение react):
+```html
+<script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+<script src="@sberdevices/assistant-client@4.6.1/umd/assistant.development.min.js"></script>
+<script>
+  const client = assistant.createSmartappDebugger({
+            // Токен из Кабинета разработчика
+            token: 'token',
+            // Пример фразы для запуска смартапа
+            initPhrase: 'Хочу попкорн',
+            // Текущее состояние смартапа
+            getState: () => ({}),
+            // Состояние смартапа, с которым он будет восстановлен при следующем запуске
+            getRecoveryState: () => ({}),
+        });
+</script>
+```
+
+Пример, для использования на устройствах:
+```html
+<script src="@sberdevices/assistant-client@4.6.1/umd/assistant.production.min.js"></script>
+<script>
+  const client = assistant.createAssistant({ getState: () => ({}), getRecoveryState: () => ({}), });
+</script>
 ```
 
 ____
