@@ -65,7 +65,7 @@ export default [
         ...common,
         output: {
             ...common.output,
-            file: pkg.unpkg,
+            file: pkg.unpkgdev,
             format: 'umd',
             name: 'assistant',
             plugins: [terser()],
@@ -79,4 +79,23 @@ export default [
             ...common.plugins,
         ],
     },
+    {
+        ...common,
+        input: 'src/createAssistant.ts',
+        output: {
+            ...common.output,
+            file: pkg.unpkg,
+            format: 'umd',
+            name: 'assistant.prod',
+            plugins: [terser()],
+        },
+        plugins: [
+            nodeResolve({
+                browser: true,
+                preferBuiltins: true,
+            }),
+            typescript({ tsconfig: 'tsconfig.json', declaration: false, declarationMap: false }),
+            ...common.plugins,
+        ],
+    }
 ];
