@@ -86,6 +86,7 @@ export const initializeAssistantSDK = ({
     nativePanel = {
         defaultText: 'Покажи что-нибудь',
         render: renderNativePanel,
+        screenshotMode: false,
     },
     sdkVersion = SDK_VERSION,
     enableRecord,
