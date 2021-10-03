@@ -55,11 +55,13 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
     getRecoveryState,
     ready,
     settings = {},
+    nativePanel,
     ...sdkParams
 }: {
     token: string;
     settings?: Pick<AssistantSettings, 'dubbing'>;
 } & CreateAssistantParams &
+    Pick<InitializeAssistantSDKParams, 'nativePanel'> &
     Pick<InitializeAssistantSDKParams, 'initPhrase' | 'enableRecord' | 'recordParams' | 'getMeta'>) => {
     try {
         const { exp } = parseJwt(token);
@@ -84,6 +86,7 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
             ...settings,
             authConnector: 'developer_portal_jwt',
         },
+        nativePanel,
         getState,
         getRecoveryState,
         ready,

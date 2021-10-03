@@ -10,6 +10,11 @@ const initializeAssistant = (getState: any) => {
             token: process.env.REACT_APP_TOKEN ?? '',
             initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
             getState,
+            nativePanel: {
+                defaultText: 'Покажи что-нибудь',
+                screenshotMode: false,
+                tabIndex: -1,
+            },
         });
     }
 
