@@ -92,7 +92,7 @@ export const initializeAssistantSDK = ({
     recordParams,
     fakeVps,
     settings = {},
-    vpsVersion = 3,
+    vpsVersion = 5,
     features,
     capabilities,
     getMeta,
