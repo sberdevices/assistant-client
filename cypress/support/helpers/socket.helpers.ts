@@ -37,7 +37,7 @@ export const sendMessage = (
         systemMessage: systemMessageData != null ? { data: JSON.stringify(systemMessageData) } : undefined,
         status: statusData,
         last: 1,
-        version: 3,
+        version: 5,
     });
 
     const buffer = Message.encode(message).finish();
