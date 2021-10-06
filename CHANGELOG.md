@@ -1,3 +1,22 @@
+# v4.7.0 (Wed Oct 06 2021)
+
+#### 🚀 Enhancement
+
+- feat: добавлен геттер settings для объекта assistant [#207](https://github.com/sberdevices/assistant-client/pull/207) ([@Burzachil](https://github.com/Burzachil))
+
+#### 🐛 Bug Fix
+
+- fix: dev и prod сборки umd [#205](https://github.com/sberdevices/assistant-client/pull/205) ([@Burzachil](https://github.com/Burzachil))
+- docs: Откатил изменения предыдущего коммита [#204](https://github.com/sberdevices/assistant-client/pull/204) ([@sasha-tlt](https://github.com/sasha-tlt))
+- build: add umd production build [#203](https://github.com/sberdevices/assistant-client/pull/203) ([@Burzachil](https://github.com/Burzachil))
+
+#### Authors: 2
+
+- [@Burzachil](https://github.com/Burzachil)
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.6.0 (Wed Sep 29 2021)
 
 #### 🚀 Enhancement
