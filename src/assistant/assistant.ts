@@ -332,6 +332,9 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         get activeApp() {
             return !isDefaultApp(app.info) ? app.info : null;
         },
+        get settings() {
+            return settings;
+        },
         destroy,
         closeApp,
         listen: voice.listen,
