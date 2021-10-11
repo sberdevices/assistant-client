@@ -1,3 +1,22 @@
+# v4.8.0 (Mon Oct 11 2021)
+
+#### 🚀 Enhancement
+
+- feat: Добавлено событие ассистента - персонаж [#200](https://github.com/sberdevices/assistant-client/pull/200) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- fix: Вернуть афину в AssistantCharacterCommand [#211](https://github.com/sberdevices/assistant-client/pull/211) ([@sasha-tlt](https://github.com/sasha-tlt))
+- refactor: Исключена зависимость транспорта от протокола [#210](https://github.com/sberdevices/assistant-client/pull/210) ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+- docs: корректная версия assistant-client в umd [#208](https://github.com/sberdevices/assistant-client/pull/208) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 2
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+- Ivan Ushatsky ([@ivan-ushatsky](https://github.com/ivan-ushatsky))
+
+---
+
 # v4.7.0 (Wed Oct 06 2021)
 
 #### 🚀 Enhancement
