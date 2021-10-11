@@ -48,6 +48,25 @@ const compileBasePayload = ({
 
 export { BatchableMethods } from './methods';
 
+export const appendHeader = (uint8Array: Uint8Array): Uint8Array => {
+    // Добавляем 4 байта в начало с длинной сообщения
+    const arrayBuffer = new ArrayBuffer(4);
+    const dataView = new DataView(arrayBuffer, 0);
+    dataView.setInt32(0, uint8Array.length, true);
+    const newUint8Array = new Uint8Array(4 + uint8Array.length);
+    newUint8Array.set(new Uint8Array(arrayBuffer));
+    newUint8Array.set(uint8Array, 4);
+
+    return newUint8Array;
+};
+
+export const removeHeader = (uint8Array: Uint8Array): Uint8Array => {
+    // Убираем 4 байта в начале с длинной сообщения
+    const newUint8Array = new Uint8Array(uint8Array).slice(4);
+
+    return newUint8Array;
+};
+
 export interface ProtocolError {
     type: 'GET_TOKEN_ERROR';
     message?: string;
@@ -96,13 +115,16 @@ export const createProtocol = (
     };
 
     const send = (message: IMessage) => {
-        const newMessage = Message.create({ ...basePayload, ...message });
+        const createdMessage = Message.create({ ...basePayload, ...message });
 
-        logger?.({ type: 'outcoming', message: newMessage });
+        logger?.({ type: 'outcoming', message: createdMessage });
 
-        transport.send(newMessage);
+        const encodedMessage = Message.encode(createdMessage).finish();
+        const encodedMessageWithHeader = appendHeader(encodedMessage);
 
-        emit('outcoming', newMessage);
+        transport.send(encodedMessageWithHeader);
+
+        emit('outcoming', createdMessage);
     };
 
     const sendMessage = (message: IMessage) => {
@@ -259,10 +281,12 @@ export const createProtocol = (
         }),
     );
     subscriptions.push(
-        transport.on('message', (message: Message) => {
-            logger?.({ type: 'incoming', message });
+        transport.on('message', (message: Uint8Array) => {
+            const decodedMessage = Message.decode(removeHeader(message));
 
-            emit('incoming', message);
+            logger?.({ type: 'incoming', message: decodedMessage });
+
+            emit('incoming', decodedMessage);
         }),
     );
 
