@@ -1,6 +1,6 @@
 import { WebSocket } from 'mock-socket';
 
-import { appendHeader } from '../../../src/assistant/client/transport';
+import { appendHeader } from '../../../src/assistant/client/protocol';
 import { IStatus, Message } from '../../../src/proto';
 import {
     AssistantNavigationCommand,

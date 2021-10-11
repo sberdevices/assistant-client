@@ -1,25 +1,12 @@
 import { createNanoEvents } from '../../nanoevents';
-import { Message } from '../../proto';
 import { WSCreator } from '../../typings';
-
-export const appendHeader = (buffer: Uint8Array) => {
-    // Добавляем 4 байта в начало с длинной сообщения
-    const arrayBuffer = new ArrayBuffer(4);
-    const dataView = new DataView(arrayBuffer, 0);
-    dataView.setInt32(0, buffer.length, true);
-    const uint8Array = new Uint8Array(4 + buffer.length);
-    uint8Array.set(new Uint8Array(arrayBuffer));
-    uint8Array.set(buffer, 4);
-
-    return uint8Array;
-};
 
 export interface TransportEvents {
     connecting: () => void;
     ready: () => void;
     close: () => void;
     error: (error?: Event) => void;
-    message: (message: Message) => void;
+    message: (data: Uint8Array) => void;
 }
 
 const defaultWSCreator: WSCreator = (url: string) => new WebSocket(url);
@@ -40,19 +27,17 @@ export const createTransport = (createWS: WSCreator = defaultWSCreator) => {
         timeOut = undefined;
     };
 
-    const send = (message: Message) => {
+    const send = (data: Uint8Array) => {
         if (!navigator.onLine) {
             close();
             emit('error');
             return;
         }
-        const buffer = Message.encode(message).finish();
-        const bufferWithHeader = appendHeader(buffer);
 
-        ws.send(bufferWithHeader);
+        ws.send(data);
     };
 
-    const open = (vpsUrl: string) => {
+    const open = (url: string) => {
         if (status !== 'closed') {
             return;
         }
@@ -60,7 +45,7 @@ export const createTransport = (createWS: WSCreator = defaultWSCreator) => {
         status = 'connecting';
         emit('connecting');
         // TODO: нужен таймаут для подключения
-        ws = createWS(vpsUrl);
+        ws = createWS(url);
 
         ws.binaryType = 'arraybuffer';
         ws.addEventListener('open', () => {
@@ -88,7 +73,7 @@ export const createTransport = (createWS: WSCreator = defaultWSCreator) => {
                 }
                 if (retries < 3) {
                     timeOut = window.setTimeout(() => {
-                        open(vpsUrl);
+                        open(url);
                         retries++;
                     }, 300 * retries);
                 } else {
@@ -99,18 +84,18 @@ export const createTransport = (createWS: WSCreator = defaultWSCreator) => {
         });
 
         ws.addEventListener('message', (e) => {
-            emit('message', Message.decode(new Uint8Array(e.data).slice(4)));
+            emit('message', e.data);
         });
     };
 
-    const reconnect = (vpsUrl: string) => {
+    const reconnect = (url: string) => {
         if (status === 'closed') {
-            open(vpsUrl);
+            open(url);
             return;
         }
 
         close();
-        setTimeout(() => reconnect(vpsUrl));
+        setTimeout(() => reconnect(url));
     };
 
     return {
@@ -119,8 +104,5 @@ export const createTransport = (createWS: WSCreator = defaultWSCreator) => {
         close,
         reconnect,
         on,
-        get status() {
-            return status;
-        },
     };
 };

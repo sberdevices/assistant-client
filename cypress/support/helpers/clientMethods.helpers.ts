@@ -1,6 +1,6 @@
 import { Server } from 'mock-socket';
 
-import { appendHeader } from '../../../src/assistant/client/transport';
+import { appendHeader } from '../../../src/assistant/client/protocol';
 import { Message } from '../../../src/proto';
 import { MessageNames } from '../../../src/typings';
 
