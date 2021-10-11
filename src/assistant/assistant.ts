@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { ActionCommand } from '@salutejs/types';
+import { ActionCommand } from '@salutejs/scenario';
 
 import { createNanoEvents } from '../nanoevents';
 import {

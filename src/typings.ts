@@ -5,10 +5,10 @@ import {
     CardCommand,
     Suggestions,
     AppInfo,
-    Character as SaluteCharacter,
+    Character,
     UUID,
     Meta,
-} from '@salutejs/types';
+} from '@salutejs/scenario';
 
 import { IDevice, ILegacyDevice, IMessage, ISettings, Message } from './proto';
 
@@ -27,18 +27,14 @@ export {
     Meta,
     PermissionType,
     PermissionStatus,
-} from '@salutejs/types';
+    Character,
+    CharacterId,
+} from '@salutejs/scenario';
 
 export type ThemeColorName = 'dark' | 'light';
 
 export type Theme = {
     name: ThemeColorName;
-};
-
-export type CharacterId = 'sber' | 'eva' | 'joy';
-
-export type Character = SaluteCharacter & {
-    id: CharacterId;
 };
 
 export enum VpsVersion {
