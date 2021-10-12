@@ -1,3 +1,20 @@
+# v4.9.0 (Tue Oct 12 2021)
+
+#### 🚀 Enhancement
+
+- feat: Добавлено: assistant.listen возвращает промис запроса микрофона [#202](https://github.com/sberdevices/assistant-client/pull/202) ([@evgeniysemin](https://github.com/evgeniysemin))
+
+#### 🐛 Bug Fix
+
+- fix: Использовать 5 версию vps [#212](https://github.com/sberdevices/assistant-client/pull/212) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 2
+
+- [@evgeniysemin](https://github.com/evgeniysemin)
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.8.1 (Tue Oct 12 2021)
 
 #### 🐛 Bug Fix
