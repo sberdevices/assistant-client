@@ -1,3 +1,15 @@
+# v4.8.1 (Tue Oct 12 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Озвучка не проигрывается, если контекст на паузе [#199](https://github.com/sberdevices/assistant-client/pull/199) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.8.0 (Mon Oct 11 2021)
 
 #### 🚀 Enhancement
