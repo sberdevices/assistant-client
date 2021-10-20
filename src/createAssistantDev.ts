@@ -28,11 +28,14 @@ export const createAssistantDev = <A extends AssistantSmartAppData>({
         | 'getMeta'
         | 'features'
     >) => {
-    initializeAssistantSDK({
+    const { nativePanel } = initializeAssistantSDK({
         ...sdkParams,
     });
 
-    return createAssistant<A>({ getState, getRecoveryState, ready });
+    return {
+        ...createAssistant<A>({ getState, getRecoveryState, ready }),
+        nativePanel,
+    };
 };
 
 const parseJwt = (token: string) => {

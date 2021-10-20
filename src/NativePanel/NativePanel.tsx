@@ -166,5 +166,9 @@ export const renderNativePanel = (props: NativePanelProps) => {
         document.body.appendChild(div);
     }
 
-    render(<NativePanel {...props} />, div);
+    if (props.hideNativePanel) {
+        render(<></>, div);
+    } else {
+        render(<NativePanel {...props} />, div);
+    }
 };

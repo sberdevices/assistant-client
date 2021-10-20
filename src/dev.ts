@@ -156,6 +156,8 @@ export const initializeAssistantSDK = ({
     let clientReady = false; // флаг готовности клиента к приему onData
     let assistantReady = false; // флаг готовности контекста ассистента
     let character: CharacterId;
+    let suggestions: Suggestions['buttons'] = [];
+    let bubbleText = '';
 
     const sendText = (messasge: string) => {
         assistant.sendText(messasge);
@@ -261,21 +263,31 @@ export const initializeAssistantSDK = ({
             }
         });
 
-    const updateDevUI = (suggestions: Suggestions['buttons'] = [], bubbleText = '') => {
+    const updateDevUI = (params: Pick<NativePanelParams, 'hideNativePanel'> = {}) => {
         if (nativePanel) {
             const { render, ...props } = nativePanel;
 
             (render || renderNativePanel)({
                 ...props,
+                ...params,
                 sendText,
                 sendServerAction: assistant.sendServerAction,
                 onListen: assistant.listen,
-                suggestions: suggestions || [],
+                suggestions,
                 bubbleText,
                 onSubscribeListenStatus: subscribeToListenerStatus,
                 onSubscribeHypotesis: subscribeToListenerHypotesis,
             });
         }
+    };
+
+    const nativePanelApi = {
+        hide: () => {
+            updateDevUI({ hideNativePanel: true });
+        },
+        show: () => {
+            updateDevUI({ hideNativePanel: false });
+        },
     };
 
     assistant.on('app', (event: AppEvent) => {
@@ -298,7 +310,6 @@ export const initializeAssistantSDK = ({
         }
 
         const { systemMessage } = event;
-        let bubbleText = '';
 
         for (const item of systemMessage.items || []) {
             if (item.bubble) {
@@ -320,8 +331,9 @@ export const initializeAssistantSDK = ({
             character = systemMessage.character.id;
             emitOnData({ type: 'character', character: systemMessage.character, sdk_meta: { mid: '-1' } });
         }
+        suggestions = systemMessage.suggestions?.buttons ?? [];
 
-        updateDevUI(systemMessage.suggestions?.buttons ?? [], bubbleText);
+        updateDevUI();
     });
 
     updateDevUI();
@@ -331,5 +343,6 @@ export const initializeAssistantSDK = ({
 
     return {
         sendText,
+        nativePanel: nativePanelApi,
     };
 };
