@@ -244,7 +244,8 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                     emit('assistant', { character: character.id });
                 }
 
-                if (mesAppInfo && activate_app_info) {
+                // по-умолчанию activate_app_info: true
+                if (mesAppInfo && activate_app_info !== false) {
                     emit('app', { type: 'run', app: mesAppInfo });
                 }
 
