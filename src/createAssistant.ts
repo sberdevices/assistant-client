@@ -24,6 +24,16 @@ export interface AssistantEvents<A extends AssistantSmartAppData> {
     ) => void;
 }
 
+interface EverythingEvent<A extends AssistantSmartAppData> {
+    everything: (param: {
+        type: keyof AssistantEvents<A> | 'sendDataContainer' | 'sendData';
+        payload:
+            | Parameters<AssistantEvents<A>[keyof AssistantEvents<A>]>[0]
+            | SendDataParams
+            | (Omit<SendDataParams, 'action' | 'name'> & { data: SendDataParams['action']; message_name: string });
+    }) => void;
+}
+
 export interface SendDataParams {
     action: AssistantServerAction;
     name?: string;
@@ -116,17 +126,31 @@ export const createAssistant = <A extends AssistantSmartAppData>({
     let isInitialCommandsEmitted = false;
     let receivedAppInitialData: AssistantClientCommand[] = [];
     const stackAppInitialData: AssistantClientCommand[] = [...(window.appInitialData || [])];
-    const { on, emit } = createNanoEvents<AssistantEvents<A>>();
     const observables = new Map<string, { next: ObserverFunc<A | AssistantSmartAppError>; requestId?: string }>();
+    const { on, emit } = createNanoEvents<AssistantEvents<A> & EverythingEvent<A>>();
     const emitCommand = (command: AssistantClientCustomizedCommand<A>) => {
         if (command.type === 'smart_app_data') {
-            emit('command', command.smart_app_data as AssistantSmartAppCommand['smart_app_data']);
+            const smartAppData = command.smart_app_data as AssistantSmartAppCommand['smart_app_data'];
+
+            emit('command', smartAppData);
+            emit('everything', {
+                type: 'command',
+                payload: smartAppData,
+            });
         }
 
         if (command.type === 'smart_app_error') {
+            emit('everything', {
+                type: 'error',
+                payload: command.smart_app_error,
+            });
             emit('error', command.smart_app_error);
         }
 
+        emit('everything', {
+            type: 'data',
+            payload: command as A,
+        });
         return emit('data', command as A);
     };
 
@@ -237,10 +261,11 @@ export const createAssistant = <A extends AssistantSmartAppData>({
     ): (() => void) => {
         if (window.AssistantHost?.sendDataContainer) {
             if (onData == null) {
-                window.AssistantHost?.sendDataContainer(
-                    /* eslint-disable-next-line @typescript-eslint/camelcase */
-                    JSON.stringify({ data: action, message_name: name || '', requestId }),
-                );
+                /* eslint-disable-next-line @typescript-eslint/camelcase */
+                const data = { data: action, message_name: name || '', requestId };
+
+                emit('everything', { type: 'sendDataContainer', payload: data });
+                window.AssistantHost?.sendDataContainer(JSON.stringify(data));
                 return () => {};
             }
 
@@ -250,11 +275,11 @@ export const createAssistant = <A extends AssistantSmartAppData>({
 
             const { subscribe } = createNanoObservable<A | AssistantSmartAppError>(({ next }) => {
                 const realRequestId = requestId || v4();
+                /* eslint-disable-next-line @typescript-eslint/camelcase */
+                const data = { data: action, message_name: name || '', requestId: realRequestId };
 
-                window.AssistantHost?.sendDataContainer(
-                    /* eslint-disable-next-line @typescript-eslint/camelcase */
-                    JSON.stringify({ data: action, message_name: name || '', requestId: realRequestId }),
-                );
+                emit('everything', { type: 'sendDataContainer', payload: data });
+                window.AssistantHost?.sendDataContainer(JSON.stringify(data));
 
                 observables.set(realRequestId, { next, requestId });
             });
@@ -266,6 +291,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
             throw new Error('Не поддерживается в данной версии клиента');
         }
 
+        emit('everything', { type: 'sendData', payload: { action, name, requestId } });
         window.AssistantHost?.sendData(JSON.stringify(action), name || null);
 
         return () => {};

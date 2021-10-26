@@ -94,7 +94,6 @@ export type AssistantEvents = {
     actionCommand: (event: ActionCommandEvent) => void;
     status: (status: OriginalMessageType['status']) => void;
     error: (error: AssistantError) => void;
-    everything: AssistantEvents[keyof Omit<AssistantEvents, 'everything'>];
 };
 
 export interface CreateAssistantDevOptions {
@@ -103,11 +102,6 @@ export interface CreateAssistantDevOptions {
 
 export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration & CreateAssistantDevOptions) => {
     const { on, emit } = createNanoEvents<AssistantEvents>();
-
-    const emitEvent: typeof emit = (event, ...args) => {
-        emit('everything', ...args);
-        emit(event, ...args);
-    };
 
     const subscriptions: Array<() => void> = [];
 
@@ -157,7 +151,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
     const client = createClient(protocol, metaProvider);
     const voice = createVoice(
         client,
-        (event) => emitEvent('assistant', event),
+        (event) => emit('assistant', event),
         () => {
             voiceReady = true;
             // когда голос готов, возвращаем первоначальное состояние
@@ -174,7 +168,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         };
 
         if (!isDefaultApp(current.info)) {
-            emitEvent('app', { type: 'close', app: current.info });
+            emit('app', { type: 'close', app: current.info });
         }
     };
 
@@ -210,33 +204,33 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         client.sendData(data, 'SERVER_ACTION');
     };
 
-    subscriptions.push(protocol.on('ready', () => emitEvent('vps', { type: 'ready' })));
+    subscriptions.push(protocol.on('ready', () => emit('vps', { type: 'ready' })));
 
     // при неудачном переподключении к сокету
     subscriptions.push(
         transport.on('error', (error: Event) => {
-            emitEvent('vps', { type: 'error', error });
+            emit('vps', { type: 'error', error });
         }),
     );
 
     // обработка исходящих сообщений
     subscriptions.push(
         protocol.on('outcoming', (message: OriginalMessageType) => {
-            emitEvent('vps', { type: 'outcoming', message });
+            emit('vps', { type: 'outcoming', message });
         }),
     );
 
     // обработка ошибок
     subscriptions.push(
         protocol.on('error', (error: ProtocolError) => {
-            emitEvent('error', error);
+            emit('error', error);
         }),
     );
 
     // оповещение о статусах
     subscriptions.push(
         client.on('status', (status) => {
-            emitEvent('status', status);
+            emit('status', status);
         }),
     );
 
@@ -247,11 +241,11 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                 const { activate_app_info, items, app_info: mesAppInfo, character } = systemMessage;
 
                 if (character) {
-                    emitEvent('assistant', { character: character.id });
+                    emit('assistant', { character: character.id });
                 }
 
                 if (mesAppInfo && activate_app_info) {
-                    emitEvent('app', { type: 'run', app: mesAppInfo });
+                    emit('app', { type: 'run', app: mesAppInfo });
                 }
 
                 if (items) {
@@ -274,7 +268,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                             }
 
                             if (command.type === 'action') {
-                                emitEvent('actionCommand', {
+                                emit('actionCommand', {
                                     type: 'command',
                                     command: command as ActionCommand,
                                 });
@@ -282,7 +276,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
 
                             if ((command.type === 'smart_app_data' || command.type === 'navigation') && mesAppInfo) {
                                 // эмитим все команды, т.к бывают фоновые команды
-                                emitEvent('app', {
+                                emit('app', {
                                     type: 'command',
                                     command: {
                                         ...(command as AssistantSmartAppData),
@@ -302,7 +296,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                     }
                 }
 
-                emitEvent('vps', { type: 'incoming', systemMessage, originalMessage });
+                emit('vps', { type: 'incoming', systemMessage, originalMessage });
             }
         }),
     );
