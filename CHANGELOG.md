@@ -1,3 +1,15 @@
+# v4.9.1 (Wed Oct 27 2021)
+
+#### 🐛 Bug Fix
+
+- fix: activate_app_info по-умолчанию должен быть true [#222](https://github.com/sberdevices/assistant-client/pull/222) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.9.0 (Tue Oct 12 2021)
 
 #### 🚀 Enhancement
