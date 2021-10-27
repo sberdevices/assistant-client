@@ -76,7 +76,7 @@ export type AssistantEvent = {
 
 export type VpsEvent =
     | { type: 'ready' }
-    | { type: 'error'; error: Event }
+    | { type: 'error'; error: Event | undefined }
     | { type: 'outcoming'; message: OriginalMessageType }
     | { type: 'incoming'; systemMessage: SystemMessageDataType; originalMessage: OriginalMessageType };
 
@@ -208,7 +208,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
 
     // при неудачном переподключении к сокету
     subscriptions.push(
-        transport.on('error', (error: Event) => {
+        transport.on('error', (error: Event | undefined) => {
             emit('vps', { type: 'error', error });
         }),
     );

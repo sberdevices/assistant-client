@@ -76,6 +76,9 @@ export const createAssistantHostMock = ({ context = window }: { context?: Window
         setHints: () => {
             throw new Error('Not implemented method');
         },
+        sendText: () => {
+            throw new Error('Not implemented method');
+        },
     };
 
     /** Добавить обработчик клиентского экшена */

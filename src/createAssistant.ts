@@ -42,7 +42,7 @@ function inIframe() {
 
 if (typeof window !== 'undefined' && inIframe()) {
     const postMessage = (action: AssistantPostMessage) => {
-        window.top.postMessage(JSON.stringify(action), '*');
+        window.top?.postMessage(JSON.stringify(action), '*');
     };
 
     window.AssistantHost = {
@@ -63,6 +63,9 @@ if (typeof window !== 'undefined' && inIframe()) {
         },
         ready() {
             postMessage({ type: 'ready' });
+        },
+        sendText(message: string) {
+            postMessage({ type: 'sendText', payload: message });
         },
     };
 

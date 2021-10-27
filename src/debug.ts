@@ -169,6 +169,7 @@ export function initializeDebugging(config: IntitializeProps = defaultConfig) {
         },
         setSuggests() {},
         setHints() {},
+        sendText() {},
     };
 
     window.__dangerouslyGetAssistantAppState = () => ({ ...currentAppState });
