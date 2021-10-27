@@ -479,6 +479,10 @@ export type AssistantPostMessage =
           payload: string;
       }
     | {
+          type: 'sendText';
+          payload: string;
+      }
+    | {
           type: 'ready';
       }
     | {
