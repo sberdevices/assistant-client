@@ -1,7 +1,7 @@
-import { PacketWrapperFromServer } from '../../asr';
 import { createNanoEvents } from '../../nanoevents';
 import { MessageNames, OriginalMessageType } from '../../typings';
 
+import { PacketWrapperFromServer } from './asr';
 import { createVoiceListener } from './createVoiceListener';
 
 type speechRecognizerEvents = {

@@ -1,4 +1,4 @@
-import { appendHeader } from '../assistant/client/protocol';
+import { appendHeader } from '../assistantSdk/client/protocol';
 import { createNanoEvents } from '../nanoevents';
 import { Message } from '../proto';
 import { WSCreator } from '../typings';
