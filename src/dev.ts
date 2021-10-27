@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase, no-underscore-dangle */
 
-import { AppEvent, createAssistant, CreateAssistantDevOptions, VpsEvent } from './assistant/assistant';
+import { AppEvent, createAssistant, CreateAssistantDevOptions, VpsEvent } from './assistantSdk/assistant';
 import { renderNativePanel, NativePanelParams } from './NativePanel/NativePanel';
 import {
     SystemMessageDataType,

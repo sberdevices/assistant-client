@@ -66,7 +66,7 @@ export default [
     },
     {
         ...common,
-        input: ['src/createAssistant.ts', 'src/createAssistantDev.ts', 'src/assistant/assistant.ts', 'src/index.ts'],
+        input: ['src/createAssistant.ts', 'src/createAssistantDev.ts', 'src/assistantSdk/assistant.ts', 'src/index.ts'],
         output: {
             ...common.output,
             dir: 'esm',

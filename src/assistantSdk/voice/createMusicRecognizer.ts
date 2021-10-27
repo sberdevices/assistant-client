@@ -1,6 +1,6 @@
 import { OriginalMessageType, MessageNames } from '../../typings';
-import { Music2TrackProtocol } from '../../mtt';
 
+import { Music2TrackProtocol } from './mtt';
 import { createVoiceListener } from './createVoiceListener';
 
 export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoiceListener>) => {

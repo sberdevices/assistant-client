@@ -7,4 +7,4 @@ export {
     ActionCommandEvent,
     AssistantEvents as AssistantClientEvents,
     createAssistant as createAssistantClient,
-} from './assistant/assistant';
+} from './assistantSdk/assistant';
