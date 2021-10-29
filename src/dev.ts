@@ -205,10 +205,6 @@ export const initializeAssistantSDK = ({
             }
 
             assistantReady = true;
-
-            for (const smartAppData of initialSmartAppData) {
-                emitOnData(smartAppData);
-            }
         }
     };
 
