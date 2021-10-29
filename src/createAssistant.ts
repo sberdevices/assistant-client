@@ -114,8 +114,16 @@ export const createAssistant = <A extends AssistantSmartAppData>({
     let currentGetRecoveryState = getRecoveryState;
     let isInitialDataReceived = false;
     let isInitialCommandsEmitted = false;
+    /**
+     * Стартовые команды на момент `window.AssistantClient.onStart()`.
+     * Сохраняются однажды и не обновляются.
+     * */
+    let stackAppInitialData: AssistantClientCommand[] = [];
+    /**
+     * Стартовые команды, которые были получены методом `getInitialData()`.
+     * Они не будут заэмичены при `window.AssistantClient.onStart()`.
+     * */
     let receivedAppInitialData: AssistantClientCommand[] = [];
-    const stackAppInitialData: AssistantClientCommand[] = [...(window.appInitialData || [])];
     const { on, emit } = createNanoEvents<AssistantEvents<A>>();
     const observables = new Map<string, { next: ObserverFunc<A | AssistantSmartAppError>; requestId?: string }>();
     const emitCommand = (command: AssistantClientCustomizedCommand<A>) => {
@@ -132,6 +140,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
 
     const findSystemCommandIndex = (command: AssistantClientCommand) => {
         let index = -1;
+
         if (command.type === 'character') {
             index = stackAppInitialData.findIndex(
                 (c) => c.type === 'character' && c.character.id === command.character.id,
@@ -147,6 +156,10 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         return index;
     };
 
+    const saveAppInitialData = () => {
+        stackAppInitialData = [...(window.appInitialData || [])];
+    };
+
     const isCommandWasReceived = (command: AssistantClientCommand) => {
         for (const receivedCommand of receivedAppInitialData) {
             if (receivedCommand === command) {
@@ -156,25 +169,27 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         return false;
     };
 
-    const emitInitialData = () => {
+    const emitAppInitialData = () => {
         if (!isInitialCommandsEmitted) {
-            const currentInitialData = window.appInitialData;
+            const currentInitialData = stackAppInitialData;
 
             const notReceivedCommands =
                 isInitialDataReceived === true
                     ? currentInitialData.filter((c) => !isCommandWasReceived(c))
                     : currentInitialData;
 
-            notReceivedCommands.map((c) => emitCommand(c as AssistantClientCustomizedCommand<A>));
+            notReceivedCommands.forEach((c) => emitCommand(c as AssistantClientCustomizedCommand<A>));
             isInitialCommandsEmitted = true;
         }
     };
 
     window.AssistantClient = {
         onData: (command: AssistantClientCommand) => {
-            const index = findSystemCommandIndex(command);
-            if (index >= 0) {
-                stackAppInitialData.splice(index, 1);
+            const commandIndex = findSystemCommandIndex(command);
+            const isCommandExist = commandIndex >= 0;
+
+            if (isCommandExist) {
+                stackAppInitialData.splice(commandIndex, 1);
                 return;
             }
 
@@ -223,7 +238,8 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         },
         onStart: () => {
             emit('start');
-            emitInitialData();
+            saveAppInitialData();
+            emitAppInitialData();
         },
     };
 

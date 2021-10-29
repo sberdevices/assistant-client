@@ -259,4 +259,32 @@ describe('Проверяем createAssistant', () => {
             expect(onData).to.callCount(initialData.length);
         }, 1);
     });
+
+    it('Не эмитить дважды команды из window.appInitialData', () => {
+        const initialSmartAppData = [
+            {
+                type: 'insets',
+                insets: { left: 0, top: 0, right: 0, bottom: 144 },
+                sdk_meta: { mid: '-1' },
+            },
+            {
+                type: 'character',
+                character: { id: 'sber' },
+                sdk_meta: { mid: '-1' },
+            },
+        ];
+
+        const onData = cy.stub();
+        const assistant = initAssistant();
+
+        assistant.on('data', onData);
+
+        window.appInitialData = [...initialSmartAppData];
+
+        for (const smartAppData of initialSmartAppData) {
+            window.AssistantClient.onData(smartAppData);
+        }
+
+        initialSmartAppData.forEach((command) => expect(onData).to.calledWith(command));
+    });
 });
