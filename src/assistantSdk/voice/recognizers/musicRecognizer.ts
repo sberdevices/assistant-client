@@ -1,7 +1,7 @@
-import { OriginalMessageType, MessageNames } from '../../typings';
+import { OriginalMessageType, MessageNames } from '../../../typings';
+import { createVoiceListener } from '../listener/voiceListener';
 
 import { Music2TrackProtocol } from './mtt';
-import { createVoiceListener } from './createVoiceListener';
 
 export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoiceListener>) => {
     let off: () => void;
@@ -25,10 +25,7 @@ export const createMusicRecognizer = (voiceListener: ReturnType<typeof createVoi
         onMessage: (cb: (message: OriginalMessageType) => void) => () => void;
     }) =>
         voiceListener
-            .listen(
-                (data: ArrayBuffer, last: boolean) =>
-                    !last && sendVoice(new Uint8Array(data), last, MessageNames.MUSIC_RECOGNITION),
-            )
+            .listen((data: Uint8Array, last: boolean) => !last && sendVoice(data, last, MessageNames.MUSIC_RECOGNITION))
             .then(() => {
                 status = 'active';
                 currentMessageId = messageId;

@@ -1,11 +1,11 @@
 import { createClient } from '../client/client';
 import { EmotionId, OriginalMessageType, SystemMessageDataType } from '../../typings';
 
-import { createMusicRecognizer } from './createMusicRecognizer';
-import { createSpeechRecognizer } from './createSpeechRecognizer';
-import { createVoiceListener } from './createVoiceListener';
+import { createMusicRecognizer } from './recognizers/musicRecognizer';
+import { createSpeechRecognizer } from './recognizers/speechRecognizer';
+import { createVoiceListener } from './listener/voiceListener';
 import { createVoicePlayer } from './player/voicePlayer';
-import { createAudioContext, isAudioSupported } from './audioContext';
+import { resolveAudioContext, isAudioSupported } from './audioContext';
 
 export const createVoice = (
     client: ReturnType<typeof createClient>,
@@ -31,25 +31,21 @@ export const createVoice = (
     let isPlaying = false; // проигрывается/не проигрывается озвучка
     let autolistenMesId: string | null = null; // id сообщения, после проигрывания которого, нужно активировать слушание
 
-    /** остановливает слушание голоса, возвращает true - если слушание было активно */
-    const stopListening = (force = false): boolean => {
+    /** останавливает слушание голоса, возвращает true - если слушание было активно */
+    const stopListening = (): boolean => {
         const result = speechRecognizer.status === 'active' || musicRecognizer.status === 'active';
 
         autolistenMesId = null;
         if (speechRecognizer.status === 'active') {
             speechRecognizer.stop();
             client.sendCancel(speechRecognizer.messageId);
-            if (!force) {
-                return true;
-            }
+            return true;
         }
 
         if (musicRecognizer.status === 'active') {
             musicRecognizer.stop();
             client.sendCancel(musicRecognizer.messageId);
-            if (!force) {
-                return true;
-            }
+            return true;
         }
 
         return result;
@@ -58,7 +54,7 @@ export const createVoice = (
     /** Останавливает слушание и воспроизведение */
     const stop = () => {
         // здесь важен порядок остановки голоса
-        stopListening(true);
+        stopListening();
         voicePlayer?.stop();
     };
 
@@ -120,7 +116,9 @@ export const createVoice = (
     };
 
     if (isAudioSupported) {
-        createAudioContext((context) => {
+        resolveAudioContext((context) => {
+            /// создаем плеер только если поддерживается аудио
+            /// и только когда готов AudioContext
             voicePlayer = createVoicePlayer(context, { startVoiceDelay: 1 });
 
             // начало проигрывания озвучки
@@ -143,6 +141,7 @@ export const createVoice = (
                 }),
             );
 
+            // оповещаем о готовности к воспроизведению звука
             onReady && onReady();
         });
     }
@@ -203,7 +202,7 @@ export const createVoice = (
 
     return {
         destroy: () => {
-            stopListening(true);
+            stopListening();
             voicePlayer?.setActive(false);
             subscriptions.splice(0, subscriptions.length).map((unsubscribe) => unsubscribe());
         },
@@ -217,7 +216,7 @@ export const createVoice = (
             if (typeof disableListening !== 'undefined' && settings.disableListening !== disableListening) {
                 settings.disableListening = disableListening;
                 if (disableListening === true) {
-                    stopListening(true);
+                    stopListening();
                 }
             }
 

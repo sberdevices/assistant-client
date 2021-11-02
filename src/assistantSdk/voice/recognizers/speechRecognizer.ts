@@ -1,8 +1,8 @@
-import { createNanoEvents } from '../../nanoevents';
-import { MessageNames, OriginalMessageType } from '../../typings';
+import { createNanoEvents } from '../../../nanoevents';
+import { MessageNames, OriginalMessageType } from '../../../typings';
+import { createVoiceListener, VoiceHandler } from '../listener/voiceListener';
 
 import { PacketWrapperFromServer } from './asr';
-import { createVoiceListener } from './createVoiceListener';
 
 type speechRecognizerEvents = {
     hypotesis: (text: string, last: boolean, mid: OriginalMessageType['messageId']) => void;
@@ -26,7 +26,7 @@ export const createSpeechRecognizer = (voiceListener: ReturnType<typeof createVo
         messageId,
         onMessage,
     }: {
-        sendVoice: (data: Uint8Array, last: boolean) => void;
+        sendVoice: VoiceHandler;
         messageId: number;
         onMessage: (cb: (message: OriginalMessageType) => void) => () => void;
     }) =>

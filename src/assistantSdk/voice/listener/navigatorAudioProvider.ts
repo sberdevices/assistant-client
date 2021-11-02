@@ -1,27 +1,19 @@
-const createAudioContext = (options?: AudioContextOptions): AudioContext => {
-    if (window.AudioContext) {
-        return new AudioContext(options);
-    }
+import { createAudioContext } from '../audioContext';
 
-    if (window.webkitAudioContext) {
-        // eslint-disable-next-line new-cap
-        return new window.webkitAudioContext();
-    }
-
-    throw new Error('Audio-context not supported');
-};
-
-let context: AudioContext;
-let processor: ScriptProcessorNode;
-
-const downsampleBuffer = (buffer: Float32Array, sampleRate: number, outSampleRate: number) => {
-    if (outSampleRate > sampleRate) {
+/**
+ * Понижает sample rate c inSampleRate до значения outSampleRate и преобразует Float32Array в ArrayBuffer
+ * @param buffer Аудио
+ * @param inSampleRate текущий sample rate
+ * @param outSampleRate требуемый sample rate
+ * @returns Аудио со значением sample rate = outSampleRate
+ */
+const downsampleBuffer = (buffer: Float32Array, inSampleRate: number, outSampleRate: number): ArrayBuffer => {
+    if (outSampleRate > inSampleRate) {
         throw new Error('downsampling rate show be smaller than original sample rate');
     }
-    const sampleRateRatio = sampleRate / outSampleRate;
+    const sampleRateRatio = inSampleRate / outSampleRate;
     const newLength = Math.round(buffer.length / sampleRateRatio);
     const result = new Int16Array(newLength);
-    let empty = true;
 
     let offsetResult = 0;
     let offsetBuffer = 0;
@@ -35,24 +27,28 @@ const downsampleBuffer = (buffer: Float32Array, sampleRate: number, outSampleRat
             count++;
         }
 
-        if (empty && accum > 0) {
-            empty = false;
-        }
-
         result[offsetResult] = Math.min(1, accum / count) * 0x7fff;
         offsetResult++;
         offsetBuffer = nextOffsetBuffer;
     }
-    return {
-        buffer: result.buffer,
-        empty,
-    };
+
+    return result.buffer;
 };
 
 const TARGET_SAMPLE_RATE = 16000;
 const IS_FIREFOX = typeof window !== 'undefined' && navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
-const createAudioRecorder = (stream: MediaStream, cb: (buffer: ArrayBuffer, last: boolean) => void) => {
+let context: AudioContext;
+let processor: ScriptProcessorNode;
+
+/**
+ * Преобразует stream в чанки (кусочки), и передает их в cb,
+ * будет это делать, пока не будет вызвана функция остановки
+ * @param stream Аудио-поток
+ * @param cb callback, куда будут переданы чанки из потока
+ * @returns Функция, вызов которой остановит передачу чанков
+ */
+const createAudioRecorder = (stream: MediaStream, cb: (buffer: ArrayBuffer, last: boolean) => void): (() => void) => {
     let state: 'inactive' | 'recording' = 'inactive';
     let input: MediaStreamAudioSourceNode;
 
@@ -81,7 +77,7 @@ const createAudioRecorder = (stream: MediaStream, cb: (buffer: ArrayBuffer, last
             const data = downsampleBuffer(buffer, context.sampleRate, TARGET_SAMPLE_RATE);
 
             const last = state === 'inactive';
-            cb(data.buffer, last);
+            cb(data, last);
 
             if (last) {
                 processor.removeEventListener('audioprocess', listener);
@@ -111,7 +107,13 @@ const createAudioRecorder = (stream: MediaStream, cb: (buffer: ArrayBuffer, last
     return stop;
 };
 
-export const createNavigatorAudioProvider = (cb: (buffer: ArrayBuffer, last: boolean) => void) =>
+/**
+ * Запрашивает у браузера доступ к микрофону и резолвит Promise, если разрешение получено.
+ * После получения разрешения, чанки с голосом будут передаваться в cb - пока не будет вызвана функция из результата.
+ * @param cb Callback, куда будут передаваться чанки с голосом пользователя
+ * @returns Promise, который содержит функцию прерывающую слушание
+ */
+export const createNavigatorAudioProvider = (cb: (buffer: ArrayBuffer, last: boolean) => void): Promise<() => void> =>
     navigator.mediaDevices
         .getUserMedia({
             audio: true,

@@ -1,5 +1,6 @@
 import { createNanoEvents } from '../../../nanoevents';
 
+import { createTrackCollection } from './trackCollection';
 import { createTrackStream } from './trackStream';
 
 export interface VoicePlayerSettings {
@@ -7,66 +8,6 @@ export interface VoicePlayerSettings {
     sampleRate?: number;
     numberOfChannels?: number;
 }
-
-/** Создает коллекцию треков  */
-const createTrackQueue = <T extends unknown>() => {
-    let trackIds: Array<string>;
-    let trackMap: Map<string, T>;
-
-    const clear = () => {
-        trackIds = new Array<string>();
-        trackMap = new Map<string, T>();
-    };
-
-    const push = (id: string, track: T) => {
-        if (trackMap.has(id)) {
-            throw new Error('Track already exists');
-        }
-
-        trackMap.set(id, track);
-        trackIds.push(id);
-    };
-
-    const has = (id: string) => trackMap.has(id);
-
-    const getById = (id: string): T => {
-        const track = trackMap.get(id);
-        if (track === undefined) {
-            throw new Error('Unknown track id');
-        }
-
-        return track;
-    };
-
-    const getByIndex = (index: number): T => {
-        if (index < 0 || index >= trackIds.length) {
-            throw new Error('Index out of bounds');
-        }
-
-        const track = trackMap.get(trackIds[index]);
-        if (track == null) {
-            throw new Error('Something wrong...');
-        }
-
-        return track;
-    };
-
-    const some = (predicate: (item: T) => boolean) => trackIds.some((id) => predicate(getById(id)));
-
-    clear();
-
-    return {
-        clear,
-        has,
-        get: getById,
-        getByIndex,
-        push,
-        some,
-        get length() {
-            return trackIds.length;
-        },
-    };
-};
 
 export type EventsType = {
     play: (trackId: string) => void;
@@ -78,9 +19,10 @@ export const createVoicePlayer = (
     { startVoiceDelay = 0.2, sampleRate, numberOfChannels }: VoicePlayerSettings = {},
 ) => {
     const { on, emit } = createNanoEvents<EventsType>();
-    const tracks = createTrackQueue<ReturnType<typeof createTrackStream>>();
+    const tracks = createTrackCollection<ReturnType<typeof createTrackStream>>();
     // true - воспроизводим все треки в очереди (новые в том числе), false - скипаем всю очередь (новые в т.ч.)
     let active = true;
+    // индекс текущего трека в tracks
     let cursor = 0;
 
     const play = () => {
@@ -89,11 +31,13 @@ export const createVoicePlayer = (
                 return;
             }
 
+            // очищаем коллекцию, если все треки были воспроизведены
             cursor = 0;
             tracks.clear();
             return;
         }
 
+        // рекурсивно последовательно включаем треки из очереди
         const current = tracks.getByIndex(cursor);
         if (current.status === 'end') {
             if (cursor < tracks.length) {
@@ -108,6 +52,8 @@ export const createVoicePlayer = (
     const append = (data: Uint8Array, trackId: string, last = false) => {
         let current = tracks.has(trackId) ? tracks.get(trackId) : undefined;
         if (current == null) {
+            /// если trackId нет в коллекции - создаем трек
+            /// по окончании проигрывания - запускаем следующий трек, вызывая play
             current = createTrackStream(actx, {
                 sampleRate,
                 numberOfChannels,
@@ -127,6 +73,7 @@ export const createVoicePlayer = (
         }
 
         if (last) {
+            // все чанки трека загружены
             current.setLoaded();
         }
 

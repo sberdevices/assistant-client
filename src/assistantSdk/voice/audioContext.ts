@@ -2,9 +2,14 @@ import { createNanoEvents } from '../../nanoevents';
 
 export const isAudioSupported = typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext);
 
-const createBrowserAudioContext = (): AudioContext => {
+/**
+ * Возвращает новый инстанс AudioContext или ошибку
+ * @param options AudioContextOptions
+ * @returns AudioContext
+ */
+export const createAudioContext = (options?: AudioContextOptions): AudioContext => {
     if (window.AudioContext) {
-        return new AudioContext();
+        return new AudioContext(options);
     }
 
     if (window.webkitAudioContext) {
@@ -23,10 +28,15 @@ const { on, emit } = createNanoEvents<ContextEvents>();
 
 let audioContext: { context: AudioContext; ready: boolean; on: typeof on };
 
-export const createAudioContext = (onReady: (context: AudioContext) => void) => {
+/**
+ * При помощи вызова функции из аргумента, возвращает, готовый к воспроизведению звука, AudioContext.
+ * Всегда возвращает один и тот же AudioContext
+ * @param onReady Функция, в аргумент которой будет возвращен AudioContext
+ */
+export const resolveAudioContext = (onReady: (context: AudioContext) => void) => {
     if (!audioContext) {
         const isSafari = navigator.vendor.search('Apple') >= 0;
-        const context = createBrowserAudioContext();
+        const context = createAudioContext();
 
         audioContext = {
             context,
@@ -34,6 +44,8 @@ export const createAudioContext = (onReady: (context: AudioContext) => void) => 
             on,
         };
 
+        /// Контекст может быть не готов для использования сразу после создания
+        /// Если попробовать что-то воспроизвести в этом контексте - звука не будет
         if (!audioContext.ready) {
             const handleClick = () => {
                 document.removeEventListener('click', handleClick);
@@ -59,6 +71,9 @@ export const createAudioContext = (onReady: (context: AudioContext) => void) => 
                 audioContext.ready = true;
                 emit('ready');
             };
+
+            /// чтобы сделать контекст готовым к использованию (воспроизведению звука),
+            /// необходимо событие от пользователя
 
             // для пк
             document.addEventListener('click', handleClick);
