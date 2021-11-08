@@ -9,6 +9,8 @@ import {
     AssistantSmartAppError,
     AssistantSmartAppCommand,
     AssistantPostMessage,
+    Hints,
+    Suggestions,
 } from './typings';
 import { createNanoEvents } from './nanoevents';
 import { createNanoObservable, ObserverFunc } from './nanoobservable';
@@ -313,8 +315,12 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         setGetRecoveryState: (nextGetRecoveryState?: () => unknown) => {
             currentGetRecoveryState = nextGetRecoveryState;
         },
-        setSuggests: (suggest: string) => window.AssistantHost?.setSuggests(suggest),
-        setHints: (hints: string) => window.AssistantHost?.setHints(hints),
+        setSuggests: (suggestions: Suggestions['buttons']) => {
+            window.AssistantHost?.setSuggests(JSON.stringify({ suggestions: { buttons: suggestions } }));
+        },
+        setHints: (hints: Hints) => {
+            window.AssistantHost?.setHints(JSON.stringify({ hints }));
+        },
         sendText: (message: string) => window.AssistantHost?.sendText(message),
         ready: () => window.AssistantHost?.ready(),
     };

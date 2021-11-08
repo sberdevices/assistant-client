@@ -29,6 +29,7 @@ export {
     PermissionStatus,
     Character,
     CharacterId,
+    Hints,
 } from '@salutejs/scenario';
 
 export type ThemeColorName = 'dark' | 'light';
