@@ -1,5 +1,6 @@
 /// <reference types="cypress" />
 import { createAssistant } from '../../src/index';
+import { Hints, Suggestions } from '@salutejs/scenario';
 
 /* eslint-disable @typescript-eslint/camelcase */
 
@@ -180,18 +181,18 @@ describe('Проверяем createAssistant', () => {
         expect(window.AssistantHost.close).to.calledOnce;
     });
 
-    it('Проверяем проксирование setSuggests', () => {
-        const suggest = 'test_suggest';
+    it('Проверяем проксирование и преобразование данных в setSuggests', () => {
+        const suggests: Suggestions['buttons'] = [{ title: 'test', action: { type: 'text', text: 'test' } }];
         const assistant = initAssistant();
-        assistant.setSuggests(suggest);
-        expect(window.AssistantHost.setSuggests).to.calledWith(suggest);
+        assistant.setSuggests(suggests);
+        expect(window.AssistantHost.setSuggests).to.calledWith(JSON.stringify({ suggestions: { buttons: suggests } }));
     });
 
-    it('Проверяем проксирование setHints', () => {
-        const hints = 'test_hints';
+    it('Проверяем проксирование и преобразование данных в setHints', () => {
+        const hints: Hints = { items: [{ text: 'test', alive_time: 0, next_time: 0 }] };
         const assistant = initAssistant();
         assistant.setHints(hints);
-        expect(window.AssistantHost.setHints).to.calledWith(hints);
+        expect(window.AssistantHost.setHints).to.calledWith(JSON.stringify({ hints }));
     });
 
     it("Проверяем фильтрацию system.command = 'back' - не должна попадать в onData", () => {
