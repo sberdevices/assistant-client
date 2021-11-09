@@ -1,3 +1,15 @@
+# v4.10.0 (Tue Nov 09 2021)
+
+#### 🚀 Enhancement
+
+- feat: улучшение api методов setHints и setSuggests [#228](https://github.com/sberdevices/assistant-client/pull/228) (IAnKulygin@sberbank.ru)
+
+#### Authors: 1
+
+- Кулыгин Илья Андреевич (IAnKulygin@sberbank.ru)
+
+---
+
 # v4.9.1 (Wed Oct 27 2021)
 
 #### 🐛 Bug Fix
