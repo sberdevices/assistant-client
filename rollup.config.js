@@ -4,6 +4,7 @@ import replace from 'rollup-plugin-replace';
 import json from '@rollup/plugin-json';
 import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
+import copy from 'rollup-plugin-copy';
 
 import pkg from './package.json';
 
@@ -62,6 +63,14 @@ export default [
             }),
             typescript({ tsconfig: 'tsconfig.json', outDir: 'dist' }),
             ...common.plugins,
+            copy({
+                targets: [
+                    {
+                        src: 'src/proto/*.d.ts',
+                        dest: 'dist/proto',
+                    },
+                ],
+            }),
         ],
     },
     {
