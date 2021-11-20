@@ -31,7 +31,7 @@
     "author": "SberDevices Frontend Team <sberdevices.frontend@gmail.com>",
     "license": "Sber Public License at-nc-sa v.2",
     "dependencies": {
-        "@salutejs/scenario": "0.18.0",
+        "@salutejs/scenario": "0.20.0",
         "axios": "0.21.1",
         "lodash.clonedeep": "^4.5.0",
         "protobufjs": "6.10.2",

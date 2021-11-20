@@ -12,6 +12,7 @@ import {
     PermissionType,
     SystemMessageDataType,
     CharacterId,
+    AssistantBackgroundApp,
 } from '../typings';
 
 import { createClient } from './client/client';
@@ -100,6 +101,8 @@ export interface CreateAssistantDevOptions {
     getMeta?: () => Record<string, unknown>;
 }
 
+type BackgroundAppOnCommand<T> = (command: AssistantSmartAppData & { smart_app_data: T }, messageId: string) => void;
+
 export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration & CreateAssistantDevOptions) => {
     const { on, emit } = createNanoEvents<AssistantEvents>();
 
@@ -119,8 +122,10 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         sendTextAsSsml: false,
     };
 
+    const backgroundApps: { [key: string]: AssistantBackgroundApp & { commandsSubscribers: unknown[] } } = {};
+
     const metaProvider = async (): Promise<Partial<Pick<SystemMessageDataType, 'app_info' | 'meta'>>> => {
-        // стейт нужен только для канваса
+        // Стейт нужен только для канваса
         const appState =
             app !== null && app.info.frontendEndpoint && app.info.frontendEndpoint !== 'None' && app.getState
                 ? await promiseTimeout<AssistantAppState>(app.getState(), STATE_UPDATE_TIMEOUT).catch(() => {
@@ -130,13 +135,50 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                   })
                 : undefined;
 
+        const current_app = {
+            app_info: app.info,
+            state: appState || {},
+        };
+
+        const getBackgroundAppsMeta = async () => {
+            const backgroundAppsIds = Object.keys(backgroundApps);
+            const backgroundAppsMeta: { app_info: AppInfo; state: Record<string, unknown> }[] = [];
+
+            await Promise.allSettled(
+                backgroundAppsIds.map(async (applicationId) => {
+                    const { getState = null } = backgroundApps[applicationId];
+
+                    return typeof getState === 'function'
+                        ? promiseTimeout(getState(), STATE_UPDATE_TIMEOUT).catch(() => ({}))
+                        : Promise.resolve({});
+                }),
+            ).then((results) => {
+                results.forEach((appResult, index) => {
+                    let state = {};
+
+                    if (appResult.status === 'fulfilled') {
+                        state = appResult.value;
+                    }
+
+                    const applicationId = backgroundAppsIds[index];
+
+                    backgroundAppsMeta.push({
+                        app_info: backgroundApps[applicationId].appInfo,
+                        state,
+                    });
+                });
+            });
+
+            return backgroundAppsMeta;
+        };
+
+        const background_apps = await getBackgroundAppsMeta();
+
         return {
             meta: {
                 time: getTime(),
-                current_app: {
-                    app_info: app.info,
-                    state: appState || {},
-                },
+                current_app,
+                background_apps,
                 ...(getMeta ? getMeta() : {}),
             },
         };
@@ -184,10 +226,11 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         serverAction: unknown,
         messageName = 'SERVER_ACTION',
         requestId: string | undefined = undefined,
+        actionApp: AppInfo = app.info,
     ) => {
         voice.stop();
 
-        client.sendServerAction(serverAction, app.info, messageName).then((messageId) => {
+        client.sendServerAction(serverAction, actionApp, messageName).then((messageId) => {
             if (requestId && messageId) {
                 requestIdMap[messageId.toString()] = requestId;
             }
@@ -302,6 +345,19 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         }),
     );
 
+    // прокидывает команды backgroundApp'ов в их подписчики
+    on('app', (event) => {
+        if (event.type === 'command') {
+            const backgroundAppOnCommand = backgroundApps[event.app.applicationId]?.commandsSubscribers;
+
+            if (Array.isArray(backgroundAppOnCommand)) {
+                backgroundAppOnCommand.forEach((onCommand) => {
+                    onCommand(event.command, event.command.sdk_meta?.mid as string);
+                });
+            }
+        }
+    });
+
     /** уничтожает ассистент, очищает подписки */
     const destroy = () => {
         voice.destroy();
@@ -375,6 +431,41 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         },
         setActiveApp: (info: AppInfo, getState?: () => Promise<AssistantAppState>) => {
             app = { info, getState };
+        },
+        addBackgroundApp: ({ appInfo, getState }: AssistantBackgroundApp) => {
+            backgroundApps[appInfo.applicationId] = {
+                appInfo,
+                getState,
+                commandsSubscribers: [],
+            };
+
+            const remove = () => {
+                delete backgroundApps[appInfo.applicationId];
+            };
+
+            const onCommand = <T>(subscriber: BackgroundAppOnCommand<T>) => {
+                backgroundApps[appInfo.applicationId]?.commandsSubscribers.push(subscriber);
+
+                return {
+                    clearSubscribers: () => {
+                        if (backgroundApps[appInfo.applicationId]) {
+                            backgroundApps[appInfo.applicationId].commandsSubscribers = [];
+                        }
+                    },
+                };
+            };
+
+            const sendServerActionToBackgroundApp = (
+                serverAction: unknown,
+                messageName = 'SERVER_ACTION',
+                requestId: string | undefined = undefined,
+            ) => sendServerAction(serverAction, messageName, requestId, backgroundApps[appInfo.applicationId]?.appInfo);
+
+            return {
+                remove,
+                onCommand,
+                sendServerAction: sendServerActionToBackgroundApp,
+            };
         },
     };
 };
