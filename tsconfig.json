@@ -3,7 +3,7 @@
     "compilerOptions": {
         "jsx": "react",
         "target": "ES5",
-        "lib": ["es2017", "esnext.asynciterable", "DOM"],
+        "lib": ["ES2020.Promise", "esnext.asynciterable", "DOM"],
         "declaration": true,
         "declarationMap": true,
         "composite": false,

@@ -251,6 +251,11 @@ export interface AssistantWindow {
     __dangerouslySendTextMessage?: (text: string) => void;
 }
 
+export interface AssistantBackgroundApp {
+    appInfo: AppInfo;
+    getState?: () => Promise<Record<string, unknown>>;
+}
+
 export interface Device {
     platformType?: string | null;
     platformVersion?: string | null;
@@ -346,6 +351,10 @@ export type SystemMessageDataType = {
                   app_info: AppInfo;
                   state: AssistantAppState;
               };
+              background_apps: {
+                  app_info: AppInfo;
+                  state: AssistantAppState;
+              }[];
           }
         | Meta;
     sdk_meta?: SdkMeta;
