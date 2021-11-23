@@ -322,7 +322,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         initPhrase?: string;
         isFirstSession?: boolean;
     } = {}): Promise<SystemMessageDataType | undefined> => {
-        if (!disableGreetings) {
+        if (!disableGreetings && isDefaultApp(app.info)) {
             await client.sendOpenAssistant({ isFirstSession });
         }
 

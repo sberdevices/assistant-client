@@ -22,6 +22,7 @@ describe('Проверяем приветствие', () => {
         server: Server,
         args: ArgumentsType<ReturnType<typeof createAssistantClient>['start']>,
         onMessage: (message: Message) => void,
+        beforeStart?: (assistant: ReturnType<typeof createAssistantClient>) => void,
     ): ReturnType<typeof createAssistantClient> => {
         server.on('connection', (socket) => {
             assert.isOk('Соединение после старта');
@@ -32,6 +33,8 @@ describe('Проверяем приветствие', () => {
         });
 
         const assistantClient = createAssistantClient(configuration);
+
+        beforeStart && beforeStart(assistantClient);
 
         assistantClient.start(...args);
 
@@ -55,8 +58,13 @@ describe('Проверяем приветствие', () => {
             server,
             [{ disableGreetings: false, isFirstSession: true }],
             ({ messageName, systemMessage }) => {
-                if (messageName === 'OPEN_ASSISTANT' && systemMessage.data === '{"is_first_session":true}') {
-                    assert.isOk('Отправлен "OPEN_ASSISTANT" и "is_first_session"');
+                if (messageName === 'OPEN_ASSISTANT') {
+                    const data = JSON.parse(systemMessage.data);
+
+                    expect(data.is_first_session, 'Отправлен "is_first_session"').be.true;
+                    expect(data.meta.current_app.app_info.systemName, 'Отправлен current_app assistant').be.eq(
+                        'assistant',
+                    );
 
                     done();
                 }
@@ -69,13 +77,46 @@ describe('Проверяем приветствие', () => {
             server,
             [{ disableGreetings: false, isFirstSession: false }],
             ({ messageName, systemMessage }) => {
-                if (messageName === 'OPEN_ASSISTANT' && systemMessage.data === '{}') {
+                if (messageName === 'OPEN_ASSISTANT') {
+                    const data = JSON.parse(systemMessage.data);
+
+                    expect(data.is_first_session, 'Не отправлен "is_first_session"').be.eq(undefined);
+                    expect(data.meta.current_app.app_info.systemName, 'Отправлен current_app assistant').be.eq(
+                        'assistant',
+                    );
                     assert.isOk('Отправлен "OPEN_ASSISTANT"');
 
                     done();
                 }
             },
         );
+    });
+
+    it('Приветствие включено, текущий апп НЕ assistant', (done) => {
+        const onMessage = cy.stub();
+
+        const assistantClient = checkStartAssistant(server, [{ isFirstSession: true }], onMessage, (client) => {
+            client.setActiveApp({
+                projectId: 'test',
+                applicationId: 'test',
+                appversionId: 'test',
+                frontendType: 'WEB_APP',
+                frontendEndpoint: 'https://example.com',
+            });
+        });
+
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(500)
+            .then(() => {
+                expect(onMessage, 'Нет соединения после старта').to.not.called;
+
+                assistantClient.sendText('text');
+            })
+            .wait(500)
+            .then(() => {
+                expect(onMessage, 'Соединение, отправлен текст').to.called;
+            })
+            .then(done);
     });
 
     it('Приветствие выключено', (done) => {

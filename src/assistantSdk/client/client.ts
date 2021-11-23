@@ -57,12 +57,14 @@ export const createClient = (
     };
 
     /** отправляет приветствие */
-    const sendOpenAssistant = (
+    const sendOpenAssistant = async (
         { isFirstSession }: { isFirstSession: boolean } = { isFirstSession: false },
     ): Promise<SystemMessageDataType> => {
         // eslint-disable-next-line @typescript-eslint/camelcase
         const data = isFirstSession ? { is_first_session: true } : {};
-        return waitForAnswer(sendData(data, 'OPEN_ASSISTANT'));
+        const meta = provideMeta ? await provideMeta() : {};
+
+        return waitForAnswer(sendData({ ...meta, ...data }, 'OPEN_ASSISTANT'));
     };
 
     /** вызывает sendSystemMessage, куда подкладывает мету */
