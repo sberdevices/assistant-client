@@ -1,3 +1,20 @@
+# v4.10.1 (Tue Nov 23 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Отправлять current_app вместе с greetings [#233](https://github.com/sberdevices/assistant-client/pull/233) ([@sasha-tlt](https://github.com/sasha-tlt))
+- chore: Ошибка при сборке [#230](https://github.com/sberdevices/assistant-client/pull/230) ([@sasha-tlt](https://github.com/sasha-tlt))
+- docs: readme для sdk [#224](https://github.com/sberdevices/assistant-client/pull/224) ([@sasha-tlt](https://github.com/sasha-tlt))
+- refactor: работа с озвучкой и голосом [#224](https://github.com/sberdevices/assistant-client/pull/224) ([@sasha-tlt](https://github.com/sasha-tlt))
+- refactor: файловая структура sdk [#224](https://github.com/sberdevices/assistant-client/pull/224) ([@sasha-tlt](https://github.com/sasha-tlt))
+- chore: Ошибки линтера [#224](https://github.com/sberdevices/assistant-client/pull/224) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.10.0 (Tue Nov 09 2021)
 
 #### 🚀 Enhancement
