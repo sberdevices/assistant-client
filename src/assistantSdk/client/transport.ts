@@ -34,7 +34,10 @@ export const createTransport = (createWS: WSCreator = defaultWSCreator) => {
             return;
         }
 
-        ws.send(data);
+        // isOpen
+        if (ws.readyState === ws.OPEN) {
+            ws.send(data);
+        }
     };
 
     const open = (url: string) => {
