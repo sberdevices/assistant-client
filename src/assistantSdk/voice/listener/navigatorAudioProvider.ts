@@ -48,64 +48,67 @@ let processor: ScriptProcessorNode;
  * @param cb callback, куда будут переданы чанки из потока
  * @returns Функция, вызов которой остановит передачу чанков
  */
-const createAudioRecorder = (stream: MediaStream, cb: (buffer: ArrayBuffer, last: boolean) => void): (() => void) => {
-    let state: 'inactive' | 'recording' = 'inactive';
-    let input: MediaStreamAudioSourceNode;
+const createAudioRecorder = (
+    stream: MediaStream,
+    cb: (buffer: ArrayBuffer, last: boolean) => void,
+): Promise<() => void> =>
+    new Promise((resolve) => {
+        let state: 'inactive' | 'recording' = 'inactive';
+        let input: MediaStreamAudioSourceNode;
 
-    const start = () => {
-        if (state !== 'inactive') {
-            throw new Error("Can't start not inactive recorder");
-        }
-
-        state = 'recording';
-
-        if (!context) {
-            context = createAudioContext({
-                // firefox не умеет выравнивать samplerate, будем делать это самостоятельно
-                sampleRate: IS_FIREFOX ? undefined : TARGET_SAMPLE_RATE,
-            });
-        }
-
-        input = context.createMediaStreamSource(stream);
-
-        if (!processor) {
-            processor = context.createScriptProcessor(2048, 1, 1);
-        }
-
-        const listener = (e: AudioProcessingEvent) => {
-            const buffer = e.inputBuffer.getChannelData(0);
-            const data = downsampleBuffer(buffer, context.sampleRate, TARGET_SAMPLE_RATE);
-
-            const last = state === 'inactive';
-            cb(data, last);
-
-            if (last) {
-                processor.removeEventListener('audioprocess', listener);
+        const stop = () => {
+            if (state === 'inactive') {
+                throw new Error("Can't stop inactive recorder");
             }
+
+            state = 'inactive';
+            stream.getTracks().forEach((track) => {
+                track.stop();
+            });
+            input.disconnect();
         };
 
-        processor.addEventListener('audioprocess', listener);
+        const start = () => {
+            if (state !== 'inactive') {
+                throw new Error("Can't start not inactive recorder");
+            }
 
-        input.connect(processor);
-        processor.connect(context.destination);
-    };
+            state = 'recording';
 
-    const stop = () => {
-        if (state === 'inactive') {
-            throw new Error("Can't stop inactive recorder");
-        }
+            if (!context) {
+                context = createAudioContext({
+                    // firefox не умеет выравнивать samplerate, будем делать это самостоятельно
+                    sampleRate: IS_FIREFOX ? undefined : TARGET_SAMPLE_RATE,
+                });
+            }
 
-        state = 'inactive';
-        stream.getTracks().forEach((track) => {
-            track.stop();
-        });
-        input.disconnect();
-    };
+            input = context.createMediaStreamSource(stream);
 
-    start();
+            if (!processor) {
+                processor = context.createScriptProcessor(2048, 1, 1);
+            }
 
-    return stop;
-};
+            const listener = (e: AudioProcessingEvent) => {
+                const buffer = e.inputBuffer.getChannelData(0);
+                const data = downsampleBuffer(buffer, context.sampleRate, TARGET_SAMPLE_RATE);
+
+                const last = state === 'inactive';
+                cb(data, last);
+
+                if (last) {
+                    processor.removeEventListener('audioprocess', listener);
+                }
+            };
+
+            processor.addEventListener('audioprocess', listener);
+            processor.addEventListener('audioprocess', () => resolve(stop), { once: true });
+
+            input.connect(processor);
+            processor.connect(context.destination);
+        };
+
+        start();
+    });
 
 /**
  * Запрашивает у браузера доступ к микрофону и резолвит Promise, если разрешение получено.
