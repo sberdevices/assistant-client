@@ -1,3 +1,15 @@
+# v4.11.0 (Tue Dec 07 2021)
+
+#### 🚀 Enhancement
+
+- feat: Добавлена поддержка BackgroundApps [#231](https://github.com/sberdevices/assistant-client/pull/231) ([@evgeniysemin](https://github.com/evgeniysemin))
+
+#### Authors: 1
+
+- [@evgeniysemin](https://github.com/evgeniysemin)
+
+---
+
 # v4.10.1 (Tue Nov 23 2021)
 
 #### 🐛 Bug Fix
