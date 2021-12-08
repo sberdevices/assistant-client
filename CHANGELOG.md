@@ -1,3 +1,15 @@
+# v4.11.1 (Wed Dec 08 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Исправлен момент отправки эмоции listen при готовности захвата речи [#238](https://github.com/sberdevices/assistant-client/pull/238) ([@evgeniysemin](https://github.com/evgeniysemin))
+
+#### Authors: 1
+
+- [@evgeniysemin](https://github.com/evgeniysemin)
+
+---
+
 # v4.11.0 (Tue Dec 07 2021)
 
 #### 🚀 Enhancement
