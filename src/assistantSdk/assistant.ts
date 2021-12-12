@@ -141,12 +141,13 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         };
 
         const getBackgroundAppsMeta = async () => {
-            const backgroundAppsIds = Object.keys(backgroundApps);
+            const apps = { ...backgroundApps };
+            const backgroundAppsIds = Object.keys(apps);
             const backgroundAppsMeta: { app_info: AppInfo; state: Record<string, unknown> }[] = [];
 
             await Promise.allSettled(
                 backgroundAppsIds.map(async (applicationId) => {
-                    const { getState = null } = backgroundApps[applicationId];
+                    const { getState = null } = apps[applicationId];
 
                     return typeof getState === 'function'
                         ? promiseTimeout(getState(), STATE_UPDATE_TIMEOUT).catch(() => ({}))
@@ -163,7 +164,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                     const applicationId = backgroundAppsIds[index];
 
                     backgroundAppsMeta.push({
-                        app_info: backgroundApps[applicationId].appInfo,
+                        app_info: apps[applicationId].appInfo,
                         state,
                     });
                 });
