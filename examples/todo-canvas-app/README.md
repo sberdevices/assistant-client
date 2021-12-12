@@ -4,7 +4,7 @@
 
 ## Генерация token:
 
-1. Идём на страницу SmartApp Studio ([ссылка](https://smartapp-studio.sberdevices.ru/));
+1. Идём на страницу SmartApp Studio ([ссылка](https://developers.sber.ru/studio));
 1. В меню пользователя (правый верхний угол) выбираем "Настройки профиля";
 1. Нажимаем "Auth Token";
 1. Нажимаем "Обновить ключ";
