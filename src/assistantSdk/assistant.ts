@@ -144,21 +144,18 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
             const backgroundAppsIds = Object.keys(backgroundApps);
             const backgroundAppsMeta: { app_info: AppInfo; state: Record<string, unknown> }[] = [];
 
-            await Promise.allSettled(
+            await Promise.all(
                 backgroundAppsIds.map(async (applicationId) => {
-                    const { getState = null } = backgroundApps[applicationId];
+                    const { getState = () => Promise.resolve({}) } = backgroundApps[applicationId];
 
-                    return typeof getState === 'function'
-                        ? promiseTimeout(getState(), STATE_UPDATE_TIMEOUT).catch(() => ({}))
-                        : Promise.resolve({});
+                    return promiseTimeout(getState(), STATE_UPDATE_TIMEOUT).then(
+                        (state) => state,
+                        () => ({}),
+                    );
                 }),
             ).then((results) => {
                 results.forEach((appResult, index) => {
-                    let state = {};
-
-                    if (appResult.status === 'fulfilled') {
-                        state = appResult.value;
-                    }
+                    const state = appResult;
 
                     const applicationId = backgroundAppsIds[index];
 
