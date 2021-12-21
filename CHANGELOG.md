@@ -1,3 +1,19 @@
+# v4.11.2 (Tue Dec 21 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Удалён метод Promise.allSettled [#246](https://github.com/sberdevices/assistant-client/pull/246) ([@evgeniysemin](https://github.com/evgeniysemin))
+- docs: Исправление битой ссылке в README.md примера todo-canvas-app [#241](https://github.com/sberdevices/assistant-client/pull/241) ([@BorodinDK](https://github.com/BorodinDK))
+- docs: Ссылки в альтернативном подключении [#239](https://github.com/sberdevices/assistant-client/pull/239) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 3
+
+- [@evgeniysemin](https://github.com/evgeniysemin)
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+- Denis Borodin ([@BorodinDK](https://github.com/BorodinDK))
+
+---
+
 # v4.11.1 (Wed Dec 08 2021)
 
 #### 🐛 Bug Fix
