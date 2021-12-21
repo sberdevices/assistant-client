@@ -1,3 +1,15 @@
+# v4.13.0 (Tue Dec 21 2021)
+
+#### 🚀 Enhancement
+
+- feat: Добавлено API для управления отображением NativePanel в рантайм (assistant.nativePanel) [#216](https://github.com/sberdevices/assistant-client/pull/216) ([@evgeniysemin](https://github.com/evgeniysemin))
+
+#### Authors: 1
+
+- [@evgeniysemin](https://github.com/evgeniysemin)
+
+---
+
 # v4.12.0 (Tue Dec 21 2021)
 
 #### 🚀 Enhancement
