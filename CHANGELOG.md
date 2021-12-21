@@ -1,3 +1,19 @@
+# v4.12.0 (Tue Dec 21 2021)
+
+#### 🚀 Enhancement
+
+- feat: Актуализирован вид NativePanel. Добавлен screenshotMode для NativePanel [#206](https://github.com/sberdevices/assistant-client/pull/206) ([@evgeniysemin](https://github.com/evgeniysemin))
+
+#### 🐛 Bug Fix
+
+- fix: Стек initialCommands теперь формируется при window.AssistantClient.onStart() [#226](https://github.com/sberdevices/assistant-client/pull/226) ([@evgeniysemin](https://github.com/evgeniysemin))
+
+#### Authors: 1
+
+- [@evgeniysemin](https://github.com/evgeniysemin)
+
+---
+
 # v4.11.2 (Tue Dec 21 2021)
 
 #### 🐛 Bug Fix
