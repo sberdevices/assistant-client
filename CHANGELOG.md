@@ -1,3 +1,15 @@
+# v4.13.1 (Tue Dec 21 2021)
+
+#### 🐛 Bug Fix
+
+- fix: Исправлен асинхронный сбор меты background_apps [#242](https://github.com/sberdevices/assistant-client/pull/242) ([@evgeniysemin](https://github.com/evgeniysemin))
+
+#### Authors: 1
+
+- [@evgeniysemin](https://github.com/evgeniysemin)
+
+---
+
 # v4.13.0 (Tue Dec 21 2021)
 
 #### 🚀 Enhancement
