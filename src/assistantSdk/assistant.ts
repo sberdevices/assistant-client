@@ -6,6 +6,7 @@ import {
     AppInfo,
     AssistantAppState,
     AssistantSmartAppData,
+    AssistantStartSmartSearch,
     VpsConfiguration,
     EmotionId,
     OriginalMessageType,
@@ -67,7 +68,7 @@ export interface AssistantSettings {
 export type AppEvent =
     | { type: 'run'; app: AppInfo }
     | { type: 'close'; app: AppInfo }
-    | { type: 'command'; app: AppInfo; command: AssistantSmartAppData };
+    | { type: 'command'; app: AppInfo; command: AssistantSmartAppData | AssistantStartSmartSearch };
 
 export type AssistantEvent = {
     asr?: { text: string; last?: boolean; mid?: OriginalMessageType['messageId'] }; // last и mid нужен для отправки исх бабла в чат
@@ -316,12 +317,17 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                                 });
                             }
 
-                            if ((command.type === 'smart_app_data' || command.type === 'navigation') && mesAppInfo) {
+                            if (
+                                (command.type === 'smart_app_data' ||
+                                    command.type === 'start_smart_search' ||
+                                    command.type === 'navigation') &&
+                                mesAppInfo
+                            ) {
                                 // эмитим все команды, т.к бывают фоновые команды
                                 emit('app', {
                                     type: 'command',
                                     command: {
-                                        ...(command as AssistantSmartAppData),
+                                        ...(command as AssistantSmartAppData | AssistantStartSmartSearch),
                                         sdk_meta: {
                                             mid: originalMessage.messageId.toString(),
                                             requestId: requestIdMap[originalMessage.messageId.toString()],

@@ -181,6 +181,15 @@ export interface AssistantSmartAppCommand extends AssistantSmartAppData {
     sdk_meta?: SdkMeta;
 }
 
+export interface AssistantStartSmartSearch {
+    type: 'start_smart_search';
+    start_smart_search: {
+        query: string;
+        timeoutMS: string;
+    };
+    sdk_meta?: SdkMeta;
+}
+
 export interface AppContext {
     app_info: AppInfo;
     device_id: string;
@@ -306,6 +315,7 @@ export type ItemType = Partial<BubbleCommand> &
     Partial<ActionCommand> & {
         command?:
             | Omit<AssistantSmartAppData, 'sdk_meta'>
+            | Omit<AssistantStartSmartSearch, 'sdk_meta'>
             | Omit<AssistantSystemCommand, 'sdk_meta'>
             | Omit<AssistantNavigationCommand, 'sdk_meta'>
             | {
