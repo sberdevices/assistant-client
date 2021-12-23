@@ -1,3 +1,15 @@
+# v4.14.0 (Thu Dec 23 2021)
+
+#### 🚀 Enhancement
+
+- feat: Добавлен эмитер StartSmartSearch [#248](https://github.com/sberdevices/assistant-client/pull/248) ([@evgeniysemin](https://github.com/evgeniysemin))
+
+#### Authors: 1
+
+- [@evgeniysemin](https://github.com/evgeniysemin)
+
+---
+
 # v4.13.1 (Tue Dec 21 2021)
 
 #### 🐛 Bug Fix
