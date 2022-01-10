@@ -45,6 +45,7 @@ if (typeof window !== 'undefined' && inIframe()) {
         window.top?.postMessage(JSON.stringify(action), '*');
     };
 
+    window.appInitialData = [];
     window.AssistantHost = {
         sendDataContainer(json: string) {
             postMessage({ type: 'sendDataContainer', payload: json });
