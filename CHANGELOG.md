@@ -1,3 +1,16 @@
+# v4.14.1 (Mon Jan 10 2022)
+
+#### 🐛 Bug Fix
+
+- fix: объявлять appInitialData в фрейме [#250](https://github.com/sberdevices/assistant-client/pull/250) ([@sasha-tlt](https://github.com/sasha-tlt))
+- docs: Добавлено описание AssistantThemeCommand [#249](https://github.com/sberdevices/assistant-client/pull/249) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.14.0 (Thu Dec 23 2021)
 
 #### 🚀 Enhancement
