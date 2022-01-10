@@ -23,6 +23,7 @@ Assistant Client — это инструмент для локального т�
      * [AssistantCharacterCommand](#AssistantCharacterCommand)
      * [AssistantNavigationCommand](#AssistantNavigationCommand)
      * [AssistantInsetsCommand](#AssistantInsetsCommand)
+     * [AssistantThemeCommand] (#AssistantThemeCommand)
      * [AssistantSmartAppError](#AssistantSmartAppError)
      * [AssistantSmartAppCommand](#AssistantSmartAppCommand)
    * [Пульт](#пульт)
@@ -233,7 +234,7 @@ ____
 
 Осуществляет подписку на событие готовности ассистента к работе.
 
-#### on('data', cb: (data: [AssistantCharacterCommand](#AssistantCharacterCommand) | [AssistantNavigationCommand](#AssistantNavigationCommand) | [AssistantInsetsCommand](#AssistantInsetsCommand) | [AssistantSmartAppError](#AssistantSmartAppError) | [AssistantSmartAppCommand](#AssistantSmartAppCommand)) => {}): void
+#### on('data', cb: (data: [AssistantCharacterCommand](#AssistantCharacterCommand) | [AssistantNavigationCommand](#AssistantNavigationCommand) | [AssistantInsetsCommand](#AssistantInsetsCommand) | [AssistantThemeCommand](#AssistantThemeCommand) | [AssistantSmartAppError](#AssistantSmartAppError) | [AssistantSmartAppCommand](#AssistantSmartAppCommand)) => {}): void
 
 Осуществляет подписку на событие получения данных с бэкенда. Получает команды из `appInitialData`, если при запуске смартапа не была вызвана команда `getInitialData()`.
 
@@ -406,6 +407,19 @@ interface AssistantInsetsCommand {
     right: number;   //px
     bottom: number;  //px
   };
+}
+```
+
+### `AssistantThemeCommand`
+
+Объект `AssistantInsetsCommand` - команда, которая сообщает смартапу текущую тему платформы — тёмная или светлая. По умолчанию нужно использовать тёмную тему.
+
+```typescript
+interface AssistantThemeCommand {
+   type: 'theme';
+   theme: {
+      name: 'dark' | 'light'
+   }
 }
 ```
 
