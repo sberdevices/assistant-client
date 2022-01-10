@@ -249,7 +249,7 @@ export interface AssistantHost {
 }
 
 export interface AssistantWindow {
-    AssistantHost?: AssistantHost;
+    AssistantHost: AssistantHost;
     AssistantClient?: AssistantClient;
     appInitialData: Array<AssistantClientCommand>;
     appRecoveryState: unknown;
