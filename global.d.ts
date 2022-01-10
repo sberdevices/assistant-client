@@ -5,6 +5,7 @@ export declare global {
     interface Window extends AssistantWindow {}
 
     interface Window {
+        __ASSISTANT_CLIENT__: { version: string };
         webkitAudioContext?: new () => AudioContext;
     }
 }
