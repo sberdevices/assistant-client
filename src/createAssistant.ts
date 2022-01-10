@@ -346,4 +346,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
     };
 };
 
+// eslint-disable-next-line no-underscore-dangle
+window.__ASSISTANT_CLIENT__ = { version: 'process.env.APP_VERSION' };
+
 export * from './typings';
