@@ -198,6 +198,7 @@ ____
 | getRecoveryState | Нет          |  Функция, которая сохраняет состояние смартапа на момент последнего закрытия |
 | settings         | Нет          |  Объект [настроек ассистента](#AssistantSettings)                          |
 | nativePanel      | Нет          |  Объект настроек панели ассистента                          |
+| surface          | Нет          |  Строка, название поверхности. Возможные значения: `SBERBOX` (SberBox), `STARGATE` (SberPortal), `SATELLITE` (SberBox Top) `SBOL` (приложение СберБанк Онлайн), `COMPANION` (приложение Салют), `TV` (Салют ТВ), `TV_HUAWEI` (Huawei Vision), `TIME` (SberBox Time)  |
 
 #### Свойства [Settings](#AssistantSettings)
 
