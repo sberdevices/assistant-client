@@ -4,18 +4,21 @@ import { AssistantSettings, AssistantSmartAppData } from './typings';
 import { initializeAssistantSDK, InitializeAssistantSDKParams } from './dev';
 import { createAssistant, CreateAssistantParams } from './createAssistant';
 
-export const createAssistantDev = <A extends AssistantSmartAppData>({
-    getState,
-    getRecoveryState,
-    ready,
-    ...sdkParams
-}: CreateAssistantParams &
-    Pick<
+export type Surface = 'SBERBOX' | 'STARGATE' | 'SATELLITE' | 'COMPANION' | 'SBOL' | 'TV' | 'TV_HUAWEI' | 'TIME';
+export type Channel = 'B2C' | 'COMPANION_B2C' | 'SBOL';
+
+const channelForSurface: Record<string, Channel> = {
+    COMPANION: 'COMPANION_B2C',
+    SBOL: 'SBOL',
+};
+
+export type CreateAssistantDevParams = CreateAssistantParams & {
+    surface?: Surface | string;
+    userChannel?: Channel | string;
+} & Pick<
         InitializeAssistantSDKParams,
         | 'initPhrase'
         | 'url'
-        | 'userChannel'
-        | 'surface'
         | 'userId'
         | 'token'
         | 'surfaceVersion'
@@ -27,9 +30,20 @@ export const createAssistantDev = <A extends AssistantSmartAppData>({
         | 'settings'
         | 'getMeta'
         | 'features'
-    >) => {
+    >;
+
+export const createAssistantDev = <A extends AssistantSmartAppData>({
+    getState,
+    getRecoveryState,
+    ready,
+    surface = 'SBERBOX',
+    userChannel,
+    ...sdkParams
+}: CreateAssistantDevParams) => {
     const { nativePanel } = initializeAssistantSDK({
         ...sdkParams,
+        surface,
+        userChannel: userChannel || channelForSurface[surface] || 'B2C',
     });
 
     return {
@@ -64,8 +78,10 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
     token: string;
     settings?: Pick<AssistantSettings, 'dubbing'>;
 } & CreateAssistantParams &
-    Pick<InitializeAssistantSDKParams, 'nativePanel'> &
-    Pick<InitializeAssistantSDKParams, 'initPhrase' | 'enableRecord' | 'recordParams' | 'getMeta'>) => {
+    Pick<
+        CreateAssistantDevParams,
+        'surface' | 'userChannel' | 'nativePanel' | 'initPhrase' | 'enableRecord' | 'recordParams' | 'getMeta'
+    >) => {
     try {
         const { exp } = parseJwt(token);
         if (exp * 1000 <= Date.now()) {
@@ -94,8 +110,6 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
         getRecoveryState,
         ready,
         url: 'wss://nlp2vps.online.sberbank.ru:443/vps/',
-        surface: 'SBERBOX',
-        userChannel: 'B2C',
     });
 };
 
