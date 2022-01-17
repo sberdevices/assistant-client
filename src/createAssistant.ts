@@ -300,6 +300,26 @@ export const createAssistant = <A extends AssistantSmartAppData>({
             receivedAppInitialData = [...(window.appInitialData || [])];
             return receivedAppInitialData;
         },
+        findInInitialData: <T>({ type, command }: { type?: string; command?: string }): T | undefined => {
+            const appInitialData = [...(window.appInitialData || [])];
+            const result = appInitialData.find((data) => {
+                if (!command && type && type === data.type) {
+                    return true;
+                }
+                const isCommandInSmartAppData = command && 'smart_app_data' in data;
+                if (!isCommandInSmartAppData) {
+                    return;
+                }
+                if (
+                    command === (data.smart_app_data as any).command ||
+                    command === (data.smart_app_data as AssistantSmartAppCommand['smart_app_data']).type
+                ) {
+                    return true;
+                }
+                return false;
+            }) as AssistantClientCustomizedCommand<AssistantSmartAppCommand>;
+            return ((result && 'smart_app_data' in result ? result.smart_app_data : result) as unknown) as T;
+        },
         getRecoveryState: () => window.appRecoveryState,
         on,
         sendAction: <
