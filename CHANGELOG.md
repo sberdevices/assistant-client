@@ -1,3 +1,15 @@
+# v4.15.0 (Mon Jan 17 2022)
+
+#### 🚀 Enhancement
+
+- feat: метод findInInitialData [#252](https://github.com/sberdevices/assistant-client/pull/252) ([@VladislavPetyukevich](https://github.com/VladislavPetyukevich))
+
+#### Authors: 1
+
+- [@VladislavPetyukevich](https://github.com/VladislavPetyukevich)
+
+---
+
 # v4.14.1 (Mon Jan 10 2022)
 
 #### 🐛 Bug Fix
