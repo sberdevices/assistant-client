@@ -23,7 +23,7 @@ Assistant Client — это инструмент для локального т�
      * [AssistantCharacterCommand](#AssistantCharacterCommand)
      * [AssistantNavigationCommand](#AssistantNavigationCommand)
      * [AssistantInsetsCommand](#AssistantInsetsCommand)
-     * [AssistantThemeCommand] (#AssistantThemeCommand)
+     * [AssistantThemeCommand](#AssistantThemeCommand)
      * [AssistantSmartAppError](#AssistantSmartAppError)
      * [AssistantSmartAppCommand](#AssistantSmartAppCommand)
    * [Пульт](#пульт)
