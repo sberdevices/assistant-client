@@ -1,3 +1,20 @@
+# v4.16.0 (Thu Jan 20 2022)
+
+#### 🚀 Enhancement
+
+- feat: Записывать версию assistant-client в window [#251](https://github.com/sberdevices/assistant-client/pull/251) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### 🐛 Bug Fix
+
+- fix: В канвас не приходит smart_app_error [#255](https://github.com/sberdevices/assistant-client/pull/255) ([@sasha-tlt](https://github.com/sasha-tlt))
+- docs: ошибка в README [#253](https://github.com/sberdevices/assistant-client/pull/253) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.15.0 (Mon Jan 17 2022)
 
 #### 🚀 Enhancement
