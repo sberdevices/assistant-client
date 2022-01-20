@@ -315,10 +315,12 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                                     type: 'command',
                                     command: command as ActionCommand,
                                 });
+                                return;
                             }
 
                             if (
                                 (command.type === 'smart_app_data' ||
+                                    command.type === 'smart_app_error' ||
                                     command.type === 'start_smart_search' ||
                                     command.type === 'navigation') &&
                                 mesAppInfo
