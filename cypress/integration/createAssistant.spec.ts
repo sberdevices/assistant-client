@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import { AssistantSmartAppData } from '../../src/typings';
 import { createAssistant } from '../../src/index';
 import { Hints, Suggestions } from '@salutejs/scenario';
 
@@ -26,7 +27,7 @@ describe('Проверяем createAssistant', () => {
     const requestId = 'TEST-0001';
     const getState = () => state;
     const getRecoveryState = () => recoveryState;
-    const initAssistant = () => createAssistant({ getState, getRecoveryState });
+    const initAssistant = <A extends AssistantSmartAppData>() => createAssistant<A>({ getState, getRecoveryState });
     const initialData = [
         { type: 'character', character: { id: 'sber' }, sdk_meta: { mid: '-1' } },
         { type: 'insets', insets: { left: 0, top: 0, right: 0, bottom: 144 }, sdk_meta: { mid: '-1' } },
@@ -197,7 +198,7 @@ describe('Проверяем createAssistant', () => {
 
     it("Проверяем фильтрацию system.command = 'back' - не должна попадать в onData", () => {
         const onData = cy.stub();
-        const assistant = initAssistant();
+        initAssistant();
 
         window.AssistantClient.onStart();
         window.AssistantClient.onData({ type: 'system', system: { command: 'BACK' } });
@@ -287,5 +288,75 @@ describe('Проверяем createAssistant', () => {
         }
 
         initialSmartAppData.forEach((command) => expect(onData).to.calledWith(command));
+    });
+
+    it('Подписки onSmartAppCommand, onAssistantCommand, onSmartAppError получают то, что нужно', () => {
+        const smartAppErrors = [
+            {
+                type: 'smart_app_error',
+                smart_app_error: {
+                    code: -1,
+                },
+            },
+        ];
+
+        type MySmartAppCommands =
+            | { type: 'MY_FIRST_ACTION' | 'MY_SECOND_ACTION'; payload: string[] }
+            | { command: 'MY_COMMAND'; MY_COMMAND: string[] };
+
+        const smartAppCommands: Array<AssistantSmartAppData & { smart_app_data: MySmartAppCommands }> = [
+            {
+                type: 'smart_app_data',
+                smart_app_data: {
+                    type: 'MY_FIRST_ACTION',
+                    payload: ['action-one'],
+                },
+            },
+            {
+                type: 'smart_app_data',
+                smart_app_data: {
+                    type: 'MY_SECOND_ACTION',
+                    payload: ['action-two'],
+                },
+            },
+            {
+                type: 'smart_app_data',
+                smart_app_data: {
+                    command: 'MY_COMMAND',
+                    MY_COMMAND: ['command-one'],
+                },
+            },
+        ];
+
+        const stubOnData = cy.stub();
+
+        const assistant = initAssistant<typeof smartAppCommands[0]>();
+
+        assistant.onAssistantCommand('insets', (command) => expect(command).to.be.equal(initialData[1]));
+
+        assistant.onSmartAppData('MY_SECOND_ACTION', (command) =>
+            expect(command).to.be.equal(smartAppCommands[1].smart_app_data),
+        );
+
+        assistant.onSmartAppData('MY_COMMAND', (command) =>
+            expect(command).to.be.equal(smartAppCommands[2].smart_app_data),
+        );
+
+        assistant.onSmartAppError((error) => expect(error).to.be.equal(smartAppErrors[0].smart_app_error));
+
+        assistant.onAssistantCommand('MY_SECOND_ACTION', () => {
+            throw new Error('Подписка не должна сработать, так как это команда сценария (а не ассистента)');
+        });
+
+        assistant.onSmartAppData('insets', () => {
+            throw new Error('Подписка не должна сработать, так как это команда ассистента (а не сценария)');
+        });
+
+        assistant.on('data', stubOnData);
+
+        const commands = [...initialData, ...smartAppErrors, ...smartAppCommands];
+        commands.forEach(window.AssistantClient.onData);
+
+        commands.forEach((command) => expect(stubOnData).calledWith(command));
     });
 });

@@ -111,11 +111,17 @@ export interface CreateAssistantParams {
     ready?: boolean;
 }
 
+type OmitStr<T extends string, S extends T> = T extends S ? never : T;
+
 export const createAssistant = <A extends AssistantSmartAppData>({
     getState,
     getRecoveryState,
     ready = true,
 }: CreateAssistantParams) => {
+    type SmartAppDataWithCommands = A & {
+        smart_app_data: A['smart_app_data'] | { command: string; [key: string]: unknown };
+    };
+
     let currentGetState = getState;
     let currentGetRecoveryState = getRecoveryState;
     let isInitialDataReceived = false;
@@ -322,6 +328,29 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         },
         getRecoveryState: () => window.appRecoveryState,
         on,
+        onSmartAppData: <C extends SmartAppDataWithCommands['smart_app_data']>(
+            commandType: C['type'] & C['command'],
+            subscriber: (smartAppData: C) => void,
+        ) => {
+            return on('command', (smartAppData: A['smart_app_data']) => {
+                if (smartAppData.type === commandType || smartAppData.command === commandType) {
+                    subscriber(smartAppData as C);
+                }
+            });
+        },
+        onAssistantCommand: (
+            commandType: OmitStr<AssistantClientCommand['type'], 'smart_app_data' | 'smart_app_error'>,
+            subscriber: (command: AssistantClientCustomizedCommand<A>) => void,
+        ) => {
+            return on('data', (command) => {
+                if (command.type === commandType && !['smart_app_data', 'smart_app_error'].includes(command.type)) {
+                    subscriber(command);
+                }
+            });
+        },
+        onSmartAppError: (subscriber: (smartAppError: AssistantSmartAppError['smart_app_error']) => void) => {
+            return on('error', subscriber);
+        },
         sendAction: <
             D extends AssistantSmartAppCommand['smart_app_data'] = AssistantSmartAppCommand['smart_app_data'],
             E extends AssistantSmartAppError['smart_app_error'] = AssistantSmartAppError['smart_app_error']
