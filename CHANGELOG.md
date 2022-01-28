@@ -1,3 +1,15 @@
+# v4.17.0 (Fri Jan 28 2022)
+
+#### 🚀 Enhancement
+
+- feat: Добавить параметр для выбора поверхности [#254](https://github.com/sberdevices/assistant-client/pull/254) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.16.0 (Thu Jan 20 2022)
 
 #### 🚀 Enhancement
