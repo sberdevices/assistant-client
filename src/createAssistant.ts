@@ -14,6 +14,7 @@ import {
 } from './typings';
 import { createNanoEvents } from './nanoevents';
 import { createNanoObservable, ObserverFunc } from './nanoobservable';
+import { appInitialData } from './appInitialData';
 
 export interface AssistantEvents<A extends AssistantSmartAppData> {
     start: () => void;
@@ -118,18 +119,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
 }: CreateAssistantParams) => {
     let currentGetState = getState;
     let currentGetRecoveryState = getRecoveryState;
-    let isInitialDataReceived = false;
     let isInitialCommandsEmitted = false;
-    /**
-     * Стартовые команды на момент `window.AssistantClient.onStart()`.
-     * Сохраняются однажды и не обновляются.
-     * */
-    let stackAppInitialData: AssistantClientCommand[] = [];
-    /**
-     * Стартовые команды, которые были получены методом `getInitialData()`.
-     * Они не будут заэмичены при `window.AssistantClient.onStart()`.
-     * */
-    let receivedAppInitialData: AssistantClientCommand[] = [];
     const { on, emit } = createNanoEvents<AssistantEvents<A>>();
     const observables = new Map<string, { next: ObserverFunc<A | AssistantSmartAppError>; requestId?: string }>();
     const emitCommand = (command: AssistantClientCustomizedCommand<A>) => {
@@ -144,58 +134,16 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         return emit('data', command as A);
     };
 
-    const findSystemCommandIndex = (command: AssistantClientCommand) => {
-        let index = -1;
-
-        if (command.type === 'character') {
-            index = stackAppInitialData.findIndex(
-                (c) => c.type === 'character' && c.character.id === command.character.id,
-            );
-        } else if (command.type === 'insets') {
-            index = stackAppInitialData.findIndex((c) => c.type === 'insets');
-        } else if (command.type === 'app_context') {
-            index = stackAppInitialData.findIndex((c) => c.type === 'app_context');
-        } else if (command.sdk_meta && command.sdk_meta?.mid && command.sdk_meta?.mid !== '-1') {
-            index = stackAppInitialData.findIndex((c) => c.sdk_meta?.mid === command.sdk_meta?.mid);
-        }
-
-        return index;
-    };
-
-    const saveAppInitialData = () => {
-        stackAppInitialData = [...(window.appInitialData || [])];
-    };
-
-    const isCommandWasReceived = (command: AssistantClientCommand) => {
-        for (const receivedCommand of receivedAppInitialData) {
-            if (receivedCommand === command) {
-                return true;
-            }
-        }
-        return false;
-    };
-
     const emitAppInitialData = () => {
         if (!isInitialCommandsEmitted) {
-            const currentInitialData = stackAppInitialData;
-
-            const notReceivedCommands =
-                isInitialDataReceived === true
-                    ? currentInitialData.filter((c) => !isCommandWasReceived(c))
-                    : currentInitialData;
-
-            notReceivedCommands.forEach((c) => emitCommand(c as AssistantClientCustomizedCommand<A>));
+            appInitialData.diff().forEach((c) => emitCommand(c as AssistantClientCustomizedCommand<A>));
             isInitialCommandsEmitted = true;
         }
     };
 
     window.AssistantClient = {
         onData: (command: AssistantClientCommand) => {
-            const commandIndex = findSystemCommandIndex(command);
-            const isCommandExist = commandIndex >= 0;
-
-            if (isCommandExist) {
-                stackAppInitialData.splice(commandIndex, 1);
+            if (appInitialData.isCommitted(command)) {
                 return;
             }
 
@@ -244,13 +192,17 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         },
         onStart: () => {
             emit('start');
-            saveAppInitialData();
             emitAppInitialData();
         },
     };
 
+    const readyFn = () => {
+        appInitialData.commit();
+        window.AssistantHost?.ready();
+    };
+
     if (ready) {
-        setTimeout(() => window.AssistantHost?.ready()); // таймаут для подписки на start
+        setTimeout(readyFn); // таймаут для подписки на start
     }
 
     const sendData = (
@@ -295,31 +247,8 @@ export const createAssistant = <A extends AssistantSmartAppData>({
 
     return {
         close: () => window.AssistantHost?.close(),
-        getInitialData: () => {
-            isInitialDataReceived = true;
-            receivedAppInitialData = [...(window.appInitialData || [])];
-            return receivedAppInitialData;
-        },
-        findInInitialData: <T>({ type, command }: { type?: string; command?: string }): T | undefined => {
-            const appInitialData = [...(window.appInitialData || [])];
-            const result = appInitialData.find((data) => {
-                if (!command && type && type === data.type) {
-                    return true;
-                }
-                const isCommandInSmartAppData = command && 'smart_app_data' in data;
-                if (!isCommandInSmartAppData) {
-                    return;
-                }
-                if (
-                    command === (data.smart_app_data as any).command ||
-                    command === (data.smart_app_data as AssistantSmartAppCommand['smart_app_data']).type
-                ) {
-                    return true;
-                }
-                return false;
-            }) as AssistantClientCustomizedCommand<AssistantSmartAppCommand>;
-            return ((result && 'smart_app_data' in result ? result.smart_app_data : result) as unknown) as T;
-        },
+        getInitialData: appInitialData.pull,
+        findInInitialData: appInitialData.find,
         getRecoveryState: () => window.appRecoveryState,
         on,
         sendAction: <
@@ -362,7 +291,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
             window.AssistantHost?.setHints(JSON.stringify({ hints }));
         },
         sendText: (message: string) => window.AssistantHost?.sendText(message),
-        ready: () => window.AssistantHost?.ready(),
+        ready: readyFn,
     };
 };
 

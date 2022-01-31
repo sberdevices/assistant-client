@@ -204,6 +204,7 @@ export const initializeAssistantSDK = ({
             }
 
             if (clientReady && window.AssistantClient?.onData) {
+                initialSmartAppData.forEach((c) => window.AssistantClient?.onData?.(c));
                 window.AssistantClient?.onStart && window.AssistantClient?.onStart();
             }
 

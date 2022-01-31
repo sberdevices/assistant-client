@@ -9,7 +9,7 @@ describe('Проверяем createAssistant', () => {
         window.appInitialData = [];
         window.AssistantHost = {
             close: cy.stub(),
-            ready: cy.stub(),
+            ready: () => window.AssistantClient?.onStart(),
             setSuggests: cy.stub(),
             setHints: cy.stub(),
         };
@@ -26,7 +26,7 @@ describe('Проверяем createAssistant', () => {
     const requestId = 'TEST-0001';
     const getState = () => state;
     const getRecoveryState = () => recoveryState;
-    const initAssistant = () => createAssistant({ getState, getRecoveryState });
+    const initAssistant = (params = {}) => createAssistant({ getState, getRecoveryState, ...params });
     const initialData = [
         { type: 'character', character: { id: 'sber' }, sdk_meta: { mid: '-1' } },
         { type: 'insets', insets: { left: 0, top: 0, right: 0, bottom: 144 }, sdk_meta: { mid: '-1' } },
@@ -85,9 +85,20 @@ describe('Проверяем createAssistant', () => {
         done();
     });
 
-    it('Проверяем вызов AssistantHost.ready', () => {
+    it('Проверяем автовызов AssistantHost.ready', async () => {
+        cy.spy(window.AssistantHost, 'ready');
         initAssistant();
-        setTimeout(() => expect(window.AssistantHost.ready).to.be.calledOnce);
+        await new Promise(resolve => setTimeout(resolve)); 
+        expect(window.AssistantHost.ready).to.calledOnce;
+    });
+
+    it('Проверяем вызов ready вручную', async () => {
+        cy.spy(window.AssistantHost, 'ready');
+        const assistant = initAssistant({ ready: false });
+        await new Promise(resolve => setTimeout(resolve)); 
+        expect(window.AssistantHost.ready).to.not.called;
+        assistant.ready();
+        expect(window.AssistantHost.ready).to.calledOnce;
     });
 
     it('Проверяем getState и getRecoveryState', () => {
@@ -105,12 +116,6 @@ describe('Проверяем createAssistant', () => {
         expect(window.AssistantClient.onRequestState()).to.equal(newState);
         // assistantClient должен возвращать newRecoveryState
         expect(window.AssistantClient.onRequestRecoveryState()).to.equal(newRecoveryState);
-    });
-
-    it('Проверяем getInitialData', () => {
-        window.appInitialData = [...initialData];
-        const assistant = initAssistant();
-        expect(assistant.getInitialData()).to.deep.equal(initialData);
     });
 
     it('Проверяем sendData', (done) => {
@@ -205,17 +210,19 @@ describe('Проверяем createAssistant', () => {
         expect(onData).to.not.called;
     });
 
-    it('Эмитить appInitialData в onData, также не эмитить дважды', () => {
+    it('Эмитить appInitialData в onData, не пропускать дубли от натива (апп не прочитал appInitialData)', () => {
         window.appInitialData = [...initialData];
+        window.AssistantHost.ready = () => {
+            initialData.forEach((command) => window.AssistantClient.onData(command));
+            window.AssistantClient?.onStart();
+        };
 
         const onData = cy.stub();
-        const assistant = initAssistant();
+        const assistant = initAssistant({ ready: false });
 
         assistant.on('data', onData);
 
-        window.AssistantClient.onStart();
-
-        initialData.forEach((command) => window.AssistantClient.onData(command));
+        assistant.ready();
 
         initialData.forEach((command) => {
             expect(onData).to.calledWith(command);
@@ -224,68 +231,22 @@ describe('Проверяем createAssistant', () => {
         expect(onData).to.callCount(initialData.length);
     });
 
-    it('Не эмитить appInitialData в onData, если был вызван appInitialData; также не эмитить дважды', () => {
+    it('Не эмитить appInitialData в onData, не эмитить дубли сообщений от нативного сдк (апп прочитал appInitialData)', () => {
         window.appInitialData = [...initialData];
+        window.AssistantHost.ready = () => {
+            initialData.forEach((command) => window.AssistantClient.onData(command));
+            window.AssistantClient?.onStart();
+        };
 
         const onData = cy.stub();
-        const assistant = initAssistant();
+        const assistant = initAssistant({ ready: false });
 
-        assistant.getInitialData();
         assistant.on('data', onData);
 
-        window.AssistantClient.onStart();
-        initialData.forEach((command) => window.AssistantClient.onData(command));
+        const appInitialData = assistant.getInitialData();
+        assistant.ready();
 
+        expect(appInitialData).to.deep.equals(initialData);
         expect(onData).to.not.called;
-    });
-
-    it('appInitialData может меняться после инициализации', () => {
-        const firstInitialData = initialData.slice(0, 2);
-        window.appInitialData = [...firstInitialData];
-
-        const onData = cy.stub();
-        const assistant = initAssistant();
-
-        assistant.on('data', onData);
-
-        setTimeout(() => {
-            window.appInitialData.push(initialData[2]);
-
-            window.AssistantClient.onStart();
-
-            initialData.forEach((command) => {
-                expect(onData).to.calledWith(command);
-            });
-
-            expect(onData).to.callCount(initialData.length);
-        }, 1);
-    });
-
-    it('Не эмитить дважды команды из window.appInitialData', () => {
-        const initialSmartAppData = [
-            {
-                type: 'insets',
-                insets: { left: 0, top: 0, right: 0, bottom: 144 },
-                sdk_meta: { mid: '-1' },
-            },
-            {
-                type: 'character',
-                character: { id: 'sber' },
-                sdk_meta: { mid: '-1' },
-            },
-        ];
-
-        const onData = cy.stub();
-        const assistant = initAssistant();
-
-        assistant.on('data', onData);
-
-        window.appInitialData = [...initialSmartAppData];
-
-        for (const smartAppData of initialSmartAppData) {
-            window.AssistantClient.onData(smartAppData);
-        }
-
-        initialSmartAppData.forEach((command) => expect(onData).to.calledWith(command));
     });
 });
