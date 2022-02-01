@@ -1,3 +1,15 @@
+# v4.17.1 (Tue Feb 01 2022)
+
+#### 🐛 Bug Fix
+
+- fix: Команды из appInitialData приходят два раза [#258](https://github.com/sberdevices/assistant-client/pull/258) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.17.0 (Fri Jan 28 2022)
 
 #### 🚀 Enhancement
