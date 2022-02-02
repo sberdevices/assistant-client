@@ -79,12 +79,6 @@ describe('Проверяем createAssistant', () => {
             assistant.sendData({ action: expectedAction, name: expectedName, requestId: expectedRequestId });
         });
 
-    it('Не падать без appInitialData', (done) => {
-        window.appInitialData = undefined;
-        initAssistant();
-        done();
-    });
-
     it('Проверяем автовызов AssistantHost.ready', async () => {
         cy.spy(window.AssistantHost, 'ready');
         initAssistant();
@@ -248,5 +242,18 @@ describe('Проверяем createAssistant', () => {
 
         expect(appInitialData).to.deep.equals(initialData);
         expect(onData).to.not.called;
+    });
+
+    it('Не падать без appInitialData', () => {
+        cy.spy(window.AssistantHost, 'ready');
+
+        window.appInitialData = undefined;
+        const assistant = initAssistant({ ready: false });
+
+        const appInitialData = assistant.getInitialData();
+        assistant.ready();
+
+        expect(appInitialData).to.deep.equals([]);
+        expect(window.AssistantHost.ready).to.calledOnce;
     });
 });
