@@ -222,9 +222,9 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                 throw new Error('requestId должен быть уникальным');
             }
 
-            const { subscribe } = createNanoObservable<A | AssistantSmartAppError>(({ next }) => {
-                const realRequestId = requestId || v4();
+            const realRequestId = requestId || v4();
 
+            const { subscribe } = createNanoObservable<A | AssistantSmartAppError>(({ next }) => {
                 window.AssistantHost?.sendDataContainer(
                     /* eslint-disable-next-line @typescript-eslint/camelcase */
                     JSON.stringify({ data: action, message_name: name || '', requestId: realRequestId }),
@@ -233,7 +233,12 @@ export const createAssistant = <A extends AssistantSmartAppData>({
                 observables.set(realRequestId, { next, requestId });
             });
 
-            return subscribe({ next: onData }).unsubscribe;
+            const { unsubscribe } = subscribe({ next: onData });
+
+            return () => {
+                unsubscribe();
+                observables.delete(realRequestId);
+            };
         }
 
         if (onData != null) {
