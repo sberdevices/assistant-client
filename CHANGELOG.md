@@ -1,3 +1,19 @@
+# v4.17.2 (Tue Feb 08 2022)
+
+#### 🐛 Bug Fix
+
+- fix: После отписки, команды не приходят в on('data') [#263](https://github.com/sberdevices/assistant-client/pull/263) (xwND1k9iIGYi7pQL)
+- fix: Стейт не приходит в сценарий [#265](https://github.com/sberdevices/assistant-client/pull/265) ([@sasha-tlt](https://github.com/sasha-tlt))
+- fix: Не падать в ноде [#262](https://github.com/sberdevices/assistant-client/pull/262) ([@sasha-tlt](https://github.com/sasha-tlt))
+- test: Ошибка из-за отсутсвие appInitialData [#259](https://github.com/sberdevices/assistant-client/pull/259) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 2
+
+- akutniakov (xwND1k9iIGYi7pQL)
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.17.1 (Tue Feb 01 2022)
 
 #### 🐛 Bug Fix
