@@ -14,7 +14,6 @@ import {
 export const APP_INFO: AppInfo = {
     applicationId: 'test_app',
     appversionId: '0.0.0',
-    frontendEndpoint: 'https://test.test',
     frontendType: 'WEB_APP',
     projectId: 'test_project',
     frontendStateId: 'test_app',
