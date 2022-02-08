@@ -128,7 +128,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
     const metaProvider = async (): Promise<Partial<Pick<SystemMessageDataType, 'app_info' | 'meta'>>> => {
         // Стейт нужен только для канваса
         const appState =
-            app !== null && app.info.frontendEndpoint && app.info.frontendEndpoint !== 'None' && app.getState
+            app !== null && app.info.frontendType === 'WEB_APP' && app.getState
                 ? await promiseTimeout<AssistantAppState>(app.getState(), STATE_UPDATE_TIMEOUT).catch(() => {
                       // eslint-disable-next-line no-console
                       console.error('App-state wasn`t resolved, timeout had been expired');
