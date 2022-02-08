@@ -112,6 +112,8 @@ export interface CreateAssistantParams {
     ready?: boolean;
 }
 
+type OmitStr<T extends string, S extends T> = T extends S ? never : T;
+
 export const createAssistant = <A extends AssistantSmartAppData>({
     getState,
     getRecoveryState,
@@ -256,6 +258,26 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         findInInitialData: appInitialData.find,
         getRecoveryState: () => window.appRecoveryState,
         on,
+        subscribeToSmartAppData: (commandType: A['type'], subscriber: (smartAppData: A['smart_app_data']) => void) => {
+            return on('command', (smartAppData) => {
+                if (smartAppData.type === commandType) {
+                    subscriber(smartAppData);
+                }
+            });
+        },
+        subscribeToAssistantCommand: (
+            commandType: OmitStr<AssistantClientCommand['type'], 'smart_app_data' | 'smart_app_error'>,
+            subscriber: (command: AssistantClientCustomizedCommand<A>) => void,
+        ) => {
+            return on('data', (command) => {
+                if (command.type === commandType && !['smart_app_data', 'smart_app_error'].includes(command.type)) {
+                    subscriber(command);
+                }
+            });
+        },
+        subscribeToSmartAppError: (subscriber: (smartAppError: AssistantSmartAppError['smart_app_error']) => void) => {
+            return on('error', subscriber);
+        },
         sendAction: <
             D extends AssistantSmartAppCommand['smart_app_data'] = AssistantSmartAppCommand['smart_app_data'],
             E extends AssistantSmartAppError['smart_app_error'] = AssistantSmartAppError['smart_app_error']
