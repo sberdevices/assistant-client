@@ -436,6 +436,10 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
             return protocol;
         },
         setActiveApp: (info: AppInfo, getState?: () => Promise<AssistantAppState>) => {
+            if (app.info.applicationId !== info.applicationId) {
+                emit('app', { type: 'close', app: app.info });
+            }
+
             app = { info, getState };
         },
         addBackgroundApp: ({ appInfo, getState }: AssistantBackgroundApp) => {
