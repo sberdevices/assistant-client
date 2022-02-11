@@ -7,16 +7,22 @@ import { createVoiceListener } from './listener/voiceListener';
 import { createVoicePlayer } from './player/voicePlayer';
 import { resolveAudioContext, isAudioSupported } from './audioContext';
 
-export const createVoice = (
-    client: ReturnType<typeof createClient>,
+export const createVoice = ({
+    client,
+    emit,
+    onReady,
+    onLowInternetQuality,
+}: {
+    client: ReturnType<typeof createClient>;
     emit: (event: {
         asr?: { text: string; last?: boolean; mid?: OriginalMessageType['messageId'] }; // lasr и mid нужен для отправки исх бабла в чат
         emotion?: EmotionId;
-    }) => void,
+    }) => void;
     /// пока onReady не вызван, треки не воспроизводятся
     /// когда случится onReady, очередь треков начнет проигрываться
-    onReady?: () => void,
-) => {
+    onReady?: () => void;
+    onLowInternetQuality?: () => void;
+}) => {
     let voicePlayer: ReturnType<typeof createVoicePlayer>;
     const listener = createVoiceListener();
     const musicRecognizer = createMusicRecognizer(listener);
@@ -167,6 +173,12 @@ export const createVoice = (
                     mid,
                 },
             });
+        }),
+    );
+
+    subscriptions.push(
+        speechRecognizer.on('error', () => {
+            onLowInternetQuality?.();
         }),
     );
 

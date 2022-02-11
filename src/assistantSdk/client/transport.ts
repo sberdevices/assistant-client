@@ -16,13 +16,27 @@ export const createTransport = (createWS: WSCreator = defaultWSCreator) => {
 
     let status: 'connecting' | 'ready' | 'closed' = 'closed';
     let stopped = false;
-    let ws: WebSocket;
+    let ws: WebSocket | undefined;
     let timeOut: number | undefined; // ид таймера автореконнекта
     let retries = 0; // количество попыток коннекта при ошибке
 
+    const handleWsClose = () => {
+        status = 'closed';
+        emit('close');
+    };
+
     const close = () => {
+        // ничего не делаем, если уже закрыто
+        if (ws && ws.readyState === 3) {
+            return;
+        }
+
         stopped = true;
+        ws && ws.removeEventListener('close', handleWsClose);
         ws && ws.close(); // статус изменится по подписке
+        handleWsClose();
+        ws = undefined;
+
         clearTimeout(timeOut);
         timeOut = undefined;
     };
@@ -34,7 +48,7 @@ export const createTransport = (createWS: WSCreator = defaultWSCreator) => {
             return;
         }
 
-        ws.send(data);
+        ws && ws.send(data);
     };
 
     const open = (url: string) => {
@@ -49,17 +63,14 @@ export const createTransport = (createWS: WSCreator = defaultWSCreator) => {
 
         ws.binaryType = 'arraybuffer';
         ws.addEventListener('open', () => {
-            if (ws.readyState === 1) {
+            if (ws && ws.readyState === 1) {
                 retries = 0; // сбрасываем количество попыток реконнекта
                 status = 'ready';
                 emit('ready');
             }
         });
 
-        ws.addEventListener('close', () => {
-            status = 'closed';
-            emit('close');
-        });
+        ws.addEventListener('close', handleWsClose);
 
         ws.addEventListener('error', (e) => {
             if (status !== 'connecting') {

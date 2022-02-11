@@ -45,13 +45,10 @@ let processor: ScriptProcessorNode;
  * Преобразует stream в чанки (кусочки), и передает их в cb,
  * будет это делать, пока не будет вызвана функция остановки
  * @param stream Аудио-поток
- * @param cb callback, куда будут переданы чанки из потока
+ * @param onData callback, куда будут переданы чанки из потока
  * @returns Функция, вызов которой остановит передачу чанков
  */
-const createAudioRecorder = (
-    stream: MediaStream,
-    cb: (buffer: ArrayBuffer, last: boolean) => void,
-): Promise<() => void> =>
+const createAudioRecorder = (stream: MediaStream, onData: (buffer: ArrayBuffer) => void): Promise<() => void> =>
     new Promise((resolve) => {
         let state: 'inactive' | 'recording' = 'inactive';
         let input: MediaStreamAudioSourceNode;
@@ -92,10 +89,9 @@ const createAudioRecorder = (
                 const buffer = e.inputBuffer.getChannelData(0);
                 const data = downsampleBuffer(buffer, context.sampleRate, TARGET_SAMPLE_RATE);
 
-                const last = state === 'inactive';
-                cb(data, last);
-
-                if (last) {
+                if (state !== 'inactive') {
+                    onData(data);
+                } else {
                     processor.removeEventListener('audioprocess', listener);
                 }
             };
@@ -113,12 +109,12 @@ const createAudioRecorder = (
 /**
  * Запрашивает у браузера доступ к микрофону и резолвит Promise, если разрешение получено.
  * После получения разрешения, чанки с голосом будут передаваться в cb - пока не будет вызвана функция из результата.
- * @param cb Callback, куда будут передаваться чанки с голосом пользователя
+ * @param onData Callback, куда будут передаваться чанки с голосом пользователя
  * @returns Promise, который содержит функцию прерывающую слушание
  */
-export const createNavigatorAudioProvider = (cb: (buffer: ArrayBuffer, last: boolean) => void): Promise<() => void> =>
+export const createNavigatorAudioProvider = (onData: (buffer: ArrayBuffer) => void): Promise<() => void> =>
     navigator.mediaDevices
         .getUserMedia({
             audio: true,
         })
-        .then((stream) => createAudioRecorder(stream, cb));
+        .then((stream) => createAudioRecorder(stream, onData));

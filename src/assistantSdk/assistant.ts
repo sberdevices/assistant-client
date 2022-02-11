@@ -87,7 +87,12 @@ export type ActionCommandEvent = {
     command: ActionCommand;
 };
 
-export type AssistantError = ProtocolError;
+export interface LowInternetQualityError {
+    type: 'LOW_INTERNET_QUALITY';
+    message?: string;
+}
+
+export type AssistantError = ProtocolError | LowInternetQualityError;
 
 export type AssistantEvents = {
     app: (event: AppEvent) => void;
@@ -190,15 +195,19 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         settings: { ...configuration.settings, dubbing: !voiceReady ? -1 : configuration.settings.dubbing },
     });
     const client = createClient(protocol, metaProvider);
-    const voice = createVoice(
+    const voice = createVoice({
         client,
-        (event) => emit('assistant', event),
-        () => {
+        emit: (event) => emit('assistant', event),
+        onReady: () => {
             voiceReady = true;
             // когда голос готов, возвращаем первоначальное состояние
             protocol.changeSettings({ dubbing: settings.disableDubbing ? -1 : 1 });
         },
-    );
+        onLowInternetQuality: () => {
+            transport.close();
+            emit('error', { type: 'LOW_INTERNET_QUALITY' });
+        },
+    });
 
     /** завершает текущий апп */
     const closeApp = () => {

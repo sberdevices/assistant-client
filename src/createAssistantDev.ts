@@ -116,7 +116,6 @@ export const createSmartappDebugger = <A extends AssistantSmartAppData>({
 export { createRecordOfflinePlayer as createRecordPlayer } from './record/offline-player';
 export { createOnlineRecordPlayer } from './record/online-player';
 export { NativePanelParams } from './NativePanel/NativePanel';
-// export * from './typings';
 export * from './dev';
 export { initializeDebugging } from './debug';
 export * from './record/mock-recorder';
