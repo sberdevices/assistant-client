@@ -231,5 +231,8 @@ export const createVoice = (
         listen,
         shazam,
         stop,
+        stopPlaying: () => {
+            voicePlayer?.stop();
+        },
     };
 };

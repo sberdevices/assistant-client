@@ -239,6 +239,7 @@ export interface AssistantClient {
 }
 
 export interface AssistantHost {
+    cancelTts?: (options: string) => void;
     close: () => void;
     ready: () => void;
     sendData: (action: string, message: string | null) => void;
