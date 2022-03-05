@@ -217,6 +217,9 @@ export const initializeAssistantSDK = ({
     window.appInitialData = [];
     window.appRecoveryState = null;
     window.AssistantHost = {
+        cancelTts() {
+            assistant.stopTts();
+        },
         close() {
             if (appInfo && appInfo.applicationId) {
                 recoveryStateRepository.remove(appInfo.applicationId);

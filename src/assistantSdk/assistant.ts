@@ -415,6 +415,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
             protocol.clearQueue();
             transport.close();
         },
+        stopTts: voice.stopPlaying,
         stopVoice: voice.stop,
         emit,
         on,

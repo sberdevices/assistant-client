@@ -134,6 +134,13 @@ export const createAssistant = <A extends AssistantSmartAppData>({
         return emit('data', command as A);
     };
 
+    const cancelTts =
+        typeof window.AssistantHost?.cancelTts !== 'undefined'
+            ? () => {
+                  window.AssistantHost.cancelTts?.('');
+              }
+            : undefined;
+
     const emitAppInitialData = () => {
         if (!isInitialCommandsEmitted) {
             appInitialData.diff().forEach((c) => emitCommand(c as AssistantClientCustomizedCommand<A>));
@@ -251,6 +258,7 @@ export const createAssistant = <A extends AssistantSmartAppData>({
     };
 
     return {
+        cancelTts,
         close: () => window.AssistantHost?.close(),
         getInitialData: appInitialData.pull,
         findInInitialData: appInitialData.find,
