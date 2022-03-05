@@ -8,3 +8,4 @@ export {
     AssistantEvents as AssistantClientEvents,
     createAssistant as createAssistantClient,
 } from './assistantSdk/assistant';
+export * from './hooks/useEventsAdapter';
