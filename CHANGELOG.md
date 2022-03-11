@@ -1,3 +1,15 @@
+# v4.18.0 (Fri Mar 11 2022)
+
+#### 🚀 Enhancement
+
+- feat: Добавить команду остановки tts [#272](https://github.com/sberdevices/assistant-client/pull/272) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.17.2 (Tue Feb 08 2022)
 
 #### 🐛 Bug Fix
