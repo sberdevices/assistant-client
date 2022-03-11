@@ -1,3 +1,15 @@
+# v4.19.0 (Fri Mar 11 2022)
+
+#### 🚀 Enhancement
+
+- feat: Добавлена возможность подклеивать ArrayBuffer[] к голосовому сообщению [#260](https://github.com/sberdevices/assistant-client/pull/260) ([@evgeniysemin](https://github.com/evgeniysemin))
+
+#### Authors: 1
+
+- [@evgeniysemin](https://github.com/evgeniysemin)
+
+---
+
 # v4.18.0 (Fri Mar 11 2022)
 
 #### 🚀 Enhancement
