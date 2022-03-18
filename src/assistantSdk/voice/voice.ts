@@ -30,6 +30,7 @@ export const createVoice = (
 
     let isPlaying = false; // проигрывается/не проигрывается озвучка
     let autolistenMesId: string | null = null; // id сообщения, после проигрывания которого, нужно активировать слушание
+    let wasDisabledDubbing = false; // состояние озвучки на момент включения слушания
 
     /** останавливает слушание голоса, возвращает true - если слушание было активно */
     const stopListening = (): boolean => {
@@ -77,6 +78,7 @@ export const createVoice = (
 
         // повторные вызовы не пройдут, пока пользователь не разрешит/запретит аудио
         if (listener.status === 'stopped') {
+            wasDisabledDubbing = settings.disableDubbing;
             return client.createVoiceStream(({ sendVoice, messageId, onMessage }) => {
                 begin?.forEach((chunk) => sendVoice(new Uint8Array(chunk), false));
 
@@ -107,6 +109,7 @@ export const createVoice = (
 
         // повторные вызовы не пройдут, пока пользователь не разрешит/запретит аудио
         if (listener.status === 'stopped') {
+            wasDisabledDubbing = settings.disableDubbing;
             client.createVoiceStream(({ sendVoice, messageId, onMessage }) =>
                 musicRecognizer.start({
                     sendVoice,
@@ -193,7 +196,8 @@ export const createVoice = (
             if (autoListening) {
                 /// если озвучка включена - сохраняем mesId чтобы включить слушание после озвучки
                 /// если озвучка выключена - включаем слушание сразу
-                if (!settings.disableDubbing) {
+
+                if (!wasDisabledDubbing) {
                     autolistenMesId = originalMessage.messageId.toString();
                 } else {
                     listen();
