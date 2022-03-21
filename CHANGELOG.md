@@ -1,3 +1,15 @@
+# v4.19.1 (Mon Mar 21 2022)
+
+#### 🐛 Bug Fix
+
+- fix: После включения озвучки не срабатывает автослушивание [#273](https://github.com/sberdevices/assistant-client/pull/273) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.19.0 (Fri Mar 11 2022)
 
 #### 🚀 Enhancement
