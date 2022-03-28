@@ -3668,6 +3668,1694 @@
     
         return Cancel;
     })();
+    
+    $root.App = (function() {
+    
+        /**
+         * Properties of an App.
+         * @exports IApp
+         * @interface IApp
+         * @property {string|null} [type] App type
+         * @property {string|null} [projectId] App projectId
+         * @property {string|null} [systemName] App systemName
+         */
+    
+        /**
+         * Constructs a new App.
+         * @exports App
+         * @classdesc Represents an App.
+         * @implements IApp
+         * @constructor
+         * @param {IApp=} [properties] Properties to set
+         */
+        function App(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * App type.
+         * @member {string} type
+         * @memberof App
+         * @instance
+         */
+        App.prototype.type = "";
+    
+        /**
+         * App projectId.
+         * @member {string} projectId
+         * @memberof App
+         * @instance
+         */
+        App.prototype.projectId = "";
+    
+        /**
+         * App systemName.
+         * @member {string} systemName
+         * @memberof App
+         * @instance
+         */
+        App.prototype.systemName = "";
+    
+        /**
+         * Creates a new App instance using the specified properties.
+         * @function create
+         * @memberof App
+         * @static
+         * @param {IApp=} [properties] Properties to set
+         * @returns {App} App instance
+         */
+        App.create = function create(properties) {
+            return new App(properties);
+        };
+    
+        /**
+         * Encodes the specified App message. Does not implicitly {@link App.verify|verify} messages.
+         * @function encode
+         * @memberof App
+         * @static
+         * @param {IApp} message App message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        App.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.type);
+            if (message.projectId != null && Object.hasOwnProperty.call(message, "projectId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.projectId);
+            if (message.systemName != null && Object.hasOwnProperty.call(message, "systemName"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.systemName);
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified App message, length delimited. Does not implicitly {@link App.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof App
+         * @static
+         * @param {IApp} message App message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        App.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes an App message from the specified reader or buffer.
+         * @function decode
+         * @memberof App
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {App} App
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        App.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.App();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.type = reader.string();
+                    break;
+                case 2:
+                    message.projectId = reader.string();
+                    break;
+                case 3:
+                    message.systemName = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes an App message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof App
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {App} App
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        App.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies an App message.
+         * @function verify
+         * @memberof App
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        App.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.type != null && message.hasOwnProperty("type"))
+                if (!$util.isString(message.type))
+                    return "type: string expected";
+            if (message.projectId != null && message.hasOwnProperty("projectId"))
+                if (!$util.isString(message.projectId))
+                    return "projectId: string expected";
+            if (message.systemName != null && message.hasOwnProperty("systemName"))
+                if (!$util.isString(message.systemName))
+                    return "systemName: string expected";
+            return null;
+        };
+    
+        /**
+         * Creates an App message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof App
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {App} App
+         */
+        App.fromObject = function fromObject(object) {
+            if (object instanceof $root.App)
+                return object;
+            var message = new $root.App();
+            if (object.type != null)
+                message.type = String(object.type);
+            if (object.projectId != null)
+                message.projectId = String(object.projectId);
+            if (object.systemName != null)
+                message.systemName = String(object.systemName);
+            return message;
+        };
+    
+        /**
+         * Creates a plain object from an App message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof App
+         * @static
+         * @param {App} message App
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        App.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.type = "";
+                object.projectId = "";
+                object.systemName = "";
+            }
+            if (message.type != null && message.hasOwnProperty("type"))
+                object.type = message.type;
+            if (message.projectId != null && message.hasOwnProperty("projectId"))
+                object.projectId = message.projectId;
+            if (message.systemName != null && message.hasOwnProperty("systemName"))
+                object.systemName = message.systemName;
+            return object;
+        };
+    
+        /**
+         * Converts this App to JSON.
+         * @function toJSON
+         * @memberof App
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        App.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        return App;
+    })();
+    
+    $root.Offset = (function() {
+    
+        /**
+         * Properties of an Offset.
+         * @exports IOffset
+         * @interface IOffset
+         * @property {string|null} [limit] Offset limit
+         * @property {string|null} [contentId] Offset contentId
+         */
+    
+        /**
+         * Constructs a new Offset.
+         * @exports Offset
+         * @classdesc Represents an Offset.
+         * @implements IOffset
+         * @constructor
+         * @param {IOffset=} [properties] Properties to set
+         */
+        function Offset(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * Offset limit.
+         * @member {string} limit
+         * @memberof Offset
+         * @instance
+         */
+        Offset.prototype.limit = "";
+    
+        /**
+         * Offset contentId.
+         * @member {string} contentId
+         * @memberof Offset
+         * @instance
+         */
+        Offset.prototype.contentId = "";
+    
+        /**
+         * Creates a new Offset instance using the specified properties.
+         * @function create
+         * @memberof Offset
+         * @static
+         * @param {IOffset=} [properties] Properties to set
+         * @returns {Offset} Offset instance
+         */
+        Offset.create = function create(properties) {
+            return new Offset(properties);
+        };
+    
+        /**
+         * Encodes the specified Offset message. Does not implicitly {@link Offset.verify|verify} messages.
+         * @function encode
+         * @memberof Offset
+         * @static
+         * @param {IOffset} message Offset message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Offset.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.limit != null && Object.hasOwnProperty.call(message, "limit"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.limit);
+            if (message.contentId != null && Object.hasOwnProperty.call(message, "contentId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.contentId);
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified Offset message, length delimited. Does not implicitly {@link Offset.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof Offset
+         * @static
+         * @param {IOffset} message Offset message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Offset.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes an Offset message from the specified reader or buffer.
+         * @function decode
+         * @memberof Offset
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {Offset} Offset
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Offset.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.Offset();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.limit = reader.string();
+                    break;
+                case 2:
+                    message.contentId = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes an Offset message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof Offset
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {Offset} Offset
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Offset.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies an Offset message.
+         * @function verify
+         * @memberof Offset
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Offset.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.limit != null && message.hasOwnProperty("limit"))
+                if (!$util.isString(message.limit))
+                    return "limit: string expected";
+            if (message.contentId != null && message.hasOwnProperty("contentId"))
+                if (!$util.isString(message.contentId))
+                    return "contentId: string expected";
+            return null;
+        };
+    
+        /**
+         * Creates an Offset message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof Offset
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {Offset} Offset
+         */
+        Offset.fromObject = function fromObject(object) {
+            if (object instanceof $root.Offset)
+                return object;
+            var message = new $root.Offset();
+            if (object.limit != null)
+                message.limit = String(object.limit);
+            if (object.contentId != null)
+                message.contentId = String(object.contentId);
+            return message;
+        };
+    
+        /**
+         * Creates a plain object from an Offset message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof Offset
+         * @static
+         * @param {Offset} message Offset
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Offset.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.limit = "";
+                object.contentId = "";
+            }
+            if (message.limit != null && message.hasOwnProperty("limit"))
+                object.limit = message.limit;
+            if (message.contentId != null && message.hasOwnProperty("contentId"))
+                object.contentId = message.contentId;
+            return object;
+        };
+    
+        /**
+         * Converts this Offset to JSON.
+         * @function toJSON
+         * @memberof Offset
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Offset.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        return Offset;
+    })();
+    
+    $root.GetHistoryRequest = (function() {
+    
+        /**
+         * Properties of a GetHistoryRequest.
+         * @exports IGetHistoryRequest
+         * @interface IGetHistoryRequest
+         * @property {Array.<string>|null} [messageTypes] GetHistoryRequest messageTypes
+         * @property {IApp|null} [app] GetHistoryRequest app
+         * @property {IOffset|null} [offset] GetHistoryRequest offset
+         */
+    
+        /**
+         * Constructs a new GetHistoryRequest.
+         * @exports GetHistoryRequest
+         * @classdesc Represents a GetHistoryRequest.
+         * @implements IGetHistoryRequest
+         * @constructor
+         * @param {IGetHistoryRequest=} [properties] Properties to set
+         */
+        function GetHistoryRequest(properties) {
+            this.messageTypes = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * GetHistoryRequest messageTypes.
+         * @member {Array.<string>} messageTypes
+         * @memberof GetHistoryRequest
+         * @instance
+         */
+        GetHistoryRequest.prototype.messageTypes = $util.emptyArray;
+    
+        /**
+         * GetHistoryRequest app.
+         * @member {IApp|null|undefined} app
+         * @memberof GetHistoryRequest
+         * @instance
+         */
+        GetHistoryRequest.prototype.app = null;
+    
+        /**
+         * GetHistoryRequest offset.
+         * @member {IOffset|null|undefined} offset
+         * @memberof GetHistoryRequest
+         * @instance
+         */
+        GetHistoryRequest.prototype.offset = null;
+    
+        /**
+         * Creates a new GetHistoryRequest instance using the specified properties.
+         * @function create
+         * @memberof GetHistoryRequest
+         * @static
+         * @param {IGetHistoryRequest=} [properties] Properties to set
+         * @returns {GetHistoryRequest} GetHistoryRequest instance
+         */
+        GetHistoryRequest.create = function create(properties) {
+            return new GetHistoryRequest(properties);
+        };
+    
+        /**
+         * Encodes the specified GetHistoryRequest message. Does not implicitly {@link GetHistoryRequest.verify|verify} messages.
+         * @function encode
+         * @memberof GetHistoryRequest
+         * @static
+         * @param {IGetHistoryRequest} message GetHistoryRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        GetHistoryRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.messageTypes != null && message.messageTypes.length)
+                for (var i = 0; i < message.messageTypes.length; ++i)
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.messageTypes[i]);
+            if (message.app != null && Object.hasOwnProperty.call(message, "app"))
+                $root.App.encode(message.app, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            if (message.offset != null && Object.hasOwnProperty.call(message, "offset"))
+                $root.Offset.encode(message.offset, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified GetHistoryRequest message, length delimited. Does not implicitly {@link GetHistoryRequest.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof GetHistoryRequest
+         * @static
+         * @param {IGetHistoryRequest} message GetHistoryRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        GetHistoryRequest.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes a GetHistoryRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof GetHistoryRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {GetHistoryRequest} GetHistoryRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        GetHistoryRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.GetHistoryRequest();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (!(message.messageTypes && message.messageTypes.length))
+                        message.messageTypes = [];
+                    message.messageTypes.push(reader.string());
+                    break;
+                case 2:
+                    message.app = $root.App.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    message.offset = $root.Offset.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes a GetHistoryRequest message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof GetHistoryRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {GetHistoryRequest} GetHistoryRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        GetHistoryRequest.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies a GetHistoryRequest message.
+         * @function verify
+         * @memberof GetHistoryRequest
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        GetHistoryRequest.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.messageTypes != null && message.hasOwnProperty("messageTypes")) {
+                if (!Array.isArray(message.messageTypes))
+                    return "messageTypes: array expected";
+                for (var i = 0; i < message.messageTypes.length; ++i)
+                    if (!$util.isString(message.messageTypes[i]))
+                        return "messageTypes: string[] expected";
+            }
+            if (message.app != null && message.hasOwnProperty("app")) {
+                var error = $root.App.verify(message.app);
+                if (error)
+                    return "app." + error;
+            }
+            if (message.offset != null && message.hasOwnProperty("offset")) {
+                var error = $root.Offset.verify(message.offset);
+                if (error)
+                    return "offset." + error;
+            }
+            return null;
+        };
+    
+        /**
+         * Creates a GetHistoryRequest message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof GetHistoryRequest
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {GetHistoryRequest} GetHistoryRequest
+         */
+        GetHistoryRequest.fromObject = function fromObject(object) {
+            if (object instanceof $root.GetHistoryRequest)
+                return object;
+            var message = new $root.GetHistoryRequest();
+            if (object.messageTypes) {
+                if (!Array.isArray(object.messageTypes))
+                    throw TypeError(".GetHistoryRequest.messageTypes: array expected");
+                message.messageTypes = [];
+                for (var i = 0; i < object.messageTypes.length; ++i)
+                    message.messageTypes[i] = String(object.messageTypes[i]);
+            }
+            if (object.app != null) {
+                if (typeof object.app !== "object")
+                    throw TypeError(".GetHistoryRequest.app: object expected");
+                message.app = $root.App.fromObject(object.app);
+            }
+            if (object.offset != null) {
+                if (typeof object.offset !== "object")
+                    throw TypeError(".GetHistoryRequest.offset: object expected");
+                message.offset = $root.Offset.fromObject(object.offset);
+            }
+            return message;
+        };
+    
+        /**
+         * Creates a plain object from a GetHistoryRequest message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof GetHistoryRequest
+         * @static
+         * @param {GetHistoryRequest} message GetHistoryRequest
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        GetHistoryRequest.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.messageTypes = [];
+            if (options.defaults) {
+                object.app = null;
+                object.offset = null;
+            }
+            if (message.messageTypes && message.messageTypes.length) {
+                object.messageTypes = [];
+                for (var j = 0; j < message.messageTypes.length; ++j)
+                    object.messageTypes[j] = message.messageTypes[j];
+            }
+            if (message.app != null && message.hasOwnProperty("app"))
+                object.app = $root.App.toObject(message.app, options);
+            if (message.offset != null && message.hasOwnProperty("offset"))
+                object.offset = $root.Offset.toObject(message.offset, options);
+            return object;
+        };
+    
+        /**
+         * Converts this GetHistoryRequest to JSON.
+         * @function toJSON
+         * @memberof GetHistoryRequest
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        GetHistoryRequest.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        return GetHistoryRequest;
+    })();
+    
+    $root.Uuid = (function() {
+    
+        /**
+         * Properties of an Uuid.
+         * @exports IUuid
+         * @interface IUuid
+         * @property {string|null} [userId] Uuid userId
+         * @property {string|null} [userChannel] Uuid userChannel
+         * @property {string|null} [sub] Uuid sub
+         */
+    
+        /**
+         * Constructs a new Uuid.
+         * @exports Uuid
+         * @classdesc Represents an Uuid.
+         * @implements IUuid
+         * @constructor
+         * @param {IUuid=} [properties] Properties to set
+         */
+        function Uuid(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * Uuid userId.
+         * @member {string} userId
+         * @memberof Uuid
+         * @instance
+         */
+        Uuid.prototype.userId = "";
+    
+        /**
+         * Uuid userChannel.
+         * @member {string} userChannel
+         * @memberof Uuid
+         * @instance
+         */
+        Uuid.prototype.userChannel = "";
+    
+        /**
+         * Uuid sub.
+         * @member {string} sub
+         * @memberof Uuid
+         * @instance
+         */
+        Uuid.prototype.sub = "";
+    
+        /**
+         * Creates a new Uuid instance using the specified properties.
+         * @function create
+         * @memberof Uuid
+         * @static
+         * @param {IUuid=} [properties] Properties to set
+         * @returns {Uuid} Uuid instance
+         */
+        Uuid.create = function create(properties) {
+            return new Uuid(properties);
+        };
+    
+        /**
+         * Encodes the specified Uuid message. Does not implicitly {@link Uuid.verify|verify} messages.
+         * @function encode
+         * @memberof Uuid
+         * @static
+         * @param {IUuid} message Uuid message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Uuid.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.userId != null && Object.hasOwnProperty.call(message, "userId"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.userId);
+            if (message.userChannel != null && Object.hasOwnProperty.call(message, "userChannel"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.userChannel);
+            if (message.sub != null && Object.hasOwnProperty.call(message, "sub"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.sub);
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified Uuid message, length delimited. Does not implicitly {@link Uuid.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof Uuid
+         * @static
+         * @param {IUuid} message Uuid message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Uuid.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes an Uuid message from the specified reader or buffer.
+         * @function decode
+         * @memberof Uuid
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {Uuid} Uuid
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Uuid.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.Uuid();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.userId = reader.string();
+                    break;
+                case 2:
+                    message.userChannel = reader.string();
+                    break;
+                case 3:
+                    message.sub = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes an Uuid message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof Uuid
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {Uuid} Uuid
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Uuid.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies an Uuid message.
+         * @function verify
+         * @memberof Uuid
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Uuid.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.userId != null && message.hasOwnProperty("userId"))
+                if (!$util.isString(message.userId))
+                    return "userId: string expected";
+            if (message.userChannel != null && message.hasOwnProperty("userChannel"))
+                if (!$util.isString(message.userChannel))
+                    return "userChannel: string expected";
+            if (message.sub != null && message.hasOwnProperty("sub"))
+                if (!$util.isString(message.sub))
+                    return "sub: string expected";
+            return null;
+        };
+    
+        /**
+         * Creates an Uuid message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof Uuid
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {Uuid} Uuid
+         */
+        Uuid.fromObject = function fromObject(object) {
+            if (object instanceof $root.Uuid)
+                return object;
+            var message = new $root.Uuid();
+            if (object.userId != null)
+                message.userId = String(object.userId);
+            if (object.userChannel != null)
+                message.userChannel = String(object.userChannel);
+            if (object.sub != null)
+                message.sub = String(object.sub);
+            return message;
+        };
+    
+        /**
+         * Creates a plain object from an Uuid message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof Uuid
+         * @static
+         * @param {Uuid} message Uuid
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Uuid.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.userId = "";
+                object.userChannel = "";
+                object.sub = "";
+            }
+            if (message.userId != null && message.hasOwnProperty("userId"))
+                object.userId = message.userId;
+            if (message.userChannel != null && message.hasOwnProperty("userChannel"))
+                object.userChannel = message.userChannel;
+            if (message.sub != null && message.hasOwnProperty("sub"))
+                object.sub = message.sub;
+            return object;
+        };
+    
+        /**
+         * Converts this Uuid to JSON.
+         * @function toJSON
+         * @memberof Uuid
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Uuid.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        return Uuid;
+    })();
+    
+    $root.HistoryMessages = (function() {
+    
+        /**
+         * Properties of a HistoryMessages.
+         * @exports IHistoryMessages
+         * @interface IHistoryMessages
+         * @property {string|null} [content] HistoryMessages content
+         * @property {string|null} [contentId] HistoryMessages contentId
+         * @property {string|null} [timeCreated] HistoryMessages timeCreated
+         */
+    
+        /**
+         * Constructs a new HistoryMessages.
+         * @exports HistoryMessages
+         * @classdesc Represents a HistoryMessages.
+         * @implements IHistoryMessages
+         * @constructor
+         * @param {IHistoryMessages=} [properties] Properties to set
+         */
+        function HistoryMessages(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * HistoryMessages content.
+         * @member {string} content
+         * @memberof HistoryMessages
+         * @instance
+         */
+        HistoryMessages.prototype.content = "";
+    
+        /**
+         * HistoryMessages contentId.
+         * @member {string} contentId
+         * @memberof HistoryMessages
+         * @instance
+         */
+        HistoryMessages.prototype.contentId = "";
+    
+        /**
+         * HistoryMessages timeCreated.
+         * @member {string} timeCreated
+         * @memberof HistoryMessages
+         * @instance
+         */
+        HistoryMessages.prototype.timeCreated = "";
+    
+        /**
+         * Creates a new HistoryMessages instance using the specified properties.
+         * @function create
+         * @memberof HistoryMessages
+         * @static
+         * @param {IHistoryMessages=} [properties] Properties to set
+         * @returns {HistoryMessages} HistoryMessages instance
+         */
+        HistoryMessages.create = function create(properties) {
+            return new HistoryMessages(properties);
+        };
+    
+        /**
+         * Encodes the specified HistoryMessages message. Does not implicitly {@link HistoryMessages.verify|verify} messages.
+         * @function encode
+         * @memberof HistoryMessages
+         * @static
+         * @param {IHistoryMessages} message HistoryMessages message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        HistoryMessages.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.content != null && Object.hasOwnProperty.call(message, "content"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.content);
+            if (message.contentId != null && Object.hasOwnProperty.call(message, "contentId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.contentId);
+            if (message.timeCreated != null && Object.hasOwnProperty.call(message, "timeCreated"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.timeCreated);
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified HistoryMessages message, length delimited. Does not implicitly {@link HistoryMessages.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof HistoryMessages
+         * @static
+         * @param {IHistoryMessages} message HistoryMessages message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        HistoryMessages.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes a HistoryMessages message from the specified reader or buffer.
+         * @function decode
+         * @memberof HistoryMessages
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {HistoryMessages} HistoryMessages
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        HistoryMessages.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.HistoryMessages();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.content = reader.string();
+                    break;
+                case 2:
+                    message.contentId = reader.string();
+                    break;
+                case 3:
+                    message.timeCreated = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes a HistoryMessages message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof HistoryMessages
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {HistoryMessages} HistoryMessages
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        HistoryMessages.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies a HistoryMessages message.
+         * @function verify
+         * @memberof HistoryMessages
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        HistoryMessages.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.content != null && message.hasOwnProperty("content"))
+                if (!$util.isString(message.content))
+                    return "content: string expected";
+            if (message.contentId != null && message.hasOwnProperty("contentId"))
+                if (!$util.isString(message.contentId))
+                    return "contentId: string expected";
+            if (message.timeCreated != null && message.hasOwnProperty("timeCreated"))
+                if (!$util.isString(message.timeCreated))
+                    return "timeCreated: string expected";
+            return null;
+        };
+    
+        /**
+         * Creates a HistoryMessages message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof HistoryMessages
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {HistoryMessages} HistoryMessages
+         */
+        HistoryMessages.fromObject = function fromObject(object) {
+            if (object instanceof $root.HistoryMessages)
+                return object;
+            var message = new $root.HistoryMessages();
+            if (object.content != null)
+                message.content = String(object.content);
+            if (object.contentId != null)
+                message.contentId = String(object.contentId);
+            if (object.timeCreated != null)
+                message.timeCreated = String(object.timeCreated);
+            return message;
+        };
+    
+        /**
+         * Creates a plain object from a HistoryMessages message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof HistoryMessages
+         * @static
+         * @param {HistoryMessages} message HistoryMessages
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        HistoryMessages.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.content = "";
+                object.contentId = "";
+                object.timeCreated = "";
+            }
+            if (message.content != null && message.hasOwnProperty("content"))
+                object.content = message.content;
+            if (message.contentId != null && message.hasOwnProperty("contentId"))
+                object.contentId = message.contentId;
+            if (message.timeCreated != null && message.hasOwnProperty("timeCreated"))
+                object.timeCreated = message.timeCreated;
+            return object;
+        };
+    
+        /**
+         * Converts this HistoryMessages to JSON.
+         * @function toJSON
+         * @memberof HistoryMessages
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        HistoryMessages.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        return HistoryMessages;
+    })();
+    
+    $root.ChatHistoryRequest = (function() {
+    
+        /**
+         * Properties of a ChatHistoryRequest.
+         * @exports IChatHistoryRequest
+         * @interface IChatHistoryRequest
+         * @property {IUuid|null} [uuid] ChatHistoryRequest uuid
+         * @property {IDevice|null} [device] ChatHistoryRequest device
+         * @property {IGetHistoryRequest|null} [getHistoryRequest] ChatHistoryRequest getHistoryRequest
+         */
+    
+        /**
+         * Constructs a new ChatHistoryRequest.
+         * @exports ChatHistoryRequest
+         * @classdesc Represents a ChatHistoryRequest.
+         * @implements IChatHistoryRequest
+         * @constructor
+         * @param {IChatHistoryRequest=} [properties] Properties to set
+         */
+        function ChatHistoryRequest(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * ChatHistoryRequest uuid.
+         * @member {IUuid|null|undefined} uuid
+         * @memberof ChatHistoryRequest
+         * @instance
+         */
+        ChatHistoryRequest.prototype.uuid = null;
+    
+        /**
+         * ChatHistoryRequest device.
+         * @member {IDevice|null|undefined} device
+         * @memberof ChatHistoryRequest
+         * @instance
+         */
+        ChatHistoryRequest.prototype.device = null;
+    
+        /**
+         * ChatHistoryRequest getHistoryRequest.
+         * @member {IGetHistoryRequest|null|undefined} getHistoryRequest
+         * @memberof ChatHistoryRequest
+         * @instance
+         */
+        ChatHistoryRequest.prototype.getHistoryRequest = null;
+    
+        /**
+         * Creates a new ChatHistoryRequest instance using the specified properties.
+         * @function create
+         * @memberof ChatHistoryRequest
+         * @static
+         * @param {IChatHistoryRequest=} [properties] Properties to set
+         * @returns {ChatHistoryRequest} ChatHistoryRequest instance
+         */
+        ChatHistoryRequest.create = function create(properties) {
+            return new ChatHistoryRequest(properties);
+        };
+    
+        /**
+         * Encodes the specified ChatHistoryRequest message. Does not implicitly {@link ChatHistoryRequest.verify|verify} messages.
+         * @function encode
+         * @memberof ChatHistoryRequest
+         * @static
+         * @param {IChatHistoryRequest} message ChatHistoryRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ChatHistoryRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.uuid != null && Object.hasOwnProperty.call(message, "uuid"))
+                $root.Uuid.encode(message.uuid, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.device != null && Object.hasOwnProperty.call(message, "device"))
+                $root.Device.encode(message.device, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            if (message.getHistoryRequest != null && Object.hasOwnProperty.call(message, "getHistoryRequest"))
+                $root.GetHistoryRequest.encode(message.getHistoryRequest, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified ChatHistoryRequest message, length delimited. Does not implicitly {@link ChatHistoryRequest.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof ChatHistoryRequest
+         * @static
+         * @param {IChatHistoryRequest} message ChatHistoryRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ChatHistoryRequest.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes a ChatHistoryRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof ChatHistoryRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {ChatHistoryRequest} ChatHistoryRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ChatHistoryRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ChatHistoryRequest();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.uuid = $root.Uuid.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.device = $root.Device.decode(reader, reader.uint32());
+                    break;
+                case 4:
+                    message.getHistoryRequest = $root.GetHistoryRequest.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes a ChatHistoryRequest message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof ChatHistoryRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {ChatHistoryRequest} ChatHistoryRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ChatHistoryRequest.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies a ChatHistoryRequest message.
+         * @function verify
+         * @memberof ChatHistoryRequest
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ChatHistoryRequest.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.uuid != null && message.hasOwnProperty("uuid")) {
+                var error = $root.Uuid.verify(message.uuid);
+                if (error)
+                    return "uuid." + error;
+            }
+            if (message.device != null && message.hasOwnProperty("device")) {
+                var error = $root.Device.verify(message.device);
+                if (error)
+                    return "device." + error;
+            }
+            if (message.getHistoryRequest != null && message.hasOwnProperty("getHistoryRequest")) {
+                var error = $root.GetHistoryRequest.verify(message.getHistoryRequest);
+                if (error)
+                    return "getHistoryRequest." + error;
+            }
+            return null;
+        };
+    
+        /**
+         * Creates a ChatHistoryRequest message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof ChatHistoryRequest
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {ChatHistoryRequest} ChatHistoryRequest
+         */
+        ChatHistoryRequest.fromObject = function fromObject(object) {
+            if (object instanceof $root.ChatHistoryRequest)
+                return object;
+            var message = new $root.ChatHistoryRequest();
+            if (object.uuid != null) {
+                if (typeof object.uuid !== "object")
+                    throw TypeError(".ChatHistoryRequest.uuid: object expected");
+                message.uuid = $root.Uuid.fromObject(object.uuid);
+            }
+            if (object.device != null) {
+                if (typeof object.device !== "object")
+                    throw TypeError(".ChatHistoryRequest.device: object expected");
+                message.device = $root.Device.fromObject(object.device);
+            }
+            if (object.getHistoryRequest != null) {
+                if (typeof object.getHistoryRequest !== "object")
+                    throw TypeError(".ChatHistoryRequest.getHistoryRequest: object expected");
+                message.getHistoryRequest = $root.GetHistoryRequest.fromObject(object.getHistoryRequest);
+            }
+            return message;
+        };
+    
+        /**
+         * Creates a plain object from a ChatHistoryRequest message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof ChatHistoryRequest
+         * @static
+         * @param {ChatHistoryRequest} message ChatHistoryRequest
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ChatHistoryRequest.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.uuid = null;
+                object.device = null;
+                object.getHistoryRequest = null;
+            }
+            if (message.uuid != null && message.hasOwnProperty("uuid"))
+                object.uuid = $root.Uuid.toObject(message.uuid, options);
+            if (message.device != null && message.hasOwnProperty("device"))
+                object.device = $root.Device.toObject(message.device, options);
+            if (message.getHistoryRequest != null && message.hasOwnProperty("getHistoryRequest"))
+                object.getHistoryRequest = $root.GetHistoryRequest.toObject(message.getHistoryRequest, options);
+            return object;
+        };
+    
+        /**
+         * Converts this ChatHistoryRequest to JSON.
+         * @function toJSON
+         * @memberof ChatHistoryRequest
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ChatHistoryRequest.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        return ChatHistoryRequest;
+    })();
+    
+    $root.GetHistoryResponse = (function() {
+    
+        /**
+         * Properties of a GetHistoryResponse.
+         * @exports IGetHistoryResponse
+         * @interface IGetHistoryResponse
+         * @property {Array.<IHistoryMessages>|null} [historyMessages] GetHistoryResponse historyMessages
+         */
+    
+        /**
+         * Constructs a new GetHistoryResponse.
+         * @exports GetHistoryResponse
+         * @classdesc Represents a GetHistoryResponse.
+         * @implements IGetHistoryResponse
+         * @constructor
+         * @param {IGetHistoryResponse=} [properties] Properties to set
+         */
+        function GetHistoryResponse(properties) {
+            this.historyMessages = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * GetHistoryResponse historyMessages.
+         * @member {Array.<IHistoryMessages>} historyMessages
+         * @memberof GetHistoryResponse
+         * @instance
+         */
+        GetHistoryResponse.prototype.historyMessages = $util.emptyArray;
+    
+        /**
+         * Creates a new GetHistoryResponse instance using the specified properties.
+         * @function create
+         * @memberof GetHistoryResponse
+         * @static
+         * @param {IGetHistoryResponse=} [properties] Properties to set
+         * @returns {GetHistoryResponse} GetHistoryResponse instance
+         */
+        GetHistoryResponse.create = function create(properties) {
+            return new GetHistoryResponse(properties);
+        };
+    
+        /**
+         * Encodes the specified GetHistoryResponse message. Does not implicitly {@link GetHistoryResponse.verify|verify} messages.
+         * @function encode
+         * @memberof GetHistoryResponse
+         * @static
+         * @param {IGetHistoryResponse} message GetHistoryResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        GetHistoryResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.historyMessages != null && message.historyMessages.length)
+                for (var i = 0; i < message.historyMessages.length; ++i)
+                    $root.HistoryMessages.encode(message.historyMessages[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified GetHistoryResponse message, length delimited. Does not implicitly {@link GetHistoryResponse.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof GetHistoryResponse
+         * @static
+         * @param {IGetHistoryResponse} message GetHistoryResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        GetHistoryResponse.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes a GetHistoryResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof GetHistoryResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {GetHistoryResponse} GetHistoryResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        GetHistoryResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.GetHistoryResponse();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (!(message.historyMessages && message.historyMessages.length))
+                        message.historyMessages = [];
+                    message.historyMessages.push($root.HistoryMessages.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes a GetHistoryResponse message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof GetHistoryResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {GetHistoryResponse} GetHistoryResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        GetHistoryResponse.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies a GetHistoryResponse message.
+         * @function verify
+         * @memberof GetHistoryResponse
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        GetHistoryResponse.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.historyMessages != null && message.hasOwnProperty("historyMessages")) {
+                if (!Array.isArray(message.historyMessages))
+                    return "historyMessages: array expected";
+                for (var i = 0; i < message.historyMessages.length; ++i) {
+                    var error = $root.HistoryMessages.verify(message.historyMessages[i]);
+                    if (error)
+                        return "historyMessages." + error;
+                }
+            }
+            return null;
+        };
+    
+        /**
+         * Creates a GetHistoryResponse message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof GetHistoryResponse
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {GetHistoryResponse} GetHistoryResponse
+         */
+        GetHistoryResponse.fromObject = function fromObject(object) {
+            if (object instanceof $root.GetHistoryResponse)
+                return object;
+            var message = new $root.GetHistoryResponse();
+            if (object.historyMessages) {
+                if (!Array.isArray(object.historyMessages))
+                    throw TypeError(".GetHistoryResponse.historyMessages: array expected");
+                message.historyMessages = [];
+                for (var i = 0; i < object.historyMessages.length; ++i) {
+                    if (typeof object.historyMessages[i] !== "object")
+                        throw TypeError(".GetHistoryResponse.historyMessages: object expected");
+                    message.historyMessages[i] = $root.HistoryMessages.fromObject(object.historyMessages[i]);
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Creates a plain object from a GetHistoryResponse message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof GetHistoryResponse
+         * @static
+         * @param {GetHistoryResponse} message GetHistoryResponse
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        GetHistoryResponse.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.historyMessages = [];
+            if (message.historyMessages && message.historyMessages.length) {
+                object.historyMessages = [];
+                for (var j = 0; j < message.historyMessages.length; ++j)
+                    object.historyMessages[j] = $root.HistoryMessages.toObject(message.historyMessages[j], options);
+            }
+            return object;
+        };
+    
+        /**
+         * Converts this GetHistoryResponse to JSON.
+         * @function toJSON
+         * @memberof GetHistoryResponse
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        GetHistoryResponse.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        return GetHistoryResponse;
+    })();
+    
+    $root.ChatHistorySearchService = (function() {
+    
+        /**
+         * Constructs a new ChatHistorySearchService service.
+         * @exports ChatHistorySearchService
+         * @classdesc Represents a ChatHistorySearchService
+         * @extends $protobuf.rpc.Service
+         * @constructor
+         * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
+         * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+         * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+         */
+        function ChatHistorySearchService(rpcImpl, requestDelimited, responseDelimited) {
+            $protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
+        }
+    
+        (ChatHistorySearchService.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = ChatHistorySearchService;
+    
+        /**
+         * Creates new ChatHistorySearchService service using the specified rpc implementation.
+         * @function create
+         * @memberof ChatHistorySearchService
+         * @static
+         * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
+         * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+         * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+         * @returns {ChatHistorySearchService} RPC service. Useful where requests and/or responses are streamed.
+         */
+        ChatHistorySearchService.create = function create(rpcImpl, requestDelimited, responseDelimited) {
+            return new this(rpcImpl, requestDelimited, responseDelimited);
+        };
+    
+        /**
+         * Callback as used by {@link ChatHistorySearchService#getMessageHistory}.
+         * @memberof ChatHistorySearchService
+         * @typedef GetMessageHistoryCallback
+         * @type {function}
+         * @param {Error|null} error Error, if any
+         * @param {GetHistoryResponse} [response] GetHistoryResponse
+         */
+    
+        /**
+         * Calls GetMessageHistory.
+         * @function getMessageHistory
+         * @memberof ChatHistorySearchService
+         * @instance
+         * @param {IChatHistoryRequest} request ChatHistoryRequest message or plain object
+         * @param {ChatHistorySearchService.GetMessageHistoryCallback} callback Node-style callback called with the error, if any, and GetHistoryResponse
+         * @returns {undefined}
+         * @variation 1
+         */
+        Object.defineProperty(ChatHistorySearchService.prototype.getMessageHistory = function getMessageHistory(request, callback) {
+            return this.rpcCall(getMessageHistory, $root.ChatHistoryRequest, $root.GetHistoryResponse, request, callback);
+        }, "name", { value: "GetMessageHistory" });
+    
+        /**
+         * Calls GetMessageHistory.
+         * @function getMessageHistory
+         * @memberof ChatHistorySearchService
+         * @instance
+         * @param {IChatHistoryRequest} request ChatHistoryRequest message or plain object
+         * @returns {Promise<GetHistoryResponse>} Promise
+         * @variation 2
+         */
+    
+        return ChatHistorySearchService;
+    })();
 
     return $root;
 });

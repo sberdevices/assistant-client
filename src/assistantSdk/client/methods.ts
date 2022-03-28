@@ -13,6 +13,9 @@ import {
     Cancel,
     ICancel,
     IMessage,
+    IGetHistoryRequest,
+    IChatHistoryRequest,
+    ChatHistoryRequest,
 } from '../../proto';
 import { VpsVersion } from '../../typings';
 
@@ -73,6 +76,7 @@ export const createClientMethods = ({
             | { legacyDevice: LegacyDevice }
             | { initialSettings: InitialSettings }
             | { cancel: Cancel }
+            | IChatHistoryRequest
         ) & {
             last: 1 | -1;
             messageName?: string;
@@ -109,6 +113,27 @@ export const createClientMethods = ({
                 initialSettings: InitialSettings.create(data),
                 last: last ? 1 : -1,
                 ...params,
+            },
+            messageId,
+        });
+    };
+
+    const getChatHistory = (
+        data: Omit<IChatHistoryRequest, 'getHistoryRequest'> & { historyParams?: IGetHistoryRequest },
+        last = true,
+        messageId = getMessageId(),
+    ) => {
+        const { uuid, device, historyParams } = data;
+
+        return send({
+            payload: {
+                ...ChatHistoryRequest.create({
+                    // uuid,
+                    // device,
+                    getHistoryRequest: historyParams,
+                }),
+                messageName: 'GET_HISTORY',
+                last: last ? 1 : -1,
             },
             messageId,
         });
@@ -278,6 +303,7 @@ export const createClientMethods = ({
     return {
         sendDevice,
         sendInitialSettings,
+        getChatHistory,
         sendCancel,
         sendLegacyDevice,
         sendSettings,
