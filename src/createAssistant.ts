@@ -77,6 +77,20 @@ if (typeof window !== 'undefined' && inIframe()) {
                 const data = JSON.parse(e.data);
 
                 switch (data.type) {
+                    case 'onBack':
+                        {
+                            const prevPage = window.location.href;
+
+                            window.history.back();
+
+                            setTimeout(() => {
+                                // закрываем страницу, если переход назад не поменял урл
+                                if (window.location.href === prevPage) {
+                                    postMessage({ type: 'close' });
+                                }
+                            }, 500);
+                        }
+                        break;
                     case 'onData':
                         window.AssistantClient?.onData?.(data.payload);
                         break;

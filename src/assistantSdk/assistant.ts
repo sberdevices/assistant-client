@@ -14,6 +14,7 @@ import {
     SystemMessageDataType,
     CharacterId,
     AssistantBackgroundApp,
+    AssistantCommand,
 } from '../typings';
 
 import { createClient } from './client/client';
@@ -94,6 +95,7 @@ export type AssistantEvents = {
     assistant: (event: AssistantEvent) => void;
     vps: (event: VpsEvent) => void;
     actionCommand: (event: ActionCommandEvent) => void;
+    command: (command: AssistantCommand) => void;
     status: (status: OriginalMessageType['status']) => void;
     error: (error: AssistantError) => void;
 };
@@ -296,6 +298,8 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                         const { command } = items[i];
 
                         if (typeof command !== 'undefined') {
+                            setTimeout(() => emit('command', command));
+
                             if (command.type === 'start_music_recognition') {
                                 voice.shazam();
                                 return;

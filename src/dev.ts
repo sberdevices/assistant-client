@@ -10,6 +10,7 @@ import {
     Suggestions,
     CharacterId,
     AssistantAppState,
+    AssistantCommand,
     AssistantClientCommand,
     AssistantSystemCommand,
     FakeVpsParams,
@@ -308,6 +309,12 @@ export const initializeAssistantSDK = ({
         }
     });
 
+    assistant.on('command', (command: AssistantCommand) => {
+        if (command.type === 'system' && (command as AssistantSystemCommand).system.command.toUpperCase() === 'BACK') {
+            window.history.back();
+        }
+    });
+
     assistant.on('vps', (event: VpsEvent) => {
         if (event.type !== 'incoming') {
             return;
@@ -318,16 +325,6 @@ export const initializeAssistantSDK = ({
         for (const item of systemMessage.items || []) {
             if (item.bubble) {
                 bubbleText = item.bubble.text;
-            }
-
-            if (item.command) {
-                if (
-                    item.command.type === 'system' &&
-                    (item.command as AssistantSystemCommand).system.command.toUpperCase() === 'BACK'
-                ) {
-                    window.history.back();
-                    return;
-                }
             }
         }
 
