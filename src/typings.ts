@@ -314,16 +314,18 @@ export type EventsType = {
 export type ItemType = Partial<BubbleCommand> &
     Partial<CardCommand> &
     Partial<ActionCommand> & {
-        command?:
-            | Omit<AssistantSmartAppData, 'sdk_meta'>
-            | Omit<AssistantStartSmartSearch, 'sdk_meta'>
-            | Omit<AssistantSystemCommand, 'sdk_meta'>
-            | Omit<AssistantNavigationCommand, 'sdk_meta'>
-            | {
-                  type: string;
-                  [k: string]: unknown;
-              };
+        command?: AssistantCommand;
     };
+
+export type AssistantCommand =
+    | Omit<AssistantSmartAppData, 'sdk_meta'>
+    | Omit<AssistantStartSmartSearch, 'sdk_meta'>
+    | Omit<AssistantSystemCommand, 'sdk_meta'>
+    | Omit<AssistantNavigationCommand, 'sdk_meta'>
+    | {
+          type: string;
+          [k: string]: unknown;
+      };
 
 export type EmotionId =
     | 'bespokoistvo'
@@ -528,4 +530,7 @@ export type AssistantPostMessage =
     | {
           type: 'recoveryState';
           payload: unknown;
+      }
+    | {
+          type: 'onBack';
       };
