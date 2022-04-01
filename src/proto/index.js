@@ -41,6 +41,7 @@
          * @property {IBytes|null} [bytes] Message bytes
          * @property {IInitialSettings|null} [initialSettings] Message initialSettings
          * @property {ICancel|null} [cancel] Message cancel
+         * @property {IGetHistoryRequest|null} [getHistoryRequest] Message getHistoryRequest
          * @property {number|Long|null} [timestamp] Message timestamp
          * @property {Object.<string,string>|null} [meta] Message meta
          */
@@ -215,6 +216,14 @@
         Message.prototype.cancel = null;
     
         /**
+         * Message getHistoryRequest.
+         * @member {IGetHistoryRequest|null|undefined} getHistoryRequest
+         * @memberof Message
+         * @instance
+         */
+        Message.prototype.getHistoryRequest = null;
+    
+        /**
          * Message timestamp.
          * @member {number|Long} timestamp
          * @memberof Message
@@ -235,12 +244,12 @@
     
         /**
          * Message content.
-         * @member {"voice"|"text"|"systemMessage"|"legacyDevice"|"settings"|"status"|"device"|"bytes"|"initialSettings"|"cancel"|undefined} content
+         * @member {"voice"|"text"|"systemMessage"|"legacyDevice"|"settings"|"status"|"device"|"bytes"|"initialSettings"|"cancel"|"getHistoryRequest"|undefined} content
          * @memberof Message
          * @instance
          */
         Object.defineProperty(Message.prototype, "content", {
-            get: $util.oneOfGetter($oneOfFields = ["voice", "text", "systemMessage", "legacyDevice", "settings", "status", "device", "bytes", "initialSettings", "cancel"]),
+            get: $util.oneOfGetter($oneOfFields = ["voice", "text", "systemMessage", "legacyDevice", "settings", "status", "device", "bytes", "initialSettings", "cancel", "getHistoryRequest"]),
             set: $util.oneOfSetter($oneOfFields)
         });
     
@@ -312,6 +321,8 @@
                     writer.uint32(/* id 20, wireType 2 =*/162).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]).uint32(/* id 2, wireType 2 =*/18).string(message.meta[keys[i]]).ldelim();
             if (message.cancel != null && Object.hasOwnProperty.call(message, "cancel"))
                 $root.Cancel.encode(message.cancel, writer.uint32(/* id 21, wireType 2 =*/170).fork()).ldelim();
+            if (message.getHistoryRequest != null && Object.hasOwnProperty.call(message, "getHistoryRequest"))
+                $root.GetHistoryRequest.encode(message.getHistoryRequest, writer.uint32(/* id 22, wireType 2 =*/178).fork()).ldelim();
             return writer;
         };
     
@@ -404,6 +415,9 @@
                     break;
                 case 21:
                     message.cancel = $root.Cancel.decode(reader, reader.uint32());
+                    break;
+                case 22:
+                    message.getHistoryRequest = $root.GetHistoryRequest.decode(reader, reader.uint32());
                     break;
                 case 19:
                     message.timestamp = reader.int64();
@@ -597,6 +611,16 @@
                         return "cancel." + error;
                 }
             }
+            if (message.getHistoryRequest != null && message.hasOwnProperty("getHistoryRequest")) {
+                if (properties.content === 1)
+                    return "content: multiple values";
+                properties.content = 1;
+                {
+                    var error = $root.GetHistoryRequest.verify(message.getHistoryRequest);
+                    if (error)
+                        return "getHistoryRequest." + error;
+                }
+            }
             if (message.timestamp != null && message.hasOwnProperty("timestamp"))
                 if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
                     return "timestamp: integer|Long expected";
@@ -705,6 +729,11 @@
                 if (typeof object.cancel !== "object")
                     throw TypeError(".Message.cancel: object expected");
                 message.cancel = $root.Cancel.fromObject(object.cancel);
+            }
+            if (object.getHistoryRequest != null) {
+                if (typeof object.getHistoryRequest !== "object")
+                    throw TypeError(".Message.getHistoryRequest: object expected");
+                message.getHistoryRequest = $root.GetHistoryRequest.fromObject(object.getHistoryRequest);
             }
             if (object.timestamp != null)
                 if ($util.Long)
@@ -845,6 +874,11 @@
                 object.cancel = $root.Cancel.toObject(message.cancel, options);
                 if (options.oneofs)
                     object.content = "cancel";
+            }
+            if (message.getHistoryRequest != null && message.hasOwnProperty("getHistoryRequest")) {
+                object.getHistoryRequest = $root.GetHistoryRequest.toObject(message.getHistoryRequest, options);
+                if (options.oneofs)
+                    object.content = "getHistoryRequest";
             }
             return object;
         };

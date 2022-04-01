@@ -59,6 +59,9 @@ export interface IMessage {
     /** Message cancel */
     cancel?: (ICancel|null);
 
+    /** Message getHistoryRequest */
+    getHistoryRequest?: (IGetHistoryRequest|null);
+
     /** Message timestamp */
     timestamp?: (number|Long|null);
 
@@ -132,6 +135,9 @@ export class Message implements IMessage {
     /** Message cancel. */
     public cancel?: (ICancel|null);
 
+    /** Message getHistoryRequest. */
+    public getHistoryRequest?: (IGetHistoryRequest|null);
+
     /** Message timestamp. */
     public timestamp: (number|Long);
 
@@ -139,7 +145,7 @@ export class Message implements IMessage {
     public meta: { [k: string]: string };
 
     /** Message content. */
-    public content?: ("voice"|"text"|"systemMessage"|"legacyDevice"|"settings"|"status"|"device"|"bytes"|"initialSettings"|"cancel");
+    public content?: ("voice"|"text"|"systemMessage"|"legacyDevice"|"settings"|"status"|"device"|"bytes"|"initialSettings"|"cancel"|"getHistoryRequest");
 
     /**
      * Creates a new Message instance using the specified properties.

@@ -128,8 +128,8 @@ export const createClientMethods = ({
         return send({
             payload: {
                 ...ChatHistoryRequest.create({
-                    // uuid,
-                    // device,
+                    uuid,
+                    device,
                     getHistoryRequest: historyParams,
                 }),
                 messageName: 'GET_HISTORY',
