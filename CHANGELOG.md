@@ -1,3 +1,15 @@
+# v4.20.0 (Mon Apr 04 2022)
+
+#### 🚀 Enhancement
+
+- feat: Поддержка system back [#276](https://github.com/sberdevices/assistant-client/pull/276) ([@sasha-tlt](https://github.com/sasha-tlt))
+
+#### Authors: 1
+
+- Alexander Salmin ([@sasha-tlt](https://github.com/sasha-tlt))
+
+---
+
 # v4.19.1 (Mon Mar 21 2022)
 
 #### 🐛 Bug Fix
