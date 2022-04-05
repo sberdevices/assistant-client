@@ -118,6 +118,12 @@ if (typeof window !== 'undefined' && inIframe()) {
             console.error(err, 'Unknown message');
         }
     });
+
+    window.addEventListener('keydown', (event) => {
+        if ((event.code || event.key) === 'Enter') {
+            (document.activeElement as HTMLElement)?.click?.();
+        }
+    });
 }
 
 export interface CreateAssistantParams {
