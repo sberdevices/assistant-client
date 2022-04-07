@@ -101,7 +101,11 @@ if (typeof window !== 'undefined' && inIframe()) {
                     }
                     case 'onRequestRecoveryState': {
                         const recoverystate = window.AssistantClient?.onRequestRecoveryState?.();
-                        postMessage({ type: 'recoveryState', payload: recoverystate });
+                        postMessage({
+                            type: 'recoveryState',
+                            payload: recoverystate,
+                            requestId: data.requestId,
+                        });
                         break;
                     }
                     case 'onStart':

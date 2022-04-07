@@ -521,6 +521,7 @@ export type AssistantPostMessage =
       }
     | {
           type: 'onRequestRecoveryState';
+          requestId: string;
       }
     | {
           type: 'state';
@@ -530,6 +531,7 @@ export type AssistantPostMessage =
     | {
           type: 'recoveryState';
           payload: unknown;
+          requestId: string;
       }
     | {
           type: 'onBack';
