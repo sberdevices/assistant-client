@@ -176,6 +176,7 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
         const background_apps = await getBackgroundAppsMeta();
 
         return {
+            app_info: app.info,
             meta: {
                 time: getTime(),
                 current_app,
@@ -242,10 +243,10 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
     const sendMetaForPermissionRequest = async (
         requestMessageId: number | Long,
         appInfo: AppInfo,
-        items: PermissionType[],
+        permissions: PermissionType[],
     ) => {
-        const data = await getAnswerForRequestPermissions(requestMessageId, appInfo, items);
-        client.sendData(data, 'SERVER_ACTION');
+        const data = await getAnswerForRequestPermissions({ requestMessageId, appInfo, items: permissions, provideMeta: metaProvider });
+        client.sendData(data, 'SERVER_ACTION', data.meta);
     };
 
     subscriptions.push(protocol.on('ready', () => emit('vps', { type: 'ready' })));
@@ -305,10 +306,10 @@ export const createAssistant = ({ getMeta, ...configuration }: VpsConfiguration 
                                 return;
                             }
 
-                            if (command.type === 'request_permissions' && mesAppInfo) {
+                            if (command.type === 'request_permissions') {
                                 sendMetaForPermissionRequest(
                                     originalMessage.messageId,
-                                    mesAppInfo,
+                                    mesAppInfo || app.info,
                                     command.permissions as PermissionType[],
                                 );
                                 return;

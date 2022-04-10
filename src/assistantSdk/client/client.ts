@@ -14,6 +14,13 @@ export type SystemMessage = SystemMessageDataType & {
     messageName: OriginalMessageType[];
 };
 
+const convertMetaToProtobufMeta = (meta: Record<string, unknown>): Record<string, string> => {
+    return Object.keys(meta).reduce((acc: Record<string, string>, cur: string) => {
+        acc[cur] = JSON.stringify(meta[cur]).replace(/\//g, '\\/').replace(/"/g, '\"');
+        return acc;
+    }, {})
+}
+
 export const createClient = (
     protocol: ReturnType<typeof createProtocol>,
     provideMeta: (() => Promise<Partial<Pick<SystemMessageDataType, 'app_info' | 'meta'>>>) | undefined = undefined,
@@ -36,7 +43,7 @@ export const createClient = (
         });
 
     /** отправляет произвольный systemMessage, не подкладывает мету */
-    const sendData = (data: Record<string, unknown>, messageName = ''): number | Long => {
+    const sendData = (data: Record<string, unknown>, messageName = '', meta: Record<string, unknown> | undefined = undefined): number | Long => {
         const messageId = protocol.getMessageId();
 
         protocol.sendSystemMessage(
@@ -46,6 +53,7 @@ export const createClient = (
             },
             true,
             messageId,
+            { meta: meta ? convertMetaToProtobufMeta(meta) : undefined }
         );
 
         return messageId;
@@ -64,12 +72,12 @@ export const createClient = (
         const data = isFirstSession ? { is_first_session: true } : {};
         const meta = provideMeta ? await provideMeta() : {};
 
-        return waitForAnswer(sendData({ ...meta, ...data }, 'OPEN_ASSISTANT'));
+        return waitForAnswer(sendData({ ...meta, ...data }, 'OPEN_ASSISTANT', meta));
     };
 
     /** вызывает sendSystemMessage, куда подкладывает мету */
     const sendMeta = async (
-        sendSystemMessage: (data: { data: Record<string, unknown>; messageName?: string }, last: boolean) => void,
+        sendSystemMessage: BatchableMethods['sendSystemMessage'],
     ) => {
         const meta = provideMeta ? await provideMeta() : {};
 
@@ -80,6 +88,7 @@ export const createClient = (
                     messageName: '',
                 },
                 false,
+                { meta: meta.meta ? convertMetaToProtobufMeta(meta.meta) : undefined }
             );
         }
     };

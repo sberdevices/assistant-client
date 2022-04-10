@@ -31,8 +31,8 @@ export const getCurrentLocation = async (): Promise<Meta['location']> =>
         navigator.geolocation.getCurrentPosition(
             ({ coords, timestamp }) => {
                 resolve({
-                    lat: coords.latitude.toString(),
-                    lon: coords.longitude.toString(),
+                    lat: coords.latitude,
+                    lon: coords.longitude,
                     accuracy: coords.accuracy,
                     timestamp,
                 });
@@ -50,11 +50,12 @@ export const getTime = (): Meta['time'] => ({
     timestamp: Date.now(),
 });
 
-export const getAnswerForRequestPermissions = async (
+export const getAnswerForRequestPermissions = async ({ requestMessageId, appInfo, items, provideMeta }: {
     requestMessageId: number | Long,
     appInfo: AppInfo,
     items: PermissionType[],
-): Promise<SystemMessageDataType> => {
+    provideMeta: () => Promise<Partial<Pick<SystemMessageDataType, 'app_info' | 'meta'>>>
+}): Promise<SystemMessageDataType> => {
     const permissions: Permission = {
         record_audio: 'denied_once',
         geo: 'denied_once',
@@ -65,10 +66,7 @@ export const getAnswerForRequestPermissions = async (
     const response: CommandResponse = {
         auto_listening: false,
         app_info: appInfo,
-        meta: {
-            time: getTime(),
-            permissions: [],
-        },
+        meta: {},
         server_action: {
             action_id: 'command_response',
             request_message_id: requestMessageId,
@@ -106,8 +104,14 @@ export const getAnswerForRequestPermissions = async (
                     console.warn('Unsupported permission request:', permission);
             }
         }),
-    ).then(() => {
-        response.meta.permissions = getMetaPermissons(permissions);
+    ).then(async () => {
+        const { meta } = await provideMeta();
+
+        response.meta = {
+            ...meta,
+            ...response.meta,
+            permissions: getMetaPermissons(permissions),
+        }
         return response;
     });
 };
