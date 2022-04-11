@@ -1,5 +1,5 @@
 import { createNanoEvents } from '../../nanoevents';
-import { IDevice, IInitialSettings, ILegacyDevice, IMessage, Message } from '../../proto';
+import { IDevice, IInitialSettings, ILegacyDevice, IMessage, Message, IGetHistoryRequest, IDevice } from '../../proto';
 import { VpsConfiguration, OriginalMessageType, VpsVersion } from '../../typings';
 
 import { createClientMethods } from './methods';
@@ -143,6 +143,7 @@ export const createProtocol = (
     const {
         sendDevice: sendDeviceOriginal,
         sendInitialSettings: sendInitialSettingsOriginal,
+        getChatHistory: getChatHistoryOriginal,
         sendCancel,
         sendLegacyDevice: sendLegacyDeviceOriginal,
         sendSettings: sendSettingsOriginal,
@@ -170,6 +171,22 @@ export const createProtocol = (
 
         return sendInitialSettingsOriginal(data, ...args);
     }) as typeof sendInitialSettingsOriginal;
+
+    const getChatHistory = (data?: {
+        userId?: string;
+        userChannel?: string;
+        device?: IDevice;
+        historyParams?: IGetHistoryRequest;
+    }) => {
+        return getChatHistoryOriginal({
+            uuid: {
+                userId: data?.userId || userId,
+                userChannel: data?.userChannel || userChannel,
+            },
+            device: data?.device || device,
+            historyParams: data?.historyParams,
+        });
+    };
 
     const sendLegacyDevice = ((data: ILegacyDevice, ...args: never[]) => {
         currentSettings = { ...currentSettings, legacyDevice: data };
@@ -300,6 +317,7 @@ export const createProtocol = (
             subscriptions.splice(0, subscriptions.length).map((unsubscribe) => unsubscribe());
         },
         on,
+        getChatHistory,
         getMessageId,
         sendCancel,
         sendText,

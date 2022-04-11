@@ -59,6 +59,9 @@ export interface IMessage {
     /** Message cancel */
     cancel?: (ICancel|null);
 
+    /** Message getHistoryRequest */
+    getHistoryRequest?: (IGetHistoryRequest|null);
+
     /** Message timestamp */
     timestamp?: (number|Long|null);
 
@@ -132,6 +135,9 @@ export class Message implements IMessage {
     /** Message cancel. */
     public cancel?: (ICancel|null);
 
+    /** Message getHistoryRequest. */
+    public getHistoryRequest?: (IGetHistoryRequest|null);
+
     /** Message timestamp. */
     public timestamp: (number|Long);
 
@@ -139,7 +145,7 @@ export class Message implements IMessage {
     public meta: { [k: string]: string };
 
     /** Message content. */
-    public content?: ("voice"|"text"|"systemMessage"|"legacyDevice"|"settings"|"status"|"device"|"bytes"|"initialSettings"|"cancel");
+    public content?: ("voice"|"text"|"systemMessage"|"legacyDevice"|"settings"|"status"|"device"|"bytes"|"initialSettings"|"cancel"|"getHistoryRequest");
 
     /**
      * Creates a new Message instance using the specified properties.
@@ -1392,4 +1398,745 @@ export class Cancel implements ICancel {
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
+}
+
+/** Properties of an App. */
+export interface IApp {
+
+    /** App type */
+    type?: (string|null);
+
+    /** App projectId */
+    projectId?: (string|null);
+
+    /** App systemName */
+    systemName?: (string|null);
+}
+
+/** Represents an App. */
+export class App implements IApp {
+
+    /**
+     * Constructs a new App.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IApp);
+
+    /** App type. */
+    public type: string;
+
+    /** App projectId. */
+    public projectId: string;
+
+    /** App systemName. */
+    public systemName: string;
+
+    /**
+     * Creates a new App instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns App instance
+     */
+    public static create(properties?: IApp): App;
+
+    /**
+     * Encodes the specified App message. Does not implicitly {@link App.verify|verify} messages.
+     * @param message App message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IApp, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified App message, length delimited. Does not implicitly {@link App.verify|verify} messages.
+     * @param message App message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IApp, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an App message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns App
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): App;
+
+    /**
+     * Decodes an App message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns App
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): App;
+
+    /**
+     * Verifies an App message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates an App message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns App
+     */
+    public static fromObject(object: { [k: string]: any }): App;
+
+    /**
+     * Creates a plain object from an App message. Also converts values to other types if specified.
+     * @param message App
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: App, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this App to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of an Offset. */
+export interface IOffset {
+
+    /** Offset limit */
+    limit?: (string|null);
+
+    /** Offset contentId */
+    contentId?: (string|null);
+}
+
+/** Represents an Offset. */
+export class Offset implements IOffset {
+
+    /**
+     * Constructs a new Offset.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IOffset);
+
+    /** Offset limit. */
+    public limit: string;
+
+    /** Offset contentId. */
+    public contentId: string;
+
+    /**
+     * Creates a new Offset instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Offset instance
+     */
+    public static create(properties?: IOffset): Offset;
+
+    /**
+     * Encodes the specified Offset message. Does not implicitly {@link Offset.verify|verify} messages.
+     * @param message Offset message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IOffset, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Offset message, length delimited. Does not implicitly {@link Offset.verify|verify} messages.
+     * @param message Offset message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IOffset, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an Offset message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Offset
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Offset;
+
+    /**
+     * Decodes an Offset message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Offset
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Offset;
+
+    /**
+     * Verifies an Offset message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates an Offset message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Offset
+     */
+    public static fromObject(object: { [k: string]: any }): Offset;
+
+    /**
+     * Creates a plain object from an Offset message. Also converts values to other types if specified.
+     * @param message Offset
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: Offset, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this Offset to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a GetHistoryRequest. */
+export interface IGetHistoryRequest {
+
+    /** GetHistoryRequest messageTypes */
+    messageTypes?: (string[]|null);
+
+    /** GetHistoryRequest app */
+    app?: (IApp|null);
+
+    /** GetHistoryRequest offset */
+    offset?: (IOffset|null);
+}
+
+/** Represents a GetHistoryRequest. */
+export class GetHistoryRequest implements IGetHistoryRequest {
+
+    /**
+     * Constructs a new GetHistoryRequest.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IGetHistoryRequest);
+
+    /** GetHistoryRequest messageTypes. */
+    public messageTypes: string[];
+
+    /** GetHistoryRequest app. */
+    public app?: (IApp|null);
+
+    /** GetHistoryRequest offset. */
+    public offset?: (IOffset|null);
+
+    /**
+     * Creates a new GetHistoryRequest instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns GetHistoryRequest instance
+     */
+    public static create(properties?: IGetHistoryRequest): GetHistoryRequest;
+
+    /**
+     * Encodes the specified GetHistoryRequest message. Does not implicitly {@link GetHistoryRequest.verify|verify} messages.
+     * @param message GetHistoryRequest message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IGetHistoryRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified GetHistoryRequest message, length delimited. Does not implicitly {@link GetHistoryRequest.verify|verify} messages.
+     * @param message GetHistoryRequest message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IGetHistoryRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a GetHistoryRequest message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns GetHistoryRequest
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): GetHistoryRequest;
+
+    /**
+     * Decodes a GetHistoryRequest message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns GetHistoryRequest
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): GetHistoryRequest;
+
+    /**
+     * Verifies a GetHistoryRequest message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a GetHistoryRequest message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns GetHistoryRequest
+     */
+    public static fromObject(object: { [k: string]: any }): GetHistoryRequest;
+
+    /**
+     * Creates a plain object from a GetHistoryRequest message. Also converts values to other types if specified.
+     * @param message GetHistoryRequest
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: GetHistoryRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this GetHistoryRequest to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of an Uuid. */
+export interface IUuid {
+
+    /** Uuid userId */
+    userId?: (string|null);
+
+    /** Uuid userChannel */
+    userChannel?: (string|null);
+
+    /** Uuid sub */
+    sub?: (string|null);
+}
+
+/** Represents an Uuid. */
+export class Uuid implements IUuid {
+
+    /**
+     * Constructs a new Uuid.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IUuid);
+
+    /** Uuid userId. */
+    public userId: string;
+
+    /** Uuid userChannel. */
+    public userChannel: string;
+
+    /** Uuid sub. */
+    public sub: string;
+
+    /**
+     * Creates a new Uuid instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Uuid instance
+     */
+    public static create(properties?: IUuid): Uuid;
+
+    /**
+     * Encodes the specified Uuid message. Does not implicitly {@link Uuid.verify|verify} messages.
+     * @param message Uuid message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IUuid, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Uuid message, length delimited. Does not implicitly {@link Uuid.verify|verify} messages.
+     * @param message Uuid message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IUuid, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an Uuid message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Uuid
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Uuid;
+
+    /**
+     * Decodes an Uuid message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Uuid
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Uuid;
+
+    /**
+     * Verifies an Uuid message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates an Uuid message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Uuid
+     */
+    public static fromObject(object: { [k: string]: any }): Uuid;
+
+    /**
+     * Creates a plain object from an Uuid message. Also converts values to other types if specified.
+     * @param message Uuid
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: Uuid, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this Uuid to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a HistoryMessages. */
+export interface IHistoryMessages {
+
+    /** HistoryMessages content */
+    content?: (string|null);
+
+    /** HistoryMessages contentId */
+    contentId?: (string|null);
+
+    /** HistoryMessages timeCreated */
+    timeCreated?: (string|null);
+}
+
+/** Represents a HistoryMessages. */
+export class HistoryMessages implements IHistoryMessages {
+
+    /**
+     * Constructs a new HistoryMessages.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IHistoryMessages);
+
+    /** HistoryMessages content. */
+    public content: string;
+
+    /** HistoryMessages contentId. */
+    public contentId: string;
+
+    /** HistoryMessages timeCreated. */
+    public timeCreated: string;
+
+    /**
+     * Creates a new HistoryMessages instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns HistoryMessages instance
+     */
+    public static create(properties?: IHistoryMessages): HistoryMessages;
+
+    /**
+     * Encodes the specified HistoryMessages message. Does not implicitly {@link HistoryMessages.verify|verify} messages.
+     * @param message HistoryMessages message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IHistoryMessages, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified HistoryMessages message, length delimited. Does not implicitly {@link HistoryMessages.verify|verify} messages.
+     * @param message HistoryMessages message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IHistoryMessages, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a HistoryMessages message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns HistoryMessages
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): HistoryMessages;
+
+    /**
+     * Decodes a HistoryMessages message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns HistoryMessages
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): HistoryMessages;
+
+    /**
+     * Verifies a HistoryMessages message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a HistoryMessages message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns HistoryMessages
+     */
+    public static fromObject(object: { [k: string]: any }): HistoryMessages;
+
+    /**
+     * Creates a plain object from a HistoryMessages message. Also converts values to other types if specified.
+     * @param message HistoryMessages
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: HistoryMessages, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this HistoryMessages to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a ChatHistoryRequest. */
+export interface IChatHistoryRequest {
+
+    /** ChatHistoryRequest uuid */
+    uuid?: (IUuid|null);
+
+    /** ChatHistoryRequest device */
+    device?: (IDevice|null);
+
+    /** ChatHistoryRequest getHistoryRequest */
+    getHistoryRequest?: (IGetHistoryRequest|null);
+}
+
+/** Represents a ChatHistoryRequest. */
+export class ChatHistoryRequest implements IChatHistoryRequest {
+
+    /**
+     * Constructs a new ChatHistoryRequest.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IChatHistoryRequest);
+
+    /** ChatHistoryRequest uuid. */
+    public uuid?: (IUuid|null);
+
+    /** ChatHistoryRequest device. */
+    public device?: (IDevice|null);
+
+    /** ChatHistoryRequest getHistoryRequest. */
+    public getHistoryRequest?: (IGetHistoryRequest|null);
+
+    /**
+     * Creates a new ChatHistoryRequest instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ChatHistoryRequest instance
+     */
+    public static create(properties?: IChatHistoryRequest): ChatHistoryRequest;
+
+    /**
+     * Encodes the specified ChatHistoryRequest message. Does not implicitly {@link ChatHistoryRequest.verify|verify} messages.
+     * @param message ChatHistoryRequest message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IChatHistoryRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ChatHistoryRequest message, length delimited. Does not implicitly {@link ChatHistoryRequest.verify|verify} messages.
+     * @param message ChatHistoryRequest message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IChatHistoryRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a ChatHistoryRequest message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ChatHistoryRequest
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): ChatHistoryRequest;
+
+    /**
+     * Decodes a ChatHistoryRequest message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ChatHistoryRequest
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): ChatHistoryRequest;
+
+    /**
+     * Verifies a ChatHistoryRequest message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a ChatHistoryRequest message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ChatHistoryRequest
+     */
+    public static fromObject(object: { [k: string]: any }): ChatHistoryRequest;
+
+    /**
+     * Creates a plain object from a ChatHistoryRequest message. Also converts values to other types if specified.
+     * @param message ChatHistoryRequest
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: ChatHistoryRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this ChatHistoryRequest to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of a GetHistoryResponse. */
+export interface IGetHistoryResponse {
+
+    /** GetHistoryResponse historyMessages */
+    historyMessages?: (IHistoryMessages[]|null);
+}
+
+/** Represents a GetHistoryResponse. */
+export class GetHistoryResponse implements IGetHistoryResponse {
+
+    /**
+     * Constructs a new GetHistoryResponse.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IGetHistoryResponse);
+
+    /** GetHistoryResponse historyMessages. */
+    public historyMessages: IHistoryMessages[];
+
+    /**
+     * Creates a new GetHistoryResponse instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns GetHistoryResponse instance
+     */
+    public static create(properties?: IGetHistoryResponse): GetHistoryResponse;
+
+    /**
+     * Encodes the specified GetHistoryResponse message. Does not implicitly {@link GetHistoryResponse.verify|verify} messages.
+     * @param message GetHistoryResponse message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IGetHistoryResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified GetHistoryResponse message, length delimited. Does not implicitly {@link GetHistoryResponse.verify|verify} messages.
+     * @param message GetHistoryResponse message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IGetHistoryResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a GetHistoryResponse message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns GetHistoryResponse
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): GetHistoryResponse;
+
+    /**
+     * Decodes a GetHistoryResponse message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns GetHistoryResponse
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): GetHistoryResponse;
+
+    /**
+     * Verifies a GetHistoryResponse message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a GetHistoryResponse message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns GetHistoryResponse
+     */
+    public static fromObject(object: { [k: string]: any }): GetHistoryResponse;
+
+    /**
+     * Creates a plain object from a GetHistoryResponse message. Also converts values to other types if specified.
+     * @param message GetHistoryResponse
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: GetHistoryResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this GetHistoryResponse to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Represents a ChatHistorySearchService */
+export class ChatHistorySearchService extends $protobuf.rpc.Service {
+
+    /**
+     * Constructs a new ChatHistorySearchService service.
+     * @param rpcImpl RPC implementation
+     * @param [requestDelimited=false] Whether requests are length-delimited
+     * @param [responseDelimited=false] Whether responses are length-delimited
+     */
+    constructor(rpcImpl: $protobuf.RPCImpl, requestDelimited?: boolean, responseDelimited?: boolean);
+
+    /**
+     * Creates new ChatHistorySearchService service using the specified rpc implementation.
+     * @param rpcImpl RPC implementation
+     * @param [requestDelimited=false] Whether requests are length-delimited
+     * @param [responseDelimited=false] Whether responses are length-delimited
+     * @returns RPC service. Useful where requests and/or responses are streamed.
+     */
+    public static create(rpcImpl: $protobuf.RPCImpl, requestDelimited?: boolean, responseDelimited?: boolean): ChatHistorySearchService;
+
+    /**
+     * Calls GetMessageHistory.
+     * @param request ChatHistoryRequest message or plain object
+     * @param callback Node-style callback called with the error, if any, and GetHistoryResponse
+     */
+    public getMessageHistory(request: IChatHistoryRequest, callback: ChatHistorySearchService.GetMessageHistoryCallback): void;
+
+    /**
+     * Calls GetMessageHistory.
+     * @param request ChatHistoryRequest message or plain object
+     * @returns Promise
+     */
+    public getMessageHistory(request: IChatHistoryRequest): Promise<GetHistoryResponse>;
+}
+
+export namespace ChatHistorySearchService {
+
+    /**
+     * Callback as used by {@link ChatHistorySearchService#getMessageHistory}.
+     * @param error Error, if any
+     * @param [response] GetHistoryResponse
+     */
+    type GetMessageHistoryCallback = (error: (Error|null), response?: GetHistoryResponse) => void;
 }

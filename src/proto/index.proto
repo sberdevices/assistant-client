@@ -21,6 +21,7 @@ message Message {
         Bytes bytes = 17;//Массив данных для передачи сервису потребителю, в виде байтов
         InitialSettings initial_settings = 18;// Присылается первым сообщением после открытии сессии, они определяют контекст сессии, если не будет прислано будет ошибка
         Cancel cancel = 21;
+        GetHistoryRequest get_history_request = 22;
     }
     int64 timestamp = 19; // время создания чанка
     map<string, string> meta = 20; // для ufsInfo и т.д.
@@ -103,3 +104,46 @@ message DevContext {
 }
 
 message Cancel {}
+
+// 
+// ChatHistory 
+//
+
+message GetHistoryRequest {
+    repeated string message_types = 1; // Опционально. Список типов сообщений, которые нужно отобрать. По умолчанию: VOICE_FROM_USER, MESSAGE_FROM_USER, ANSWER_TO_USER
+    App app = 2; //Опционально.
+    Offset offset = 3; //Опционально. Параметры для получения порции сообщений
+}
+
+message App {
+    google.protobuf.StringValue type = 1; // Опционально. Тип аппа, по умолчанию DIALOG - если нужна история переписки с ассистентом
+    google.protobuf.StringValue project_id = 2; //Опционально. Если требуется история переписки в конкретном приложении, например ChatApp'е
+    google.protobuf.StringValue system_name = 3; //Опционально. Если требуется история переписки в конкретном приложении, например ChatApp'е
+}
+
+message Offset {
+    google.protobuf.StringValue limit = 1; // Опционально. Количество запрашиваемых сообщений, по умолчанию 10. Максимальное значение 30
+    google.protobuf.StringValue content_id = 2; //Опционально. Идентификатор записи в History (content_id из ответа)
+}
+
+message ChatHistoryRequest {
+    Uuid uuid = 1; //Обязательно
+    proto.vps.Device device = 2;//Обязательно
+    proto.vps.GetHistoryRequest get_history_request = 4;
+}
+
+message Uuid {
+    string user_id = 1;//Обязательно (max 36 символов)
+    string user_channel = 2;//Обязательно. Пример, SBOL, B2C и т д
+    string sub = 3;//Обязательно
+}
+
+message GetHistoryResponse {
+    repeated HistoryMessages history_messages = 1; // Коллекция сообщений
+}
+
+message HistoryMessages {
+    string content = 1; // JSON as String.
+    string content_id = 2; //Идентификатор записи в History
+    string time_created = 3; //Дата вставки в БД, для отображения на фронте
+}
