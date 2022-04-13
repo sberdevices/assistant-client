@@ -5,10 +5,6 @@ const findCommandIndex = (arr: AssistantClientCommand[], command: AssistantClien
 
     if (command.type === 'character') {
         index = arr.findIndex((c) => c.type === 'character' && c.character.id === command.character.id);
-    } else if (command.type === 'insets') {
-        index = arr.findIndex((c) => c.type === 'insets');
-    } else if (command.type === 'app_context') {
-        index = arr.findIndex((c) => c.type === 'app_context');
     } else if (command.sdk_meta && command.sdk_meta?.mid && command.sdk_meta?.mid !== '-1') {
         index = arr.findIndex((c) => c.sdk_meta?.mid === command.sdk_meta?.mid);
     }
